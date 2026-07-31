@@ -51,7 +51,7 @@ const MyBookingsScreen = ({ navigation }) => {
     const inProgressData = {
         id: '1',
         serviceName: 'Home Deep Cleaning',
-        provider: 'CleanMaster Services',
+        provider: 'HomeHelp',
         status: 'In Progress',
         items: ['Living Room', 'Kitchen', 'Bathrooms'],
         startOtp: '4826',
@@ -61,11 +61,11 @@ const MyBookingsScreen = ({ navigation }) => {
 
     // Sample Data - Previous Bookings
     const previousBookings = [
-        
+
         {
             id: '1',
             serviceName: 'Sofa Cleaning',
-            provider: 'SofaCare Experts',
+            provider: 'HomeHelp',
             date: '10 Dec 2026',
             status: 'Completed',
             rating: 4.5,
@@ -76,13 +76,24 @@ const MyBookingsScreen = ({ navigation }) => {
         {
             id: '2',
             serviceName: 'Kitchen Cleaning',
-            provider: 'SparkleClean Services',
+            provider: 'HomeHelp',
             date: '5 Dec 2026',
             status: 'Completed',
             rating: 4.9,
             image: require('../../asset/kitchen-cleaning.jpg'),
             price: '₹349',
             feedback: 'Excellent work! Very thorough.',
+        },
+        {
+            id: '2',
+            serviceName: 'Carpet Cleaning',
+            provider: 'HomeHelp',
+            date: '8 Dec 2025',
+            status: 'Cancelled',
+            rating: 4.9,
+            image: require('../../asset/carpet-clean.png'),
+            price: '₹0',
+            feedback: '-.',
         },
     ];
 
@@ -91,7 +102,7 @@ const MyBookingsScreen = ({ navigation }) => {
         {
             id: '5',
             serviceName: 'Kitchen Deep Cleaning',
-            provider: 'CleanMaster Services',
+            provider: 'HomeHelp',
             date: '5 Jan 2027',
             time: '09:00 AM',
             status: 'Confirmed',
@@ -102,11 +113,11 @@ const MyBookingsScreen = ({ navigation }) => {
         {
             id: '6',
             serviceName: 'Carpet Cleaning',
-            provider: 'CarpetCare Experts',
+            provider: 'HomeHelp',
             date: '12 Jan 2027',
             time: '11:00 AM',
             status: 'Pending',
-            image:  require('../../asset/carpet-clean.png'),
+            image: require('../../asset/carpet-clean.png'),
             address: '456, Park Avenue, Mumbai',
             price: '₹699',
         },
@@ -293,15 +304,25 @@ const MyBookingsScreen = ({ navigation }) => {
 
                         }}
                     />
-                    <Text style={styles.callButtonText}>Call Provider</Text>
+                    <Text style={styles.callButtonText}>Call Professional</Text>
                 </TouchableOpacity>
             </View>
         </View>
     );
 
     const renderPreviousBookingItem = (item) => (
-        <View style={styles.bookingCard}>
-            <Image source={ item.image } style={styles.bookingImage} />
+        <TouchableOpacity
+            style={styles.bookingCard}
+            activeOpacity={0.8}
+            onPress={() => {
+                if (item.status === 'Completed') {
+                    navigation.navigate('JobCompletedScreen', {
+                        booking: item,
+                    });
+                }
+            }}
+        >
+            <Image source={item.image} style={styles.bookingImage} />
             <View style={styles.bookingContent}>
                 <View style={styles.bookingHeader}>
                     <Text style={styles.bookingName}>{item.serviceName}</Text>
@@ -368,7 +389,7 @@ const MyBookingsScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 
     const renderUpcomingBookingItem = (item) => (
@@ -617,8 +638,8 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
-       
-        
+
+
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,

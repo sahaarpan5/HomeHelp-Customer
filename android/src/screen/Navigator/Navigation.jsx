@@ -8,6 +8,7 @@ import LoginScreen from '../Common/LoginScreen';
 import CreateAccountScreen from '../Common/CreateAccountScreen';
 import DashboardScreen from '../Common/DashboardScreen';
 import MyBookingsScreen from '../Common/MyBookingsScreen';
+import JobCompletedScreen from '../Common/JobCompletedScreen';
 
 
 
@@ -26,6 +27,7 @@ const Navigation = () => {
        <Stack.Screen name="CreateAccountScreen" component={CreateAccountScreen} />
        <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
        <Stack.Screen name="MyBookingsScreen" component={MyBookingsScreen} />
+       <Stack.Screen name="JobCompletedScreen" component={JobCompletedScreen} />
       </Stack.Navigator>
 
     </SafeAreaProvider>
