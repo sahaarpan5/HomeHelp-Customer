@@ -84,7 +84,7 @@ const JobCompletedScreen = ({ navigation, route }) => {
     // Celebrating Professionals
     const celebratingProfessionals = [
         { id: '1', name: '-', video: require('../../asset/videos/pr-1.mp4'), role: '-' },
-        { id: '2', name: '-', video: require('../../asset/videos/pr-2.mp4'), role: '-' },
+        { id: '2', name: '-', video: require('../../asset/videos/demo1.mp4'), role: '-' },
         { id: '2', name: '-', video: require('../../asset/videos/pr-3.mp4'), role: '-' },
 
 

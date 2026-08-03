@@ -80,7 +80,7 @@ const MyBookingsScreen = ({ navigation }) => {
             date: '5 Dec 2026',
             status: 'Completed',
             rating: 4.9,
-            image: require('../../asset/kitchen-cleaning.jpg'),
+            image: require('../../asset/kitchen-clean.png'),
             price: '₹349',
             feedback: 'Excellent work! Very thorough.',
         },
@@ -106,7 +106,7 @@ const MyBookingsScreen = ({ navigation }) => {
             date: '5 Jan 2027',
             time: '09:00 AM',
             status: 'Confirmed',
-            image: require('../../asset/kitchen-cleaning.jpg'),
+            image: require('../../asset/kitchen-clean.png'),
             address: '123, Main Street, Mumbai',
             price: '₹449',
         },
@@ -116,7 +116,7 @@ const MyBookingsScreen = ({ navigation }) => {
             provider: 'HomeHelp',
             date: '12 Jan 2027',
             time: '11:00 AM',
-            status: 'Pending',
+            status: 'Confirmed',
             image: require('../../asset/carpet-clean.png'),
             address: '456, Park Avenue, Mumbai',
             price: '₹699',
@@ -319,6 +319,10 @@ const MyBookingsScreen = ({ navigation }) => {
                     navigation.navigate('JobCompletedScreen', {
                         booking: item,
                     });
+                } else if (item.status === 'Cancelled') {
+                    navigation.navigate('CancelOrderScreen', {
+                        booking: item,
+                    });
                 }
             }}
         >
@@ -393,7 +397,17 @@ const MyBookingsScreen = ({ navigation }) => {
     );
 
     const renderUpcomingBookingItem = (item) => (
-        <View style={styles.bookingCard}>
+        <TouchableOpacity
+            style={styles.bookingCard}
+            activeOpacity={0.8}
+            onPress={() => {
+
+                navigation.navigate('BookingScheduleScreen', {
+                    booking: item,
+                });
+
+            }}
+        >
             <Image source={item.image} style={styles.bookingImage} />
             <View style={styles.bookingContent}>
                 <View style={styles.bookingHeader}>
@@ -483,7 +497,7 @@ const MyBookingsScreen = ({ navigation }) => {
                     </View>
                 </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 
     const renderSectionHeader = ({ section }) => (

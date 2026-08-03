@@ -199,11 +199,8 @@ const LoginScreen = ({ navigation }) => {
         setTimeout(() => {
             setIsLoading(false);
             setIsOtpModalVisible(false);
-            setMpin(['', '', '', '']);
-            setConfirmMpin(['', '', '', '']);
-            setMpinStep('set');
-            setIsMpinModalVisible(true);
-            animateModalIn();
+            Alert.alert('Success', 'Login successfully!');
+            navigation.replace('DashboardScreen');
         }, 1500);
     };
 
@@ -881,7 +878,7 @@ const LoginScreen = ({ navigation }) => {
                                             width: 40,
                                             height: 40,
                                             resizeMode: 'contain',
-                                            tintColor:'#FFFFFF'
+                                            tintColor: '#FFFFFF'
 
 
 

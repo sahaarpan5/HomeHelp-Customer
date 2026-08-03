@@ -9,6 +9,8 @@ import CreateAccountScreen from '../Common/CreateAccountScreen';
 import DashboardScreen from '../Common/DashboardScreen';
 import MyBookingsScreen from '../Common/MyBookingsScreen';
 import JobCompletedScreen from '../Common/JobCompletedScreen';
+import CancelOrderScreen from '../Common/CancelOrderScreen';
+import BookingScheduleScreen from '../Common/BookingScheduleScreen';
 
 
 
@@ -28,6 +30,8 @@ const Navigation = () => {
        <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
        <Stack.Screen name="MyBookingsScreen" component={MyBookingsScreen} />
        <Stack.Screen name="JobCompletedScreen" component={JobCompletedScreen} />
+       <Stack.Screen name="CancelOrderScreen" component={CancelOrderScreen} />
+       <Stack.Screen name="BookingScheduleScreen" component={BookingScheduleScreen} />
       </Stack.Navigator>
 
     </SafeAreaProvider>

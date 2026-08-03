@@ -87,7 +87,7 @@ const DashboardScreen = ({ navigation }) => {
             id: '1',
             title: '20% OFF on Deep Cleaning',
             description: 'Get your home sparkling clean with our professional deep cleaning service',
-            image: require('../../asset/offer1.png'),
+            image: require('../../asset/deepclean.png'),
             discount: '20%',
             validTill: '31 Dec 2026',
         },
@@ -95,7 +95,7 @@ const DashboardScreen = ({ navigation }) => {
             id: '2',
             title: '25% OFF on Bathroom Cleaning',
             description: 'Professional bathroom cleaning with stain removal and complete sanitization',
-            image: require('../../asset/offer2.png'),
+            image: require('../../asset/bathroom-clean.png'),
             discount: '25%',
             validTill: '15 Jan 2027',
         },
@@ -103,7 +103,7 @@ const DashboardScreen = ({ navigation }) => {
             id: '3',
             title: '15% OFF on Sofa Cleaning',
             description: 'Professional sofa cleaning with premium fabric care',
-            image: require('../../asset/offer3.png'),
+            image: require('../../asset/sofa-clean.png'),
             discount: '15%',
             validTill: '31 Jan 2027',
         },
@@ -120,7 +120,7 @@ const DashboardScreen = ({ navigation }) => {
             rating: 4.9,
             reviews: 1240,
             price: '₹499',
-            image: require('../../asset/offer1.png'),
+            image: require('../../asset/HomeHelp-icon.png'),
         },
         {
             id: '2',
@@ -131,7 +131,7 @@ const DashboardScreen = ({ navigation }) => {
             rating: 4.8,
             reviews: 890,
             price: '₹399',
-            image: require('../../asset/offer2.png'),
+            image: require('../../asset/bathrromclean-icon.png'),
         },
         {
             id: '3',
@@ -142,7 +142,7 @@ const DashboardScreen = ({ navigation }) => {
             rating: 4.7,
             reviews: 650,
             price: '₹599',
-            image: require('../../asset/offer3.png'),
+            image: require('../../asset/sofaclean-icon.png'),
         },
     ];
     // All Services - Grid View for Modal
@@ -205,7 +205,7 @@ const DashboardScreen = ({ navigation }) => {
             id: '1',
             name: 'Deep Cleaning',
             provider: 'CleanMaster Services',
-            image: require('../../asset/offer1.png'),
+            image: require('../../asset/deepclean.png'),
             date: 'Last booked: 15 Dec 2026',
             rating: 4.9,
             price: '₹499',
@@ -255,7 +255,7 @@ const DashboardScreen = ({ navigation }) => {
             id: '1',
             title: 'Professional Cleaning',
             description: 'Experience the best cleaning services',
-            video: require('../../asset/videos/demo.mp4'),
+            video: require('../../asset/videos/pr-2.mp4'),
             cta: 'Book Now',
         },
         {
@@ -357,7 +357,7 @@ const DashboardScreen = ({ navigation }) => {
             if (thoughtfulCreations.length > 0) {
                 setCurrentThoughtfulIndex((prev) => (prev + 1) % thoughtfulCreations.length);
             }
-        }, 5000);
+        }, 10000);
 
         Animated.loop(
             Animated.sequence([

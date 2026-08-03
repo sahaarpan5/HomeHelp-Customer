@@ -1147,7 +1147,7 @@ const CreateAccountScreen = ({ navigation }) => {
                             value={dateOfBirth}
                             onChangeText={handleDateChange}
                             keyboardType="numeric"
-                            maxLength={10}
+                            maxLength={11}
                             returnKeyType="done"
                         />
                     </View>

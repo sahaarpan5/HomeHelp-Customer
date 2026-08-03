@@ -99,13 +99,13 @@ const WelcomeScreen = ({ navigation }) => {
       useNativeDriver: false,
     }).start(() => {
       setTimeout(() => {
-        navigation.replace('MyBookingsScreen');
+        navigation.replace('DashboardScreen');
       }, 500);
     });
 
     // Fallback timer
     const timer = setTimeout(() => {
-      navigation.replace('MyBookingsScreen');
+      navigation.replace('DashboardScreen');
     }, 3800);
 
     return () => clearTimeout(timer);
