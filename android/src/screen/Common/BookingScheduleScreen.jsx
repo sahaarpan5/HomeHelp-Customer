@@ -280,8 +280,8 @@ const BookingScheduleScreen = ({ navigation, route }) => {
                                 <Image
                                     source={require('../../asset/arrow-forward.png')} // Update the path as needed
                                     style={{
-                                        width: 20,
-                                        height: 20,
+                                        width: 12,
+                                        height: 12,
                                         resizeMode: 'contain',
                                         tintColor: COLORS.white
 
@@ -591,8 +591,8 @@ const BookingScheduleScreen = ({ navigation, route }) => {
                     <Image
                         source={require('../../asset/arrow-forward.png')} // Update the path as needed
                         style={{
-                            width: 20,
-                            height: 20,
+                            width: 12,
+                            height: 12,
                             resizeMode: 'contain',
                             tintColor: COLORS.textLight
 
@@ -619,8 +619,8 @@ const BookingScheduleScreen = ({ navigation, route }) => {
                     <Image
                         source={require('../../asset/arrow-forward.png')} // Update the path as needed
                         style={{
-                            width: 20,
-                            height: 20,
+                            width: 12,
+                            height: 12,
                             resizeMode: 'contain',
                             tintColor: COLORS.textLight
 
@@ -865,8 +865,8 @@ const BookingScheduleScreen = ({ navigation, route }) => {
                             <Image
                                 source={require('../../asset/arrow-forward.png')} // Update the path as needed
                                 style={{
-                                    width: 20,
-                                    height: 20,
+                                    width: 12,
+                                    height: 12,
                                     resizeMode: 'contain',
                                     tintColor: COLORS.textLight,
                                     marginLeft: 'auto',
@@ -898,8 +898,8 @@ const BookingScheduleScreen = ({ navigation, route }) => {
                             <Image
                                 source={require('../../asset/arrow-forward.png')} // Update the path as needed
                                 style={{
-                                    width: 20,
-                                    height: 20,
+                                    width: 12,
+                                    height: 12,
                                     resizeMode: 'contain',
                                     tintColor: COLORS.textLight,
                                     marginLeft: 'auto',
@@ -916,8 +916,8 @@ const BookingScheduleScreen = ({ navigation, route }) => {
                             <Image
                                 source={require('../../asset/arrow-forward.png')} // Update the path as needed
                                 style={{
-                                    width: 16,
-                                    height: 16,
+                                    width: 12,
+                                    height: 12,
                                     resizeMode: 'contain',
                                     tintColor: COLORS.gold,
                                     marginLeft: 'auto',
@@ -931,25 +931,7 @@ const BookingScheduleScreen = ({ navigation, route }) => {
                 </View>
 
                 {/* Celebrating Professionals */}
-                <View style={styles.celebratingContainer}>
-                    <Text style={styles.sectionTitle}>Celebrating Professionals</Text>
-                    {/* <Text style={styles.celebratingSubtitle}>Meet our team of experts</Text> */}
-                    <FlatList
-                        ref={celebratingFlatListRef}
-                        data={celebratingProfessionals}
-                        renderItem={renderCelebratingProfessional}
-                        keyExtractor={(item) => item.id}
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        onMomentumScrollEnd={(e) => {
-                            const index = Math.round(
-                                e.nativeEvent.contentOffset.x / (width * 0.7)
-                            );
-                            setCurrentVideoIndex(index);
-                        }}
-                    />
-                </View>
+                
 
                 {/* Appreciation Section */}
                 <View style={styles.appreciationContainer}>

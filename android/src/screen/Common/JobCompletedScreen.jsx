@@ -927,25 +927,7 @@ const JobCompletedScreen = ({ navigation, route }) => {
                 </View>
 
                 {/* Celebrating Professionals */}
-                <View style={styles.celebratingContainer}>
-                    <Text style={styles.sectionTitle}>Celebrating Professionals</Text>
-                    {/* <Text style={styles.celebratingSubtitle}>Meet our team of experts</Text> */}
-                    <FlatList
-                        ref={celebratingFlatListRef}
-                        data={celebratingProfessionals}
-                        renderItem={renderCelebratingProfessional}
-                        keyExtractor={(item) => item.id}
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        onMomentumScrollEnd={(e) => {
-                            const index = Math.round(
-                                e.nativeEvent.contentOffset.x / (width * 0.7)
-                            );
-                            setCurrentVideoIndex(index);
-                        }}
-                    />
-                </View>
+               
 
                 {/* Appreciation Section with Auto-Scroll Images - Increased Height */}
 

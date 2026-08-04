@@ -431,7 +431,7 @@ const DashboardScreen = ({ navigation }) => {
             break;
 
         case 'My Account':
-            navigation.navigate('MyAccount');
+            navigation.navigate('ProfileScreen');
             break;
 
         default:
@@ -516,7 +516,7 @@ const DashboardScreen = ({ navigation }) => {
                                 </View>
 
                                 <View style={styles.sidebarMenu}>
-                                    {['Dashboard', 'My Bookings', 'Saved Services', 'Profile Settings', 'Refer & Earn', 'Help & Support'].map((item, index) => (
+                                    {['Dashboard', 'My Bookings', 'Saved Services',   'Help & Support'].map((item, index) => (
                                         <TouchableOpacity key={index} style={styles.sidebarMenuItem}>
                                             <View style={styles.sidebarMenuIcon}>
                                                 <Image
