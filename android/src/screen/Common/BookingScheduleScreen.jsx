@@ -632,7 +632,7 @@ const BookingScheduleScreen = ({ navigation, route }) => {
                 {/* Professional Details */}
                 <View style={styles.professionalContainer}>
                     <Text style={styles.sectionTitle}>Professional Details</Text>
-                    <View style={styles.professionalCard}>
+                    <TouchableOpacity style={styles.professionalCard} onPress={() => navigation.navigate('ProfessionalDetailsScreen', { provider: bookingData.provider })}>
                         <Image source={ bookingData.providerImage } style={styles.professionalImage} />
                         <View style={styles.professionalInfo}>
                             <Text style={styles.professionalName}>{bookingData.provider}</Text>
@@ -672,7 +672,7 @@ const BookingScheduleScreen = ({ navigation, route }) => {
                                 <Ionicons name="chatbubble-outline" size={22} color={COLORS.gold} />
                             </TouchableOpacity> */}
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 </View>
 
                 {/* Booking Details */}

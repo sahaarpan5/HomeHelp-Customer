@@ -421,23 +421,23 @@ const DashboardScreen = ({ navigation }) => {
     }, [currentThoughtfulIndex]);
 
     const handleQuickAction = (item) => {
-    switch (item.name) {
-        case 'My Bookings':
-            navigation.navigate('MyBookingsScreen');
-            break;
+        switch (item.name) {
+            case 'My Bookings':
+                navigation.navigate('MyBookingsScreen');
+                break;
 
-        case 'Saved Services':
-            navigation.navigate('SavedServices');
-            break;
+            case 'Saved Services':
+                navigation.navigate('SavedServicesScreen');
+                break;
 
-        case 'My Account':
-            navigation.navigate('ProfileScreen');
-            break;
+            case 'My Account':
+                navigation.navigate('ProfileScreen');
+                break;
 
-        default:
-            break;
-    }
-};
+            default:
+                break;
+        }
+    };
 
 
 
@@ -503,7 +503,7 @@ const DashboardScreen = ({ navigation }) => {
                             <View style={styles.sidebarContent}>
                                 <View style={styles.sidebarHeader}>
                                     <View style={styles.sidebarAvatarContainer}>
-                                       
+
                                         <Image
                                             source={userData.avatar}
                                             style={styles.sidebarAvatar}
@@ -516,8 +516,30 @@ const DashboardScreen = ({ navigation }) => {
                                 </View>
 
                                 <View style={styles.sidebarMenu}>
-                                    {['Dashboard', 'My Bookings', 'Saved Services',   'Help & Support'].map((item, index) => (
-                                        <TouchableOpacity key={index} style={styles.sidebarMenuItem}>
+                                    {['Dashboard', 'My Bookings', 'Saved Services', 'Help & Support'].map((item, index) => (
+                                        <TouchableOpacity key={index} style={styles.sidebarMenuItem}
+                                            onPress={() => {
+                                                switch (item) {
+                                                    case 'Dashboard':
+                                                        navigation.navigate('Dashboard');
+                                                        break;
+
+                                                    case 'My Bookings':
+                                                        navigation.navigate('MyBookingsScreen');
+                                                        break;
+
+                                                    case 'Saved Services':
+                                                        navigation.navigate('SavedServicesScreen');
+                                                        break;
+
+                                                    case 'Help & Support':
+                                                        navigation.navigate('HelpSupport');
+                                                        break;
+
+                                                    default:
+                                                        break;
+                                                }
+                                            }}>
                                             <View style={styles.sidebarMenuIcon}>
                                                 <Image
                                                     source={tabIcons[index]}
@@ -649,7 +671,7 @@ const DashboardScreen = ({ navigation }) => {
     );
 
     const renderOfferItem = ({ item }) => (
-        <View style={styles.offerCard}>
+        <TouchableOpacity style={styles.offerCard} onPress={() => navigation.navigate('ServiceBookingScreen', { serviceId: item.id })}>
             <Image
                 source={item.image}
                 style={styles.offerImage}
@@ -680,7 +702,7 @@ const DashboardScreen = ({ navigation }) => {
                             />
                             <Text style={styles.offerValidityText}>Valid till {item.validTill}</Text>
                         </View>
-                        <TouchableOpacity style={styles.bookNowButton}>
+                        <View style={styles.bookNowButton} >
                             <Text style={styles.bookNowText}>Book Now</Text>
 
                             <Image
@@ -695,15 +717,15 @@ const DashboardScreen = ({ navigation }) => {
 
                                 }}
                             />
-                        </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 
     const renderPopularService = ({ item }) => (
-        <TouchableOpacity style={styles.popularServiceCard}>
+        <TouchableOpacity style={styles.popularServiceCard} onPress={() => navigation.navigate('ServiceBookingScreen', { serviceId: item.id })}>
 
 
             <Image
@@ -749,7 +771,7 @@ const DashboardScreen = ({ navigation }) => {
     );
 
     const renderOnTheSpotService = ({ item }) => (
-        <TouchableOpacity style={styles.onTheSpotCard}>
+        <TouchableOpacity style={styles.onTheSpotCard} onPress={() => navigation.navigate('ServiceBookingScreen', { serviceId: item.id })}>
 
             <Image
                 source={item.image}
@@ -796,9 +818,9 @@ const DashboardScreen = ({ navigation }) => {
                                 <Text style={styles.onTheSpotRatingText}>{item.rating}</Text>
                             </View>
                         </View>
-                        <TouchableOpacity style={styles.onTheSpotBookButton}>
+                        <View style={styles.onTheSpotBookButton}>
                             <Text style={styles.onTheSpotBookText}>Book Now</Text>
-                        </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -806,7 +828,7 @@ const DashboardScreen = ({ navigation }) => {
     );
 
     const renderRebookService = ({ item }) => (
-        <TouchableOpacity style={styles.rebookCard}>
+        <TouchableOpacity style={styles.rebookCard} onPress={() => navigation.navigate('ServiceBookingScreen', { serviceId: item.id })}>
 
 
             <Image
@@ -837,7 +859,7 @@ const DashboardScreen = ({ navigation }) => {
                     </View>
                     <Text style={styles.rebookPrice}>{item.price}</Text>
                 </View>
-                <TouchableOpacity style={styles.rebookButton}>
+                <View style={styles.rebookButton}>
                     <Text style={styles.rebookButtonText}>Rebook Now</Text>
 
                     <Image
@@ -852,13 +874,13 @@ const DashboardScreen = ({ navigation }) => {
 
                         }}
                     />
-                </TouchableOpacity>
+                </View>
             </View>
         </TouchableOpacity>
     );
 
     const renderThoughtfulCreation = ({ item, index }) => (
-        <TouchableOpacity style={styles.thoughtfulCard}>
+        <TouchableOpacity style={styles.thoughtfulCard} onPress={() => navigation.navigate('AdvertisementScreen', { creationId: item.id })}>
             {/* <Image
                 source={{ uri: item.image }}
                 style={styles.thoughtfulImage}

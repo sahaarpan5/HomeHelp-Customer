@@ -647,7 +647,7 @@ const JobCompletedScreen = ({ navigation, route }) => {
                 {/* Service Partner */}
                 <View style={styles.partnerContainer}>
                     <Text style={styles.sectionTitle}>Service Partner</Text>
-                    <View style={styles.partnerCard}>
+                    <TouchableOpacity style={styles.partnerCard} onPress={() => navigation.navigate('ProfessionalDetailsScreen', { provider: jobData.provider })}>
                         <Image source={jobData.providerImage} style={styles.partnerImage} />
                         <View style={styles.partnerInfo}>
                             <Text style={styles.partnerName}>{jobData.provider}</Text>
@@ -726,7 +726,7 @@ const JobCompletedScreen = ({ navigation, route }) => {
                                 }}
                             />
                         </TouchableOpacity>
-                    </View>
+                    </TouchableOpacity>
                 </View>
 
                 {/* Rating Button */}

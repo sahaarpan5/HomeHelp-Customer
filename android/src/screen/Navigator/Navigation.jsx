@@ -18,6 +18,13 @@ import MyRatingsScreen from '../Common/MyRatingsScreen';
 import ManageAddressScreen from '../Common/ManageAddressScreen';
 import AddAddressScreen from '../Common/AddAddressScreen';
 import ManagePaymentScreen from '../Common/ManagePaymentScreen';
+import ProfessionalDetailsScreen from '../Common/ProfessionalDetailsScreen';
+import ServiceBookingScreen from '../Common/ServiceBookingScreen';
+import ViewCartScreen from '../Common/ViewCartScreen';
+import SelectSlotScreen from '../Common/SelectSlotScreen';
+import BookingConfirmationScreen from '../Common/BookingConfirmationScreen';
+import SavedServicesScreen from '../Common/SavedServicesScreen';
+import AdvertisementScreen from '../Common/AdvertisementScreen';
 
 
 
@@ -33,19 +40,26 @@ const Navigation = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="WelcomeScreen">
         <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
-       <Stack.Screen name="CreateAccountScreen" component={CreateAccountScreen} />
-       <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
-       <Stack.Screen name="MyBookingsScreen" component={MyBookingsScreen} />
-       <Stack.Screen name="JobCompletedScreen" component={JobCompletedScreen} />
-       <Stack.Screen name="CancelOrderScreen" component={CancelOrderScreen} />
-       <Stack.Screen name="BookingScheduleScreen" component={BookingScheduleScreen} />
-       <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
-       <Stack.Screen name="ProfileUpdateScreen" component={ProfileUpdateScreen} />
-       <Stack.Screen name="WalletScreen" component={WalletScreen} />
-       <Stack.Screen name="MyRatingsScreen" component={MyRatingsScreen} />
-       <Stack.Screen name="ManageAddressScreen" component={ManageAddressScreen} />
+        <Stack.Screen name="CreateAccountScreen" component={CreateAccountScreen} />
+        <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
+        <Stack.Screen name="MyBookingsScreen" component={MyBookingsScreen} />
+        <Stack.Screen name="JobCompletedScreen" component={JobCompletedScreen} />
+        <Stack.Screen name="CancelOrderScreen" component={CancelOrderScreen} />
+        <Stack.Screen name="BookingScheduleScreen" component={BookingScheduleScreen} />
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen name="ProfileUpdateScreen" component={ProfileUpdateScreen} />
+        <Stack.Screen name="WalletScreen" component={WalletScreen} />
+        <Stack.Screen name="MyRatingsScreen" component={MyRatingsScreen} />
+        <Stack.Screen name="ManageAddressScreen" component={ManageAddressScreen} />
         <Stack.Screen name="AddAddressScreen" component={AddAddressScreen} />
         <Stack.Screen name="ManagePaymentScreen" component={ManagePaymentScreen} />
+        <Stack.Screen name="ProfessionalDetailsScreen" component={ProfessionalDetailsScreen} />
+        <Stack.Screen name="ServiceBookingScreen" component={ServiceBookingScreen} />
+        <Stack.Screen name="ViewCartScreen" component={ViewCartScreen} />
+        <Stack.Screen name="SelectSlotScreen" component={SelectSlotScreen} />
+        <Stack.Screen name="BookingConfirmationScreen" component={BookingConfirmationScreen} />
+         <Stack.Screen name="SavedServicesScreen" component={SavedServicesScreen} />
+         <Stack.Screen name="AdvertisementScreen" component={AdvertisementScreen} />
       </Stack.Navigator>
 
     </SafeAreaProvider>
