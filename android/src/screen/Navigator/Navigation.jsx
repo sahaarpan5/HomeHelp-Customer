@@ -25,6 +25,10 @@ import SelectSlotScreen from '../Common/SelectSlotScreen';
 import BookingConfirmationScreen from '../Common/BookingConfirmationScreen';
 import SavedServicesScreen from '../Common/SavedServicesScreen';
 import AdvertisementScreen from '../Common/AdvertisementScreen';
+import MonthlySubscriptionScreen from '../Common/MonthlySubscriptionScreen';
+import SubscriptionDetailScreen from '../Common/SubscriptionDetailScreen';
+import SubscriptionSlotScreen from '../Common/SubscriptionSlotScreen';
+import SubscriptionConfirmationScreen from '../Common/SubscriptionConfirmationScreen';
 
 
 
@@ -60,6 +64,10 @@ const Navigation = () => {
         <Stack.Screen name="BookingConfirmationScreen" component={BookingConfirmationScreen} />
          <Stack.Screen name="SavedServicesScreen" component={SavedServicesScreen} />
          <Stack.Screen name="AdvertisementScreen" component={AdvertisementScreen} />
+         <Stack.Screen name="MonthlySubscriptionScreen" component={MonthlySubscriptionScreen} />
+         <Stack.Screen name="SubscriptionDetailScreen" component={SubscriptionDetailScreen} />
+         <Stack.Screen name="SubscriptionSlotScreen" component={SubscriptionSlotScreen} />
+         <Stack.Screen name="SubscriptionConfirmationScreen" component={SubscriptionConfirmationScreen} />
       </Stack.Navigator>
 
     </SafeAreaProvider>

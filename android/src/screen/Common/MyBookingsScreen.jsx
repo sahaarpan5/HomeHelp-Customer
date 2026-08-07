@@ -50,7 +50,7 @@ const MyBookingsScreen = ({ navigation }) => {
     // Sample Data - In Progress (Always one item)
     const inProgressData = {
         id: '1',
-        serviceName: 'Home Deep Cleaning',
+        serviceName: 'Home Cleaning',
         provider: 'HomeHelp',
         status: 'In Progress',
         items: ['Living Room', 'Kitchen', 'Bathrooms'],

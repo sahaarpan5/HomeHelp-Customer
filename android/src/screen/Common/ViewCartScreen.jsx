@@ -29,13 +29,7 @@ const ViewCartScreen = ({ navigation, route }) => {
             coverImage: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
             duration: '2 hours',
         },
-        {
-            id: 'c2',
-            name: 'Kitchen Deep Cleaning',
-            price: '₹349',
-            coverImage: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop',
-            duration: '1.5 hours',
-        },
+       
     ]);
     const [couponCode, setCouponCode] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState(null);

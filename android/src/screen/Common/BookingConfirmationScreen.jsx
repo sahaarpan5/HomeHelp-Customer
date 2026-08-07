@@ -48,7 +48,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
   // Sample booking data
   const bookingData = {
     bookingId: 'BK-2027-001',
-    serviceName: 'Home Deep Cleaning',
+    serviceName: 'Home Cleaning',
     customerName: 'Rahul Sharma',
     customerMobile: '+91 98765 43210',
     address: '123, Main Street, Mumbai, Maharashtra - 400001',

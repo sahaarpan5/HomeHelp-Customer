@@ -42,7 +42,7 @@ const CancelOrderScreen = ({ navigation, route }) => {
 
     // Sample booking data
     const bookingData = {
-        serviceName: 'Home Deep Cleaning',
+        serviceName: 'Home Cleaning',
         provider: 'CleanMaster Services',
         providerImage: 'https://ui-avatars.com/api/?name=CleanMaster&background=C9A84C&color=fff&size=100',
         date: '15 Jan 2027',

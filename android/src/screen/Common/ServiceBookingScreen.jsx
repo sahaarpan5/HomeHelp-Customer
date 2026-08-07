@@ -59,7 +59,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
     // Sample Service Data
     const serviceData = {
         id: '1',
-        name: 'Home Deep Cleaning',
+        name: 'Home Cleaning',
         tagline: '✨ A spotless home, just a tap away',
         coverImage: require('../../asset/heroic.png'),
         rating: 4.9,

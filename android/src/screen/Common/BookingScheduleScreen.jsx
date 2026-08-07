@@ -58,7 +58,7 @@ const BookingScheduleScreen = ({ navigation, route }) => {
 
     // Sample data
     const bookingData = {
-        serviceName: 'Home Deep Cleaning',
+        serviceName: 'Home Cleaning',
         provider: 'Susanta Ghosh',
         providerImage: require('../../asset/demo-user.png'),
         date: '15 Jan 2027',

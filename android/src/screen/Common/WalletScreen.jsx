@@ -64,7 +64,7 @@ const WalletScreen = ({ navigation }) => {
             id: '2',
             type: 'debit',
             title: 'Service Payment',
-            description: 'Paid for Home Deep Cleaning',
+            description: 'Paid for Home Cleaning',
             amount: '-₹499',
             date: '10 Jan 2027, 02:15 PM',
             icon: require('../../asset/credit-card.png'),

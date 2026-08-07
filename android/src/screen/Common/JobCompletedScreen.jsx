@@ -67,7 +67,7 @@ const JobCompletedScreen = ({ navigation, route }) => {
 
     // Sample data
     const jobData = {
-        serviceName: 'Home Deep Cleaning',
+        serviceName: 'Home Cleaning',
         provider: 'Rahul Ghosh',
         providerImage: require('../../asset/demo-user.png'),
         date: '15 Jan 2027',

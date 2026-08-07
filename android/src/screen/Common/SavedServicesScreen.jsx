@@ -21,7 +21,7 @@ const SavedServicesScreen = ({ navigation }) => {
     const [savedServices, setSavedServices] = useState([
         {
             id: '1',
-            name: 'Home Deep Cleaning',
+            name: 'Home Cleaning',
             image:  require('../../asset/heroic.png'),
             rating: 4.9,
             reviews: 1240,

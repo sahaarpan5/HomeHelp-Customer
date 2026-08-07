@@ -77,7 +77,7 @@ const ProfessionalDetailsScreen = ({ navigation, route }) => {
             rating: 5,
             date: '15 Jan 2027',
             comment: 'Excellent service! Rajesh did a fantastic job cleaning my home. Very professional and thorough. Highly recommend!',
-            serviceName: 'Home Deep Cleaning',
+            serviceName: 'Home Cleaning',
         },
         {
             id: '2',

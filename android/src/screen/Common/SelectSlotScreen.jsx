@@ -22,6 +22,7 @@ const SelectSlotScreen = ({ navigation, route }) => {
     // States
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
+    const [selectedDurationType, setSelectedDurationType] = useState(null); // 'hourly', 'halfDay', 'fullDay'
     const [selectedHours, setSelectedHours] = useState(null);
     const [selectedProfessional, setSelectedProfessional] = useState(null);
     const [addedSlots, setAddedSlots] = useState([]);
@@ -54,7 +55,11 @@ const SelectSlotScreen = ({ navigation, route }) => {
         orange: '#FDCB6E',
         warning: '#F39C12',
     };
-
+    const starImages = {
+        full: require('../../asset/star-fill.png'),
+        half: require('../../asset/star-half.png'),
+        empty: require('../../asset/star-outline.png'),
+    };
     // Generate next 7 days (starting from tomorrow)
     const generateDates = () => {
         const dates = [];
@@ -83,11 +88,20 @@ const SelectSlotScreen = ({ navigation, route }) => {
         '06:00 PM',
     ];
 
-    // Hours options
-    const hoursOptions = ['1 Hour', '2 Hours', '3 Hours', '4 Hours', '5 Hours', '6 Hours','7 Hours','8 Hours'];
+    // Duration Types
+    const durationTypes = [
+        { id: 'hourly', label: 'Hourly', icon: require('../../asset/time-outline.png'), description: 'Pay per hour' },
+        { id: 'halfDay', label: 'Half Day', icon: require('../../asset/sun.png'), description: '4 hours' },
+        { id: 'fullDay', label: 'Full Day', icon: require('../../asset/sun.png'), description: '8 hours' },
+    ];
+
+    // Hours options (for hourly only)
+    const hoursOptions = ['1 Hour', '2 Hours', '3 Hours', '4 Hours', '5 Hours', '6 Hours'];
 
     // Service price per hour
     const PRICE_PER_HOUR = 499;
+    const HALF_DAY_HOURS = 4;
+    const FULL_DAY_HOURS = 8;
 
     // Professionals data
     const professionals = [
@@ -142,11 +156,8 @@ const SelectSlotScreen = ({ navigation, route }) => {
             availableSlots: ['10:00 AM', '01:00 PM', '05:00 PM'],
         },
     ];
-    const starImages = {
-        full: require('../../asset/star-fill.png'),
-        half: require('../../asset/star-half.png'),
-        empty: require('../../asset/star-outline.png'),
-    };
+
+
 
     const activeProfessionals = professionals.filter(p => p.isActive);
 
@@ -222,6 +233,26 @@ const SelectSlotScreen = ({ navigation, route }) => {
         }
     };
 
+    const selectDurationType = (type) => {
+        setSelectedDurationType(type);
+        if (type === 'hourly') {
+            setSelectedHours(null);
+        } else if (type === 'halfDay') {
+            setSelectedHours(`${HALF_DAY_HOURS} Hours`);
+        } else if (type === 'fullDay') {
+            setSelectedHours(`${FULL_DAY_HOURS} Hours`);
+        }
+    };
+
+    const getHoursFromSelection = () => {
+        if (selectedDurationType === 'halfDay') return HALF_DAY_HOURS;
+        if (selectedDurationType === 'fullDay') return FULL_DAY_HOURS;
+        if (selectedDurationType === 'hourly' && selectedHours) {
+            return parseInt(selectedHours);
+        }
+        return 0;
+    };
+
     const addSlot = () => {
         if (!selectedDate) {
             Alert.alert('Select Date', 'Please select a date');
@@ -231,8 +262,12 @@ const SelectSlotScreen = ({ navigation, route }) => {
             Alert.alert('Select Time', 'Please select a time slot');
             return;
         }
-        if (!selectedHours) {
-            Alert.alert('Select Hours', 'Please select duration hours');
+        if (!selectedDurationType) {
+            Alert.alert('Select Duration Type', 'Please select Hourly, Half Day, or Full Day');
+            return;
+        }
+        if (selectedDurationType === 'hourly' && !selectedHours) {
+            Alert.alert('Select Hours', 'Please select number of hours');
             return;
         }
         if (!selectedProfessional) {
@@ -241,19 +276,26 @@ const SelectSlotScreen = ({ navigation, route }) => {
         }
 
         const professional = professionals.find(p => p.id === selectedProfessional);
-        const hours = parseInt(selectedHours);
+        const hours = getHoursFromSelection();
         const amount = hours * PRICE_PER_HOUR;
+
+        const durationLabel = selectedDurationType === 'hourly'
+            ? `${selectedHours}`
+            : selectedDurationType === 'halfDay'
+                ? 'Half Day (4 hrs)'
+                : 'Full Day (8 hrs)';
 
         const newSlot = {
             id: Date.now().toString(),
             date: selectedDate,
             time: selectedTime,
-            hours: selectedHours,
+            hours: durationLabel,
+            hoursNum: hours,
+            durationType: selectedDurationType,
             professionalId: selectedProfessional,
             professionalName: professional?.name,
             professionalImage: professional?.image,
             amount: amount,
-            hoursNum: hours,
         };
 
         // Check for duplicate slot on same date
@@ -268,6 +310,7 @@ const SelectSlotScreen = ({ navigation, route }) => {
         // Reset selections
         setSelectedDate(null);
         setSelectedTime(null);
+        setSelectedDurationType(null);
         setSelectedHours(null);
         setSelectedProfessional(null);
     };
@@ -286,45 +329,46 @@ const SelectSlotScreen = ({ navigation, route }) => {
 
     const handleConfirmBooking = () => {
         closeBillSummary();
-        setTimeout(() => {
-            Alert.alert('Success', 'Booking confirmed successfully!');
-            navigation.goBack();
-        }, 300);
+        navigation.replace('BookingConfirmationScreen', {
+            slots: addedSlots,
+            totalAmount: getTotalAmount(),
+            totalHours: getTotalHours(),
+        });
     };
 
-   const renderStars = (rating, size = 16) => {
-          const stars = [];
-          const fullStars = Math.floor(rating);
-          const hasHalfStar = rating % 1 >= 0.5;
-  
-          for (let i = 0; i < 5; i++) {
-              let image = starImages.empty;
-              let tintColor = '#DDD';
-  
-              if (i < fullStars) {
-                  image = starImages.full;
-                  tintColor = '#FFD700';
-              } else if (i === fullStars && hasHalfStar) {
-                  image = starImages.half;
-                  tintColor = '#FFD700';
-              }
-  
-              stars.push(
-                  <Image
-                      key={i}
-                      source={image}
-                      style={{
-                          width: 16,
-                          height: 16,
-                          tintColor, // Remove this if your PNGs are already colored
-                          resizeMode: 'contain',
-                          marginHorizontal: 1,
-                      }}
-                  />
-              );
-          }
-          return stars;
-      };
+    const renderStars = (rating, size = 16) => {
+        const stars = [];
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+
+        for (let i = 0; i < 5; i++) {
+            let image = starImages.empty;
+            let tintColor = '#DDD';
+
+            if (i < fullStars) {
+                image = starImages.full;
+                tintColor = '#FFD700';
+            } else if (i === fullStars && hasHalfStar) {
+                image = starImages.half;
+                tintColor = '#FFD700';
+            }
+
+            stars.push(
+                <Image
+                    key={i}
+                    source={image}
+                    style={{
+                        width: 16,
+                        height: 16,
+                        tintColor, // Remove this if your PNGs are already colored
+                        resizeMode: 'contain',
+                        marginHorizontal: 1,
+                    }}
+                />
+            );
+        }
+        return stars;
+    };
 
     const renderProfessionalGrid = ({ item }) => {
         const isSelected = selectedProfessional === item.id;
@@ -344,6 +388,10 @@ const SelectSlotScreen = ({ navigation, route }) => {
                     }
                     if (!selectedTime) {
                         Alert.alert('Select Time First', 'Please select a time slot before choosing a professional');
+                        return;
+                    }
+                    if (!selectedDurationType) {
+                        Alert.alert('Select Duration Type', 'Please select Hourly, Half Day, or Full Day first');
                         return;
                     }
                     if (!isAvailable) {
@@ -392,15 +440,14 @@ const SelectSlotScreen = ({ navigation, route }) => {
                     <Image
                         source={require('../../asset/eye_open.png')} // Update the path as needed
                         style={{
-                            width: 20,
-                            height: 20,
+                            width: 18,
+                            height: 18,
                             resizeMode: 'contain',
                             tintColor: COLORS.gold
 
 
                         }}
                     />
-
                 </TouchableOpacity>
             </TouchableOpacity>
         );
@@ -488,11 +535,11 @@ const SelectSlotScreen = ({ navigation, route }) => {
                                     <TouchableOpacity
                                         style={styles.modalSelectButton}
                                         onPress={() => {
-                                            if (selectedDate && selectedTime) {
+                                            if (selectedDate && selectedTime && selectedDurationType) {
                                                 setSelectedProfessional(selectedProfessionalDetails.id);
                                                 closeProfessionalModal();
                                             } else {
-                                                Alert.alert('Select Date & Time', 'Please select date and time first');
+                                                Alert.alert('Select Date, Time & Duration', 'Please select date, time and duration first');
                                             }
                                         }}
                                     >
@@ -561,10 +608,10 @@ const SelectSlotScreen = ({ navigation, route }) => {
                                         <Text style={styles.billLabel}>Total Hours</Text>
                                         <Text style={styles.billValue}>{getTotalHours()} hrs</Text>
                                     </View>
-                                    {/* <View style={styles.billRow}>
+                                    <View style={styles.billRow}>
                                         <Text style={styles.billLabel}>Price per Hour</Text>
                                         <Text style={styles.billValue}>₹{PRICE_PER_HOUR}</Text>
-                                    </View> */}
+                                    </View>
                                     <View style={styles.billRow}>
                                         <Text style={styles.billLabel}>Service Fee</Text>
                                         <Text style={styles.billValue}>₹0</Text>
@@ -587,15 +634,15 @@ const SelectSlotScreen = ({ navigation, route }) => {
 
                                 <TouchableOpacity
                                     style={styles.billConfirmButton}
-                                    onPress={()=>navigation.replace('BookingConfirmationScreen', { slots: addedSlots, totalAmount: Math.round(getTotalAmount() * 1.18) })  }
+                                    onPress={handleConfirmBooking}
                                 >
                                     <Text style={styles.billConfirmText}>Confirm Booking</Text>
 
                                     <Image
-                                        source={require('../../asset/arrow-forward.png')} // Update the path as needed
+                                        source={require('../../asset/right-arrow.png')} // Update the path as needed
                                         style={{
-                                            width: 16,
-                                            height: 16,
+                                            width: 20,
+                                            height: 20,
                                             resizeMode: 'contain',
                                             tintColor: COLORS.white
 
@@ -741,28 +788,107 @@ const SelectSlotScreen = ({ navigation, route }) => {
                     </View>
                 </View>
 
-                {/* Select Hours */}
+                {/* Select Duration Type - Hourly, Half Day, Full Day */}
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Select Duration</Text>
-                    <Text style={styles.sectionSubtitle}>Choose service duration</Text>
-                    <View style={styles.hoursContainer}>
-                        {hoursOptions.map((hours) => (
+                    <Text style={styles.sectionSubtitle}>Choose your service duration</Text>
+                    <View style={styles.durationContainer}>
+                        {durationTypes.map((type) => (
                             <TouchableOpacity
-                                key={hours}
+                                key={type.id}
                                 style={[
-                                    styles.hoursCard,
-                                    selectedHours === hours && styles.hoursCardSelected,
+                                    styles.durationCard,
+                                    selectedDurationType === type.id && styles.durationCardSelected,
                                 ]}
-                                onPress={() => setSelectedHours(hours)}
+                                onPress={() => selectDurationType(type.id)}
                             >
+                                <View style={[styles.durationIcon, selectedDurationType === type.id && styles.durationIconSelected]}>
+                                    <Image
+                                        source={type.icon}
+                                        style={{
+                                            width: 24,
+                                            height: 24,
+                                            resizeMode: 'contain',
+                                            tintColor:
+                                                selectedDurationType === type.id
+                                                    ? COLORS.white
+                                                    : COLORS.gold, // Remove if your PNGs are already colored
+                                        }}
+                                    />
+                                </View>
                                 <Text style={[
-                                    styles.hoursText,
-                                    selectedHours === hours && styles.hoursTextSelected,
-                                ]}>{hours}</Text>
+                                    styles.durationLabel,
+                                    selectedDurationType === type.id && styles.durationLabelSelected,
+                                ]}>{type.label}</Text>
+                                <Text style={[
+                                    styles.durationDescription,
+                                    selectedDurationType === type.id && styles.durationDescriptionSelected,
+                                ]}>{type.description}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>
                 </View>
+
+                {/* Select Hours (only for hourly) */}
+                {selectedDurationType === 'hourly' && (
+                    <View style={styles.sectionContainer}>
+                        <Text style={styles.sectionTitle}>Select Hours</Text>
+                        <Text style={styles.sectionSubtitle}>Choose number of hours</Text>
+                        <View style={styles.hoursContainer}>
+                            {hoursOptions.map((hours) => (
+                                <TouchableOpacity
+                                    key={hours}
+                                    style={[
+                                        styles.hoursCard,
+                                        selectedHours === hours && styles.hoursCardSelected,
+                                    ]}
+                                    onPress={() => setSelectedHours(hours)}
+                                >
+                                    <Text style={[
+                                        styles.hoursText,
+                                        selectedHours === hours && styles.hoursTextSelected,
+                                    ]}>{hours}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
+                )}
+
+                {/* Show selected duration summary for Half Day & Full Day */}
+                {selectedDurationType === 'halfDay' && (
+                    <View style={styles.durationSummary}>
+
+                        <Image
+                            source={require('../../asset/time-outline.png')} // Update the path as needed
+                            style={{
+                                width: 20,
+                                height: 20,
+                                resizeMode: 'contain',
+                                tintColor: COLORS.gold
+
+
+                            }}
+                        />
+                        <Text style={styles.durationSummaryText}>Half Day - 4 hours</Text>
+                    </View>
+                )}
+                {selectedDurationType === 'fullDay' && (
+                    <View style={styles.durationSummary}>
+
+                        <Image
+                            source={require('../../asset/time-outline.png')} // Update the path as needed
+                            style={{
+                                width: 20,
+                                height: 20,
+                                resizeMode: 'contain',
+                                tintColor: COLORS.gold
+
+
+                            }}
+                        />
+                        <Text style={styles.durationSummaryText}>Full Day - 8 hours</Text>
+                    </View>
+                )}
 
                 {/* Professional Grid */}
                 <View style={styles.sectionContainer}>
@@ -771,16 +897,13 @@ const SelectSlotScreen = ({ navigation, route }) => {
 
                     {!selectedDate && (
                         <View style={styles.warningBox}>
-
                             <Image
-                                source={require('../../asset/information.png')} // Update the path as needed
+                                source={require('../../asset/information.png')}
                                 style={{
                                     width: 18,
                                     height: 18,
                                     resizeMode: 'contain',
                                     tintColor: COLORS.warning
-
-
                                 }}
                             />
                             <Text style={styles.warningText}>Select a date first</Text>
@@ -789,7 +912,7 @@ const SelectSlotScreen = ({ navigation, route }) => {
                     {selectedDate && !selectedTime && (
                         <View style={styles.warningBox}>
                             <Image
-                                source={require('../../asset/information.png')} // Update the path as needed
+                                source={require('../../asset/information.png')}
                                 style={{
                                     width: 18,
                                     height: 18,
@@ -798,6 +921,20 @@ const SelectSlotScreen = ({ navigation, route }) => {
                                 }}
                             />
                             <Text style={styles.warningText}>Select a time first</Text>
+                        </View>
+                    )}
+                    {selectedDate && selectedTime && !selectedDurationType && (
+                        <View style={styles.warningBox}>
+                            <Image
+                                source={require('../../asset/information.png')}
+                                style={{
+                                    width: 18,
+                                    height: 18,
+                                    resizeMode: 'contain',
+                                    tintColor: COLORS.warning
+                                }}
+                            />
+                            <Text style={styles.warningText}>Select duration type first</Text>
                         </View>
                     )}
 
@@ -815,21 +952,21 @@ const SelectSlotScreen = ({ navigation, route }) => {
                 <TouchableOpacity
                     style={[
                         styles.addSlotButton,
-                        (!selectedDate || !selectedTime || !selectedHours || !selectedProfessional) && styles.addSlotButtonDisabled,
+                        (!selectedDate || !selectedTime || !selectedDurationType || !selectedProfessional ||
+                            (selectedDurationType === 'hourly' && !selectedHours)) && styles.addSlotButtonDisabled,
                     ]}
                     onPress={addSlot}
-                    disabled={!selectedDate || !selectedTime || !selectedHours || !selectedProfessional}
+                    disabled={!selectedDate || !selectedTime || !selectedDurationType || !selectedProfessional ||
+                        (selectedDurationType === 'hourly' && !selectedHours)}
                 >
 
                     <Image
-                        source={require('../../asset/add.png')} // Update the path as needed
+                        source={require('../../asset/add.png')}
                         style={{
                             width: 22,
                             height: 22,
                             resizeMode: 'contain',
                             tintColor: COLORS.white
-
-
                         }}
                     />
                     <Text style={styles.addSlotButtonText}>Add Slot</Text>
@@ -860,14 +997,12 @@ const SelectSlotScreen = ({ navigation, route }) => {
                                 >
 
                                     <Image
-                                        source={require('../../asset/delete.png')} // Update the path as needed
+                                        source={require('../../asset/delete.png')}
                                         style={{
                                             width: 20,
                                             height: 20,
                                             resizeMode: 'contain',
                                             tintColor: COLORS.red
-
-
                                         }}
                                     />
                                 </TouchableOpacity>
@@ -890,16 +1025,14 @@ const SelectSlotScreen = ({ navigation, route }) => {
                             </View>
                             <View style={styles.totalRight}>
                                 <Text style={styles.totalGrandValue}>₹{Math.round(getTotalAmount() * 1.18)}</Text>
-                                
+
                                 <Image
-                                    source={require('../../asset/arrow-forward.png')} // Update the path as needed
+                                    source={require('../../asset/arrow-forward.png')}
                                     style={{
-                                        width: 16,
-                                        height: 16,
+                                        width: 12,
+                                        height: 12,
                                         resizeMode: 'contain',
                                         tintColor: COLORS.gold
-
-
                                     }}
                                 />
                             </View>
@@ -1051,6 +1184,69 @@ const styles = StyleSheet.create({
     },
     timeTextSelected: {
         color: '#FFFFFF',
+    },
+    // Duration Types
+    durationContainer: {
+        flexDirection: 'row',
+        gap: 10,
+    },
+    durationCard: {
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 12,
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: '#E8E3D8',
+    },
+    durationCardSelected: {
+        borderColor: '#C9A84C',
+        backgroundColor: '#F8F6F0',
+    },
+    durationIcon: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#F8F6F0',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+    durationIconSelected: {
+        backgroundColor: '#C9A84C',
+    },
+    durationLabel: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#1A1A1A',
+    },
+    durationLabelSelected: {
+        color: '#C9A84C',
+    },
+    durationDescription: {
+        fontSize: 11,
+        color: '#666666',
+        marginTop: 2,
+    },
+    durationDescriptionSelected: {
+        color: '#C9A84C',
+    },
+    // Duration Summary
+    durationSummary: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        backgroundColor: '#F8F6F0',
+        padding: 10,
+        borderRadius: 8,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: '#E8E3D8',
+    },
+    durationSummaryText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#1A1A1A',
     },
     // Hours
     hoursContainer: {
@@ -1243,14 +1439,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         borderRadius: 12,
         padding: 16,
-        marginVertical: 16,
+        marginTop: 16,
         borderWidth: 1,
         borderColor: '#F0EDE8',
         shadowColor: 'rgba(0,0,0,0.04)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 4,
-        elevation: 4,
+        elevation: 2,
     },
     totalRow: {
         flexDirection: 'row',

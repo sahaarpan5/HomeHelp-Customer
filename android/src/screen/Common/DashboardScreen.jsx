@@ -41,7 +41,7 @@ const DashboardScreen = ({ navigation }) => {
 
 
     const tabIcons = [
-        require('../../asset/home.png'),
+        require('../../asset/person-outline.png'),
         require('../../asset/calendar-outline.png'),
         require('../../asset/heart.png'),
         require('../../asset/person-outline.png'),
@@ -77,7 +77,7 @@ const DashboardScreen = ({ navigation }) => {
     // Sample user data
     const userData = {
         name: 'Rahul Sharma',
-        email: 'rahul@email.com',
+        email: '9804043285',
         avatar: require('../../asset/demo-user.png'),
     };
 
@@ -113,7 +113,7 @@ const DashboardScreen = ({ navigation }) => {
     const popularServices = [
         {
             id: '1',
-            name: 'Home Deep Cleaning',
+            name: 'Home Cleaning',
             icon: require('../../asset/home.png'),
             color: COLORS.gold,
             bg: COLORS.goldFade,
@@ -149,7 +149,7 @@ const DashboardScreen = ({ navigation }) => {
     const allServices = [
         {
             id: '1',
-            name: 'Home Deep Cleaning',
+            name: 'Home Cleaning',
             icon: require('../../asset/home.png'),
             color: COLORS.gold,
         },
@@ -501,7 +501,7 @@ const DashboardScreen = ({ navigation }) => {
                     >
                         <TouchableWithoutFeedback>
                             <View style={styles.sidebarContent}>
-                                <View style={styles.sidebarHeader}>
+                                <TouchableOpacity style={styles.sidebarHeader} onPress={() => navigation.navigate('ProfileScreen')}>
                                     <View style={styles.sidebarAvatarContainer}>
 
                                         <Image
@@ -513,15 +513,15 @@ const DashboardScreen = ({ navigation }) => {
                                     </View>
                                     <Text style={styles.sidebarName}>{userData.name}</Text>
                                     <Text style={styles.sidebarEmail}>{userData.email}</Text>
-                                </View>
+                                </TouchableOpacity>
 
                                 <View style={styles.sidebarMenu}>
-                                    {['Dashboard', 'My Bookings', 'Saved Services', 'Help & Support'].map((item, index) => (
+                                    {['My Account', 'My Bookings', 'Saved Services', 'Help & Support'].map((item, index) => (
                                         <TouchableOpacity key={index} style={styles.sidebarMenuItem}
                                             onPress={() => {
                                                 switch (item) {
-                                                    case 'Dashboard':
-                                                        navigation.navigate('Dashboard');
+                                                    case 'My Account':
+                                                        navigation.navigate('ProfileScreen');
                                                         break;
 
                                                     case 'My Bookings':

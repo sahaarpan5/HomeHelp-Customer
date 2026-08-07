@@ -54,6 +54,14 @@ const ProfileScreen = ({ navigation }) => {
 
     // Profile menu items
     const profileMenuItems = [
+         {
+            id: '6',
+            icon: require('../../asset/monthly-subscription.png'),
+            title: 'Monthly Subscription',
+            subtitle: 'Enjoy hassle-free recurring home services',
+            color: COLORS.green,
+            onPress: () => navigation.navigate('MonthlySubscriptionScreen'),
+        },
         {
             id: '1',
             icon: require('../../asset/wallet.png'),
