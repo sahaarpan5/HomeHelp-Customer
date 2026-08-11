@@ -167,7 +167,7 @@ const MonthlySubscriptionScreen = ({ navigation }) => {
                 ]}
                 onPress={() => {
                     if (subscribed) {
-                        navigation.navigate('MySubscriptionDetailsScreen', {
+                        navigation.navigate('SubscribedServiceScreen', {
                             plan: item,
                         });
                     } else {

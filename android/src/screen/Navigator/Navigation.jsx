@@ -29,6 +29,7 @@ import MonthlySubscriptionScreen from '../Common/MonthlySubscriptionScreen';
 import SubscriptionDetailScreen from '../Common/SubscriptionDetailScreen';
 import SubscriptionSlotScreen from '../Common/SubscriptionSlotScreen';
 import SubscriptionConfirmationScreen from '../Common/SubscriptionConfirmationScreen';
+import SubscribedServiceScreen from '../Common/SubscribedServiceScreen';
 
 
 
@@ -68,6 +69,7 @@ const Navigation = () => {
          <Stack.Screen name="SubscriptionDetailScreen" component={SubscriptionDetailScreen} />
          <Stack.Screen name="SubscriptionSlotScreen" component={SubscriptionSlotScreen} />
          <Stack.Screen name="SubscriptionConfirmationScreen" component={SubscriptionConfirmationScreen} />
+         <Stack.Screen name="SubscribedServiceScreen" component={SubscribedServiceScreen} />
       </Stack.Navigator>
 
     </SafeAreaProvider>

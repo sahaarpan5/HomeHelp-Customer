@@ -93,7 +93,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                 step: '3',
                 title: 'Final Checks',
                 description: 'Thorough quality check to ensure 100% satisfaction',
-               image: require('../../asset/final-check.png'),
+                image: require('../../asset/final-check.png'),
             },
         ],
         images: [
@@ -178,7 +178,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
         ],
     };
 
-      const starImages = {
+    const starImages = {
         full: require('../../asset/star-fill.png'),
         half: require('../../asset/star-half.png'),
         empty: require('../../asset/star-outline.png'),
@@ -308,38 +308,38 @@ const ServiceBookingScreen = ({ navigation, route }) => {
     };
 
     const renderStars = (rating, size = 16) => {
-           const stars = [];
-           const fullStars = Math.floor(rating);
-           const hasHalfStar = rating % 1 >= 0.5;
-   
-           for (let i = 0; i < 5; i++) {
-               let image = starImages.empty;
-               let tintColor = '#DDD';
-   
-               if (i < fullStars) {
-                   image = starImages.full;
-                   tintColor = '#FFD700';
-               } else if (i === fullStars && hasHalfStar) {
-                   image = starImages.half;
-                   tintColor = '#FFD700';
-               }
-   
-               stars.push(
-                   <Image
-                       key={i}
-                       source={image}
-                       style={{
-                           width: 16,
-                           height: 16,
-                           tintColor, // Remove this if your PNGs are already colored
-                           resizeMode: 'contain',
-                           marginHorizontal: 1,
-                       }}
-                   />
-               );
-           }
-           return stars;
-       };
+        const stars = [];
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+
+        for (let i = 0; i < 5; i++) {
+            let image = starImages.empty;
+            let tintColor = '#DDD';
+
+            if (i < fullStars) {
+                image = starImages.full;
+                tintColor = '#FFD700';
+            } else if (i === fullStars && hasHalfStar) {
+                image = starImages.half;
+                tintColor = '#FFD700';
+            }
+
+            stars.push(
+                <Image
+                    key={i}
+                    source={image}
+                    style={{
+                        width: 16,
+                        height: 16,
+                        tintColor, // Remove this if your PNGs are already colored
+                        resizeMode: 'contain',
+                        marginHorizontal: 1,
+                    }}
+                />
+            );
+        }
+        return stars;
+    };
 
     const renderServiceImage = ({ item }) => (
         <Image source={{ uri: item }} style={styles.galleryImage} resizeMode="cover" />
@@ -354,7 +354,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                 onPress={() => openChildModal(item)}
                 activeOpacity={0.8}
             >
-                <Image source={item.coverImage } style={styles.childServiceImage} />
+                <Image source={item.coverImage} style={styles.childServiceImage} />
                 <View style={styles.childServiceInfo}>
                     <View style={styles.childServiceHeaderRow}>
                         <Text style={styles.childServiceName}>{item.name}</Text>
@@ -380,7 +380,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                         </TouchableOpacity>
                     </View>
                     <Text style={styles.childServicePrice}>{item.price}</Text>
-                    
+
                 </View>
                 <TouchableOpacity
                     style={[styles.actionButton, isAdded && styles.actionButtonAdded]}
@@ -506,7 +506,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
 
                             {currentChildService && (
                                 <ScrollView showsVerticalScrollIndicator={false}>
-                                    <Image source={currentChildService.coverImage } style={styles.modalCoverImage} />
+                                    <Image source={currentChildService.coverImage} style={styles.modalCoverImage} />
 
                                     <View style={styles.modalBody}>
                                         <View style={styles.modalHeaderRow}>
@@ -558,6 +558,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                                                 </View>
                                             ))}
                                         </View>
+
 
                                         <TouchableOpacity
                                             style={[styles.modalAddButton, isServiceSelected(currentChildService.id) && styles.modalAddButtonAdded]}
@@ -626,7 +627,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                             <ScrollView showsVerticalScrollIndicator={false}>
                                 {selectedServices.map((item) => (
                                     <View key={item.id} style={styles.cartItem}>
-                                        <Image source={ item.coverImage } style={styles.cartItemImage} />
+                                        <Image source={item.coverImage} style={styles.cartItemImage} />
                                         <View style={styles.cartItemInfo}>
                                             <Text style={styles.cartItemName}>{item.name}</Text>
                                             {/* <Text style={styles.cartItemPrice}>{item.price}</Text> */}
@@ -702,7 +703,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
             >
                 {/* Cover Image with Back & Share Icons */}
                 <View style={styles.coverContainer}>
-                    <Image source={serviceData.coverImage } style={styles.coverImage} />
+                    <Image source={serviceData.coverImage} style={styles.coverImage} />
                     <View style={styles.coverGradient} />
 
                     <View style={styles.iconOverlay}>
@@ -756,7 +757,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                         <Text style={styles.ratingText}>{serviceData.rating}</Text>
                         <Text style={styles.ratingCount}>({serviceData.totalReviews} reviews)</Text>
                     </View>
-                    
+
                 </View>
 
                 {/* Services Section */}
@@ -798,6 +799,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                         </View>
                     ))}
                 </View>
+             
 
                 {/* Our Process - Updated with Images */}
                 <View style={styles.sectionContainer}>
@@ -810,7 +812,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                             <View key={index} style={styles.processStepWrapper}>
                                 <View style={styles.processCard}>
                                     <View style={styles.processImageContainer}>
-                                        <Image source={ item.image }style={styles.processImage} />
+                                        <Image source={item.image} style={styles.processImage} />
                                         <View style={styles.processStepBadge}>
                                             <Text style={styles.processStepBadgeText}>{item.step}</Text>
                                         </View>
@@ -820,7 +822,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                                         <Text style={styles.processDescription}>{item.description}</Text>
                                     </View>
                                 </View>
-                                
+
                             </View>
                         ))}
                     </View>
@@ -887,7 +889,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                         }}
                     />
                     <Text style={styles.cartButtonText}>View Cart</Text>
-                    
+
 
                     <Image
                         source={require('../../asset/arrow-forward.png')} // Update the path as needed
@@ -1519,6 +1521,35 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#999',
         fontWeight: '500',
+    },
+    selectSlotButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: '#C9A84C',
+        paddingVertical: 14,
+        paddingHorizontal: 18,
+        borderRadius: 12,
+        marginTop: 16,
+    },
+    selectSlotText: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#FFFFFF',
+        flex: 1,
+        marginLeft: 12,
+    },
+    slotCountBadge: {
+        backgroundColor: 'rgba(255,255,255,0.3)',
+        paddingHorizontal: 10,
+        paddingVertical: 2,
+        borderRadius: 12,
+        marginRight: 8,
+    },
+    slotCountText: {
+        fontSize: 12,
+        color: '#FFFFFF',
+        fontWeight: '600',
     },
 });
 

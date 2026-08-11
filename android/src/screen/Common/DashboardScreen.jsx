@@ -44,6 +44,7 @@ const DashboardScreen = ({ navigation }) => {
         require('../../asset/person-outline.png'),
         require('../../asset/calendar-outline.png'),
         require('../../asset/heart.png'),
+        require('../../asset/calendar.png'),
         require('../../asset/person-outline.png'),
         require('../../asset/gift.png'),
         require('../../asset/information.png'),
@@ -516,24 +517,32 @@ const DashboardScreen = ({ navigation }) => {
                                 </TouchableOpacity>
 
                                 <View style={styles.sidebarMenu}>
-                                    {['My Account', 'My Bookings', 'Saved Services', 'Help & Support'].map((item, index) => (
+                                    {['My Account', 'My Bookings', 'Saved Services', 'Monthly Subscription', 'Help & Support'].map((item, index) => (
                                         <TouchableOpacity key={index} style={styles.sidebarMenuItem}
                                             onPress={() => {
                                                 switch (item) {
                                                     case 'My Account':
                                                         navigation.navigate('ProfileScreen');
+                                                        setIsSidebarOpen(false);
                                                         break;
 
                                                     case 'My Bookings':
                                                         navigation.navigate('MyBookingsScreen');
+                                                        setIsSidebarOpen(false);
                                                         break;
 
                                                     case 'Saved Services':
                                                         navigation.navigate('SavedServicesScreen');
+                                                        setIsSidebarOpen(false);
+                                                        break;
+                                                    case 'Monthly Subscription':
+                                                        navigation.navigate('MonthlySubscriptionScreen');
+                                                        setIsSidebarOpen(false);
                                                         break;
 
                                                     case 'Help & Support':
                                                         navigation.navigate('HelpSupport');
+                                                        setIsSidebarOpen(false);
                                                         break;
 
                                                     default:
