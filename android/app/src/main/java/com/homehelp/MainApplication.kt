@@ -9,6 +9,12 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
+import com.facebook.react.modules.network.OkHttpClientFactory
+import com.facebook.react.modules.network.OkHttpClientProvider
+import okhttp3.OkHttpClient
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.*
 
 class MainApplication : Application(), ReactApplication {
 
@@ -33,6 +39,51 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
+     if (BuildConfig.DEBUG) {
+        OkHttpClientProvider.setOkHttpClientFactory(
+            OkHttpClientFactory {
+                getUnsafeOkHttpClient()
+            }
+        )
+    }
     loadReactNative(this)
   }
+
+    private fun getUnsafeOkHttpClient(): OkHttpClient {
+
+    val trustAllCerts = arrayOf<TrustManager>(
+        object : X509TrustManager {
+
+            override fun checkClientTrusted(
+                chain: Array<X509Certificate>,
+                authType: String
+            ) {
+            }
+
+            override fun checkServerTrusted(
+                chain: Array<X509Certificate>,
+                authType: String
+            ) {
+            }
+
+            override fun getAcceptedIssuers(): Array<X509Certificate> {
+                return arrayOf()
+            }
+        }
+    )
+
+    val sslContext = SSLContext.getInstance("TLS")
+    sslContext.init(null, trustAllCerts, SecureRandom())
+
+    val trustManager = trustAllCerts[0] as X509TrustManager
+
+    return OkHttpClientProvider
+        .createClientBuilder()
+        .sslSocketFactory(
+            sslContext.socketFactory,
+            trustManager
+        )
+        .hostnameVerifier { _, _ -> true }
+        .build()
+}
 }
