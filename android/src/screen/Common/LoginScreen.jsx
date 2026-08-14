@@ -198,6 +198,10 @@ const LoginScreen = ({ navigation }) => {
             console.log('SEND OTP RESPONSE:', response.data);
 
             if (response.data?.success === true) {
+                Alert.alert(
+                    'OTP Sent',
+                    response.data?.message || 'Unable to send OTP'
+                );
                 setTimer(30);
                 setCanResend(false);
                 setOtp(['', '', '', '']);
@@ -263,7 +267,7 @@ const LoginScreen = ({ navigation }) => {
                     navigation.replace('CreateAccountScreen', {
                         mobileNo: response.data?.uniqueMobileNo || phoneNumber,
                         mobileVerified: response.data?.mobileVerified,
-                        fromOTP: true,
+                        
                     });
 
                 }

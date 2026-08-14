@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
 import {
     View,
@@ -16,13 +17,15 @@ import {
     TouchableWithoutFeedback,
     Image,
 } from 'react-native';
+import API from '../../util/API';
 
 
 const { width, height } = Dimensions.get('window');
 
-const CreateAccountScreen = ({ navigation }) => {
+const CreateAccountScreen = ({ navigation,route }) => {
     // States
     const [phoneNumber, setPhoneNumber] = useState('');
+     const [mobileVerified, setMobileVerified] = useState(false);
     const [otp, setOtp] = useState(['', '', '', '']);
     const [step, setStep] = useState('phone');
     const [isLoading, setIsLoading] = useState(false);
@@ -90,6 +93,25 @@ const CreateAccountScreen = ({ navigation }) => {
         blue: '#0984E3',
         green: '#00B894',
     };
+
+
+    useEffect(() => {
+        const mobileNo = route.params?.mobileNo;
+        const verified = route.params?.mobileVerified;
+
+        console.log('Mobile No:', mobileNo);
+        console.log('Mobile Verified:', verified);
+
+        if (mobileNo) {
+            setPhoneNumber(mobileNo);
+        }
+
+        if (verified === true) {
+            setMobileVerified(true);
+            setStep('profile');
+            animateProgress();
+        }
+    }, [route.params]);
 
     useEffect(() => {
         // Initial animations
@@ -404,43 +426,169 @@ const CreateAccountScreen = ({ navigation }) => {
         ]).start();
     };
 
-    const sendOTP = () => {
+
+
+    const sendOTP = async () => {
         if (phoneNumber.length !== 10) {
-            Alert.alert('Invalid Number', 'Please enter a valid 10-digit mobile number');
+            Alert.alert(
+                'Invalid Number',
+                'Please enter a valid 10-digit mobile number'
+            );
             return;
         }
-        animateButtonPress();
-        setIsLoading(true);
-        setTimeout(() => {
+
+        try {
+            setIsLoading(true);
+
+            const response = await axios.post(API.SEND_OTP, {
+                mobileNo: phoneNumber,
+                loginType: 'Customer',
+            });
+
+            console.log('SEND OTP RESPONSE:', response.data);
+
+            if (response.data?.success === true) {
+                Alert.alert(
+                    'OTP Sent',
+                    response.data?.message || 'Unable to send OTP'
+                );
+                setTimer(30);
+                setCanResend(false);
+                setOtp(['', '', '', '']);
+
+                setIsOtpModalVisible(true);
+                animateModalIn();
+
+                setTimeout(() => {
+                    otpInputs.current[0]?.focus();
+                }, 300);
+            } else {
+                Alert.alert(
+                    'OTP Failed',
+                    response.data?.message || 'Unable to send OTP'
+                );
+            }
+
+        } catch (error) {
+            console.log(
+                'SEND OTP ERROR:',
+                error?.response?.data || error?.message
+            );
+
+            Alert.alert(
+                'Error',
+                error?.response?.data?.message ||
+                'Unable to send OTP. Please try again.'
+            );
+
+        } finally {
             setIsLoading(false);
-            setTimer(30);
-            setCanResend(false);
-            setOtp(['', '', '', '']);
-            setIsOtpModalVisible(true);
-            animateModalIn();
-        }, 1500);
+        }
     };
 
-    const verifyOTP = () => {
+
+
+
+    const verifyOTP = async () => {
         const otpString = otp.join('');
+
         if (otpString.length !== 4) {
-            Alert.alert('Invalid OTP', 'Please enter the complete 4-digit OTP');
+            Alert.alert(
+                'Invalid OTP',
+                'Please enter the complete 4-digit OTP'
+            );
             return;
         }
-        animateButtonPress();
-        setIsLoading(true);
-        setTimeout(() => {
+
+        try {
+            setIsLoading(true);
+
+            const response = await axios.post(API.VERIFY_OTP, {
+                mobileNo: phoneNumber,
+                otp: otpString,
+                loginType: 'Customer',
+            });
+
+            console.log('VERIFY OTP RESPONSE:', response.data);
+
+            if (response.data?.success === true) {
+
+                setIsOtpModalVisible(false);
+                setStep('profile');
+                animateProgress();
+
+                // New customer → Signup
+
+            } else {
+                Alert.alert(
+                    'OTP Verification Failed',
+                    response.data?.message || 'Invalid OTP'
+                );
+            }
+
+        } catch (error) {
+
+            console.log(
+                'VERIFY OTP ERROR:',
+                error?.response?.data || error?.message
+            );
+
+            Alert.alert(
+                'Verification Failed',
+                error?.response?.data?.message ||
+                'Unable to verify OTP. Please try again.'
+            );
+
+        } finally {
             setIsLoading(false);
-            setIsOtpModalVisible(false);
-            setStep('profile');
-            animateProgress();
-        }, 1500);
+        }
     };
 
-    const resendOTP = () => {
-        setTimer(30);
-        setCanResend(false);
-        Alert.alert('OTP Resent', 'A new OTP has been sent to your number');
+    const resendOTP = async () => {
+        setIsOtpModalVisible(false);
+        try {
+            setIsLoading(true);
+
+            const response = await axios.post(API.SEND_OTP, {
+                mobileNo: phoneNumber,
+                loginType: 'Customer',
+            });
+
+            console.log('SEND OTP RESPONSE:', response.data);
+
+            if (response.data?.success === true) {
+                setTimer(30);
+                setCanResend(false);
+                setOtp(['', '', '', '']);
+
+                setIsOtpModalVisible(true);
+                animateModalIn();
+
+                setTimeout(() => {
+                    otpInputs.current[0]?.focus();
+                }, 300);
+            } else {
+                Alert.alert(
+                    'OTP Failed',
+                    response.data?.message || 'Unable to send OTP'
+                );
+            }
+
+        } catch (error) {
+            console.log(
+                'SEND OTP ERROR:',
+                error?.response?.data || error?.message
+            );
+
+            Alert.alert(
+                'Error',
+                error?.response?.data?.message ||
+                'Unable to send OTP. Please try again.'
+            );
+
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const animateModalIn = () => {
@@ -683,7 +831,7 @@ const CreateAccountScreen = ({ navigation }) => {
             animationType="none"
             onRequestClose={closeOtpModal}
         >
-            <TouchableWithoutFeedback onPress={closeOtpModal}>
+            <TouchableWithoutFeedback >
                 <View style={styles.modalOverlay}>
                     <TouchableWithoutFeedback>
                         <Animated.View
@@ -777,9 +925,7 @@ const CreateAccountScreen = ({ navigation }) => {
                                 )}
                             </View>
 
-                            <TouchableOpacity style={styles.modalCloseButton} onPress={closeOtpModal}>
-                                <Text style={styles.modalCloseText}>Cancel</Text>
-                            </TouchableOpacity>
+
                         </Animated.View>
                     </TouchableWithoutFeedback>
                 </View>
@@ -1147,7 +1293,7 @@ const CreateAccountScreen = ({ navigation }) => {
                             value={dateOfBirth}
                             onChangeText={handleDateChange}
                             keyboardType="numeric"
-                            maxLength={11}
+                            maxLength={10}
                             returnKeyType="done"
                         />
                     </View>
@@ -1216,7 +1362,7 @@ const CreateAccountScreen = ({ navigation }) => {
                         <View style={styles.headerContent}>
                             <View style={styles.headerLogo}>
                                 <View style={styles.headerIcon}>
-                                   
+
                                     <Image
                                         source={require('../../asset/genlogo.png')} // Update the path as needed
                                         style={{
