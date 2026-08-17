@@ -18,14 +18,16 @@ import {
     Image,
 } from 'react-native';
 import API from '../../util/API';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const { width, height } = Dimensions.get('window');
 
-const CreateAccountScreen = ({ navigation,route }) => {
+const CreateAccountScreen = ({ navigation, route }) => {
     // States
     const [phoneNumber, setPhoneNumber] = useState('');
-     const [mobileVerified, setMobileVerified] = useState(false);
+    const [token, setToken] = useState('');
+    const [mobileVerified, setMobileVerified] = useState(false);
     const [otp, setOtp] = useState(['', '', '', '']);
     const [step, setStep] = useState('phone');
     const [isLoading, setIsLoading] = useState(false);
@@ -33,18 +35,27 @@ const CreateAccountScreen = ({ navigation,route }) => {
     const [canResend, setCanResend] = useState(false);
     const [focusedInput, setFocusedInput] = useState(null);
     const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
 
     // Profile Form States
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [emailID, setEmailID] = useState('');
     const [gender, setGender] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     // Refs
     const otpInputs = useRef([]);
     const firstNameRef = useRef(null);
     const lastNameRef = useRef(null);
+    const emailRef = useRef(null);
     const dobRef = useRef(null);
+    const passwordRef = useRef(null);
+    const confirmPasswordRef = useRef(null);
 
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -98,12 +109,17 @@ const CreateAccountScreen = ({ navigation,route }) => {
     useEffect(() => {
         const mobileNo = route.params?.mobileNo;
         const verified = route.params?.mobileVerified;
+        const token = route.params?.token
+
 
         console.log('Mobile No:', mobileNo);
         console.log('Mobile Verified:', verified);
 
         if (mobileNo) {
             setPhoneNumber(mobileNo);
+        }
+        if (token) {
+            setToken(token);
         }
 
         if (verified === true) {
@@ -399,6 +415,22 @@ const CreateAccountScreen = ({ navigation,route }) => {
         }
     };
 
+    const validatePassword = (pass) => {
+        if (pass.length < 6) {
+            return { valid: false, message: 'Password must be at least 6 characters' };
+        }
+        if (!/[A-Z]/.test(pass)) {
+            return { valid: false, message: 'Password must contain at least one uppercase letter' };
+        }
+        if (!/[a-z]/.test(pass)) {
+            return { valid: false, message: 'Password must contain at least one lowercase letter' };
+        }
+        if (!/[0-9]/.test(pass)) {
+            return { valid: false, message: 'Password must contain at least one number' };
+        }
+        return { valid: true, message: 'Password is strong' };
+    };
+
     const handleDateChange = (text) => {
         const cleaned = text.replace(/[^0-9/]/g, '');
         let formatted = cleaned;
@@ -516,6 +548,7 @@ const CreateAccountScreen = ({ navigation,route }) => {
                 setIsOtpModalVisible(false);
                 setStep('profile');
                 animateProgress();
+                setToken(response.data?.token);
 
                 // New customer → Signup
 
@@ -626,7 +659,7 @@ const CreateAccountScreen = ({ navigation,route }) => {
         }).start();
     };
 
-    const handleCreateAccount = () => {
+    const handleCreateAccount = async () => {
         if (!firstName.trim()) {
             Alert.alert('Required', 'Please enter your first name');
             firstNameRef.current?.focus();
@@ -637,23 +670,146 @@ const CreateAccountScreen = ({ navigation,route }) => {
             lastNameRef.current?.focus();
             return;
         }
+        if (!emailID) {
+            Alert.alert('Required', 'Please enter your email id');
+            emailRef.current?.focus();
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(emailID.trim())) {
+            Alert.alert('Validation', 'Please enter a valid email id');
+            emailRef.current?.focus();
+            return;
+        }
         if (!gender) {
             Alert.alert('Required', 'Please select your gender');
             return;
         }
-        if (!dateOfBirth || dateOfBirth.length < 10) {
-            Alert.alert('Required', 'Please enter a valid date of birth (DD/MM/YYYY)');
-            dobRef.current?.focus();
+
+        if (!password) {
+            Alert.alert('Required', 'Please enter a password');
+            passwordRef.current?.focus();
             return;
         }
 
-        animateButtonPress();
-        setIsLoading(true);
-        setTimeout(() => {
+        const passwordValidation = validatePassword(password);
+        if (!passwordValidation.valid) {
+            Alert.alert('Password Requirements', passwordValidation.message);
+            passwordRef.current?.focus();
+            return;
+        }
+
+        if (!confirmPassword) {
+            Alert.alert('Required', 'Please confirm your password');
+            confirmPasswordRef.current?.focus();
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            Alert.alert('Password Mismatch', 'Passwords do not match. Please try again.');
+            confirmPasswordRef.current?.focus();
+            return;
+        }
+        console.log('token',token);
+
+        try {
+            setIsLoading(true);
+
+           
+
+            const requestBody = {
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                email: emailID.trim(),
+                password: password,
+                gender: gender,
+            };
+
+            console.log('CREATE ACCOUNT REQUEST:', requestBody);
+
+            const response = await axios.post(
+                API.REGISTER_CUSTOMER,
+                requestBody,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log(
+                'CREATE ACCOUNT RESPONSE:',
+                response.data
+            );
+
+            if (response.data?.success === true) {
+
+                // Save new token
+                if (response.data?.token) {
+                    await AsyncStorage.setItem(
+                        'token',
+                        response.data.token
+                    );
+                }
+
+                // Save User ID
+                if (response.data?.userId) {
+                    await AsyncStorage.setItem(
+                        'userId',
+                        String(response.data.userId)
+                    );
+                }
+
+                // Save Customer ID
+                if (response.data?.customerId) {
+                    await AsyncStorage.setItem(
+                        'customerId',
+                        String(response.data.customerId)
+                    );
+                }
+
+                await AsyncStorage.setItem(
+                        'customerMob',
+                        String(phoneNumber)
+                    );
+
+                Alert.alert(
+                    'Success',
+                    response.data?.message ||
+                    'Customer registered successfully.'
+                );
+
+                navigation.replace('DashboardScreen');
+                animateProgress();
+
+            } else {
+
+                Alert.alert(
+                    'Create Account Failed',
+                    response.data?.message ||
+                    'Unable to create account.'
+                );
+            }
+
+        } catch (error) {
+
+            console.log(
+                'CREATE ACCOUNT ERROR:',
+                error?.response?.data || error?.message
+            );
+
+            Alert.alert(
+                'Create Account Failed',
+                error?.response?.data?.message ||
+                'Something went wrong. Please try again.'
+            );
+
+        } finally {
             setIsLoading(false);
-            Alert.alert('Success', 'Account created successfully!');
-            navigation.replace('DashboardScreen');
-        }, 1500);
+        }
     };
 
     const renderAccountIcon = () => {
@@ -1177,6 +1333,39 @@ const CreateAccountScreen = ({ navigation,route }) => {
                             value={lastName}
                             onChangeText={setLastName}
                             returnKeyType="next"
+                            onSubmitEditing={() => emailRef.current?.focus()}
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.inputGroup}>
+                    <View style={styles.inputLabelContainer}>
+                        <Text style={styles.inputLabel}>Email ID</Text>
+                        <Text style={styles.inputRequired}>*</Text>
+                    </View>
+                    <View style={styles.inputContainer}>
+
+                        <Image
+                            source={require('../../asset/mail.png')} // Update the path as needed
+                            style={{
+                                width: 20,
+                                height: 20,
+                                resizeMode: 'contain',
+                                tintColor: COLORS.gold,
+                                marginRight: 12
+
+
+
+                            }}
+                        />
+                        <TextInput
+                            ref={emailRef}
+                            style={styles.input}
+                            placeholder="Enter your email id"
+                            placeholderTextColor="#999"
+                            value={emailID}
+                            onChangeText={setEmailID}
+                            returnKeyType="next"
                             onSubmitEditing={() => dobRef.current?.focus()}
                         />
                     </View>
@@ -1267,36 +1456,136 @@ const CreateAccountScreen = ({ navigation,route }) => {
                     </View>
                 </View>
 
-                {/* Date of Birth */}
+
+
+
+                {/* Password Field */}
                 <View style={styles.inputGroup}>
                     <View style={styles.inputLabelContainer}>
-                        <Text style={styles.inputLabel}>Date of Birth</Text>
+                        <Text style={styles.inputLabel}>Password</Text>
                         <Text style={styles.inputRequired}>*</Text>
                     </View>
                     <View style={styles.inputContainer}>
-
-
                         <Image
-                            source={require('../../asset/calendar-outline.png')} // Update the path as needed
+                            source={require('../../asset/lock.png')}
                             style={{
-                                width: 24,
-                                height: 24,
+                                width: 20,
+                                height: 20,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.gold, // Remove if the PNG is already colored
+                                tintColor: COLORS.gold,
+                                marginRight: 12
                             }}
                         />
                         <TextInput
-                            ref={dobRef}
+                            ref={passwordRef}
                             style={styles.input}
-                            placeholder="DD/MM/YYYY"
+                            placeholder="Create a strong password"
                             placeholderTextColor="#999"
-                            value={dateOfBirth}
-                            onChangeText={handleDateChange}
-                            keyboardType="numeric"
-                            maxLength={10}
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry={!showPassword}
+                            returnKeyType="next"
+                            onSubmitEditing={() => confirmPasswordRef.current?.focus()}
+                        />
+                        <TouchableOpacity
+                            onPress={() => setShowPassword(!showPassword)}
+                            style={styles.eyeIcon}
+                        >
+                            <Image
+                                source={
+                                    showPassword
+                                        ? require('../../asset/eye_open.png')
+                                        : require('../../asset/eye_close.png')
+                                }
+                                style={{
+                                    width: 20,
+                                    height: 20,
+                                    resizeMode: 'contain',
+                                    tintColor: COLORS.textLight,
+                                }}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    {password.length > 0 && (
+                        <View style={styles.passwordStrength}>
+                            <Text style={[
+                                styles.passwordStrengthText,
+                                password.length < 6 ? { color: COLORS.red } :
+                                    password.length < 8 ? { color: COLORS.orange } :
+                                        { color: COLORS.success }
+                            ]}>
+                                {password.length < 6 ? 'Weak' :
+                                    password.length < 8 ? 'Medium' : 'Strong'}
+                            </Text>
+                            <View style={styles.strengthBar}>
+                                <View style={[
+                                    styles.strengthFill,
+                                    {
+                                        width: password.length < 6 ? '33%' :
+                                            password.length < 8 ? '66%' : '100%',
+                                        backgroundColor: password.length < 6 ? COLORS.red :
+                                            password.length < 8 ? COLORS.orange : COLORS.success
+                                    }
+                                ]} />
+                            </View>
+                        </View>
+                    )}
+                </View>
+
+                {/* Confirm Password Field */}
+                <View style={styles.inputGroup}>
+                    <View style={styles.inputLabelContainer}>
+                        <Text style={styles.inputLabel}>Confirm Password</Text>
+                        <Text style={styles.inputRequired}>*</Text>
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <Image
+                            source={require('../../asset/lock.png')}
+                            style={{
+                                width: 20,
+                                height: 20,
+                                resizeMode: 'contain',
+                                tintColor: COLORS.gold,
+                                marginRight: 12
+                            }}
+                        />
+                        <TextInput
+                            ref={confirmPasswordRef}
+                            style={styles.input}
+                            placeholder="Confirm your password"
+                            placeholderTextColor="#999"
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                            secureTextEntry={!showConfirmPassword}
                             returnKeyType="done"
                         />
+                        <TouchableOpacity
+                            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                            style={styles.eyeIcon}
+                        >
+                            <Image
+                                source={
+                                    showPassword
+                                        ? require('../../asset/eye_open.png')
+                                        : require('../../asset/eye_close.png')
+                                }
+                                style={{
+                                    width: 20,
+                                    height: 20,
+                                    resizeMode: 'contain',
+                                    tintColor: COLORS.textLight,
+                                }}
+                            />
+                        </TouchableOpacity>
                     </View>
+                    {confirmPassword.length > 0 && password.length > 0 && (
+                        <Text style={[
+                            styles.matchText,
+                            password === confirmPassword ? { color: COLORS.success } : { color: COLORS.red }
+                        ]}>
+                            {password === confirmPassword ? '✅ Passwords match' : '❌ Passwords do not match'}
+                        </Text>
+                    )}
                 </View>
 
                 <Animated.View style={{ transform: [{ scale: buttonScaleAnim }] }}>

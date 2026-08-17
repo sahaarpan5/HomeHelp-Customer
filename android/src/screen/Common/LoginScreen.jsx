@@ -18,6 +18,7 @@ import {
     Image,
 } from 'react-native';
 import API from '../../util/API';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const { width, height } = Dimensions.get('window');
@@ -267,12 +268,22 @@ const LoginScreen = ({ navigation }) => {
                     navigation.replace('CreateAccountScreen', {
                         mobileNo: response.data?.uniqueMobileNo || phoneNumber,
                         mobileVerified: response.data?.mobileVerified,
+                        token:response.data?.token,
                         
                     });
+                    
 
                 }
                 // Existing customer → Dashboard
                 else if (response.data?.isRegistered === true) {
+                     await AsyncStorage.setItem(
+                        'customerMob',
+                        String(response.data?.uniqueMobileNo || phoneNumber)
+                    );
+                    await AsyncStorage.setItem(
+                        'token',
+                        response.data.token
+                    );
 
                     navigation.replace('DashboardScreen');
                 }
