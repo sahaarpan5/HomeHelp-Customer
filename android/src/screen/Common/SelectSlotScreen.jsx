@@ -64,7 +64,7 @@ const SelectSlotScreen = ({ navigation, route }) => {
     const generateDates = () => {
         const dates = [];
         const today = new Date();
-        for (let i = 1; i <= 7; i++) {
+        for (let i = 1; i <= 14; i++) {
             const date = new Date(today);
             date.setDate(today.getDate() + i);
             dates.push(date);
@@ -96,7 +96,7 @@ const SelectSlotScreen = ({ navigation, route }) => {
     ];
 
     // Hours options (for hourly only)
-    const hoursOptions = ['1 Hour', '2 Hours', '3 Hours', '4 Hours', '5 Hours', '6 Hours'];
+    const hoursOptions = ['1 Hour', '2 Hours', '3 Hours', '4 Hours', '5 Hours', '6 Hours', '7 Hours', '8 Hours'];
 
     // Service price per hour
     const PRICE_PER_HOUR = 499;
@@ -114,6 +114,10 @@ const SelectSlotScreen = ({ navigation, route }) => {
             isActive: true,
             experience: '8 years',
             availableSlots: ['09:00 AM', '11:00 AM', '02:00 PM'],
+            lastBooked: {
+                date: '10 Jan 2027',
+                hours: '4 hrs',
+            },
         },
         {
             id: 'p2',
@@ -124,6 +128,10 @@ const SelectSlotScreen = ({ navigation, route }) => {
             isActive: true,
             experience: '6 years',
             availableSlots: ['10:00 AM', '01:00 PM', '03:00 PM'],
+            lastBooked: {
+                date: '05 Jan 2027',
+                hours: '6 hrs',
+            },
         },
         {
             id: 'p3',
@@ -134,6 +142,10 @@ const SelectSlotScreen = ({ navigation, route }) => {
             isActive: true,
             experience: '5 years',
             availableSlots: ['09:00 AM', '12:00 PM', '04:00 PM'],
+            lastBooked: {
+                date: '15 Dec 2026',
+                hours: '3 hrs',
+            },
         },
         {
             id: 'p4',
@@ -144,6 +156,10 @@ const SelectSlotScreen = ({ navigation, route }) => {
             isActive: true,
             experience: '10 years',
             availableSlots: ['09:00 AM', '12:00 PM', '04:00 PM'],
+            lastBooked: {
+                date: '20 Dec 2026',
+                hours: '8 hrs',
+            },
         },
         {
             id: 'p5',
@@ -154,8 +170,13 @@ const SelectSlotScreen = ({ navigation, route }) => {
             isActive: true,
             experience: '4 years',
             availableSlots: ['10:00 AM', '01:00 PM', '05:00 PM'],
+            lastBooked: {
+                date: '28 Dec 2026',
+                hours: '2 hrs',
+            },
         },
     ];
+
 
 
 
@@ -370,9 +391,94 @@ const SelectSlotScreen = ({ navigation, route }) => {
         return stars;
     };
 
+
+    //     const isSelected = selectedProfessional === item.id;
+    //     const isAvailable = !selectedTime || item.availableSlots.includes(selectedTime);
+
+    //     return (
+    //         <TouchableOpacity
+    //             style={[
+    //                 styles.professionalGridCard,
+    //                 isSelected && styles.professionalGridCardSelected,
+    //                 !isAvailable && styles.professionalGridCardUnavailable,
+    //             ]}
+    //             onPress={() => {
+    //                 if (!selectedDate) {
+    //                     Alert.alert('Select Date First', 'Please select a date before choosing a professional');
+    //                     return;
+    //                 }
+    //                 if (!selectedTime) {
+    //                     Alert.alert('Select Time First', 'Please select a time slot before choosing a professional');
+    //                     return;
+    //                 }
+    //                 if (!selectedDurationType) {
+    //                     Alert.alert('Select Duration Type', 'Please select Hourly, Half Day, or Full Day first');
+    //                     return;
+    //                 }
+    //                 if (!isAvailable) {
+    //                     Alert.alert('Not Available', `${item.name} is not available at ${selectedTime}`);
+    //                     return;
+    //                 }
+    //                 setSelectedProfessional(isSelected ? null : item.id);
+    //             }}
+    //             activeOpacity={0.8}
+    //         >
+    //             <Image source={{ uri: item.image }} style={styles.professionalGridImage} />
+    //             <View style={styles.professionalGridInfo}>
+    //                 <Text style={styles.professionalGridName} numberOfLines={1}>{item.name}</Text>
+    //                 <View style={styles.professionalGridRating}>
+    //                     {renderStars(item.rating)}
+    //                     <Text style={styles.professionalGridRatingText}>{item.rating}</Text>
+    //                 </View>
+    //                 <Text style={styles.professionalGridJobs}>{item.jobsCompleted} jobs</Text>
+    //             </View>
+    //             {isSelected && (
+    //                 <View style={styles.professionalGridCheck}>
+
+    //                     <Image
+    //                         source={require('../../asset/checked.png')} // Update the path as needed
+    //                         style={{
+    //                             width: 12,
+    //                             height: 12,
+    //                             resizeMode: 'contain',
+    //                             tintColor: COLORS.white
+
+
+    //                         }}
+    //                     />
+    //                 </View>
+    //             )}
+    //             {!isAvailable && (
+    //                 <View style={styles.professionalGridUnavailableBadge}>
+    //                     <Text style={styles.professionalGridUnavailableText}>Unavailable</Text>
+    //                 </View>
+    //             )}
+    //             <TouchableOpacity
+    //                 style={styles.professionalGridViewButton}
+    //                 onPress={() => navigation.navigate('ProfessionalDetailsScreen', { professional: item })}
+    //             >
+
+    //                 <Image
+    //                     source={require('../../asset/eye_open.png')} // Update the path as needed
+    //                     style={{
+    //                         width: 18,
+    //                         height: 18,
+    //                         resizeMode: 'contain',
+    //                         tintColor: COLORS.gold
+
+
+    //                     }}
+    //                 />
+    //             </TouchableOpacity>
+    //         </TouchableOpacity>
+    //     );
+    // };
+
+
     const renderProfessionalGrid = ({ item }) => {
         const isSelected = selectedProfessional === item.id;
         const isAvailable = !selectedTime || item.availableSlots.includes(selectedTime);
+        const hasLastBooked = item.lastBooked !== undefined;
 
         return (
             <TouchableOpacity
@@ -410,19 +516,36 @@ const SelectSlotScreen = ({ navigation, route }) => {
                         <Text style={styles.professionalGridRatingText}>{item.rating}</Text>
                     </View>
                     <Text style={styles.professionalGridJobs}>{item.jobsCompleted} jobs</Text>
+
+                    {/* Last Booked Details - Only Date & Hours */}
+                    {hasLastBooked && (
+                        <View style={styles.lastBookedContainer}>
+                            <View style={styles.lastBookedBadge}>
+                                <Image
+                                    source={require('../../asset/time-outline.png')}
+                                    style={{
+                                        width: 10,
+                                        height: 10,
+                                        resizeMode: 'contain',
+                                        tintColor: COLORS.gold
+                                    }}
+                                />
+                                <Text style={styles.lastBookedText}>
+                                    Last Booked: {item.lastBooked.date} • {item.lastBooked.hours}
+                                </Text>
+                            </View>
+                        </View>
+                    )}
                 </View>
                 {isSelected && (
                     <View style={styles.professionalGridCheck}>
-
                         <Image
-                            source={require('../../asset/checked.png')} // Update the path as needed
+                            source={require('../../asset/checked.png')}
                             style={{
                                 width: 12,
                                 height: 12,
                                 resizeMode: 'contain',
                                 tintColor: COLORS.white
-
-
                             }}
                         />
                     </View>
@@ -434,24 +557,27 @@ const SelectSlotScreen = ({ navigation, route }) => {
                 )}
                 <TouchableOpacity
                     style={styles.professionalGridViewButton}
-                    onPress={() => navigation.navigate('ProfessionalDetailsScreen', { professional: item })}
+                    onPress={() =>
+                        navigation.navigate('ProfessionalDetailsScreen', {
+                            professional: item,
+                        })
+                    }
                 >
-
                     <Image
-                        source={require('../../asset/eye_open.png')} // Update the path as needed
+                        source={require('../../asset/eye_open.png')}
                         style={{
                             width: 18,
                             height: 18,
                             resizeMode: 'contain',
                             tintColor: COLORS.gold
-
-
                         }}
                     />
                 </TouchableOpacity>
             </TouchableOpacity>
         );
     };
+
+
 
     // Professional Details Modal
     const renderProfessionalModal = () => (
@@ -942,9 +1068,10 @@ const SelectSlotScreen = ({ navigation, route }) => {
                         data={activeProfessionals}
                         renderItem={renderProfessionalGrid}
                         keyExtractor={(item) => item.id}
-                        numColumns={3}
+                        numColumns={2}  // Changed from 3 to 2
                         scrollEnabled={false}
                         contentContainerStyle={styles.professionalGrid}
+                        columnWrapperStyle={styles.professionalGridRow}
                     />
                 </View>
 
@@ -1288,7 +1415,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#F0EDE8',
         position: 'relative',
-        minHeight: 120,
+        minHeight: 150,
+        maxWidth: (width - 40) / 2,
     },
     professionalGridCardSelected: {
         borderColor: '#C9A84C',
@@ -1329,6 +1457,26 @@ const styles = StyleSheet.create({
         color: '#666666',
         marginTop: 1,
     },
+    lastBookedContainer: {
+        marginTop: 3,
+        alignItems: 'center',
+    },
+    lastBookedBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 3,
+        backgroundColor: '#F8F6F0',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: '#E8E3D8',
+    },
+    lastBookedText: {
+        fontSize: 8,
+        color: '#666666',
+        fontWeight: '500',
+    },
     professionalGridCheck: {
         position: 'absolute',
         top: 4,
@@ -1355,9 +1503,10 @@ const styles = StyleSheet.create({
     },
     professionalGridViewButton: {
         position: 'absolute',
-        bottom: 4,
+        bottom: 2,
         right: 4,
         padding: 4,
+
     },
     warningBox: {
         flexDirection: 'row',
@@ -1711,6 +1860,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
         color: '#FFFFFF',
+    },
+    professionalGridRow: {
+        justifyContent: 'space-between',
     },
 });
 

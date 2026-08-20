@@ -21,6 +21,9 @@ const ProfessionalDetailsScreen = ({ navigation, route }) => {
     const [showAllReviews, setShowAllReviews] = useState(false);
     const [expandedAbout, setExpandedAbout] = useState(false);
 
+    const professional = route?.params?.professional;
+
+
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(30)).current;
@@ -242,7 +245,7 @@ const ProfessionalDetailsScreen = ({ navigation, route }) => {
 
                     <View style={styles.profileInfo}>
                         <View style={styles.profileNameRow}>
-                            <Text style={styles.profileName}>{professionalData.name}</Text>
+                            <Text style={styles.profileName}> {professional?.name || professionalData?.name}</Text>
                             {professionalData.isVerified && (
                                 <View style={styles.verifiedTextBadge}>
 
@@ -265,9 +268,9 @@ const ProfessionalDetailsScreen = ({ navigation, route }) => {
                         {/* Rating Row */}
                         <View style={styles.ratingRow}>
                             <View style={styles.ratingStars}>
-                                {renderStars(professionalData.rating)}
+                                {renderStars(professional?.rating || professionalData?.rating)}
                             </View>
-                            <Text style={styles.ratingText}>{professionalData.rating}</Text>
+                            <Text style={styles.ratingText}>{professional?.rating ||professionalData.rating}</Text>
                             <Text style={styles.ratingCount}>({professionalData.totalReviews} reviews)</Text>
                         </View>
 
@@ -279,7 +282,7 @@ const ProfessionalDetailsScreen = ({ navigation, route }) => {
                             </View>
                             <View style={styles.statDivider} />
                             <View style={styles.statItem}>
-                                <Text style={styles.statValue}>{professionalData.jobsCompleted}</Text>
+                                <Text style={styles.statValue}>{professional?.jobsCompleted ||professionalData.jobsCompleted}</Text>
                                 <Text style={styles.statLabel}>Jobs Done</Text>
                             </View>
                             <View style={styles.statDivider} />

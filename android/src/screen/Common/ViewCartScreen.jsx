@@ -120,7 +120,7 @@ const ViewCartScreen = ({ navigation, route }) => {
         
         {
             id: 'p2',
-            name: 'Sofa Cleaning',
+            name: 'House Maid',
             price: '₹599',
             image: require('../../asset/sofa-clean.png'),
             rating: 4.7,
@@ -134,7 +134,7 @@ const ViewCartScreen = ({ navigation, route }) => {
         },
         {
             id: 'p4',
-            name: 'Kitchen Cleaning',
+            name: 'Kitchen & Utensil cleaning',
             price: '₹449',
              image: require('../../asset/kitchen-clean.png'),
             rating: 4.5,

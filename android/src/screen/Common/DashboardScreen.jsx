@@ -86,7 +86,7 @@ const DashboardScreen = ({ navigation }) => {
     const offers = [
         {
             id: '1',
-            title: '20% OFF on Deep Cleaning',
+            title: 'Home Cleaning Services',
             description: 'Get your home sparkling clean with our professional deep cleaning service',
             image: require('../../asset/deepclean.png'),
             discount: '20%',
@@ -94,7 +94,7 @@ const DashboardScreen = ({ navigation }) => {
         },
         {
             id: '2',
-            title: '25% OFF on Bathroom Cleaning',
+            title: 'Bathroom Cleaning',
             description: 'Professional bathroom cleaning with stain removal and complete sanitization',
             image: require('../../asset/bathroom-clean.png'),
             discount: '25%',
@@ -102,9 +102,33 @@ const DashboardScreen = ({ navigation }) => {
         },
         {
             id: '3',
-            title: '15% OFF on Sofa Cleaning',
-            description: 'Professional sofa cleaning with premium fabric care',
-            image: require('../../asset/sofa-clean.png'),
+            title: 'Cooking',
+            description: 'Expert cooking with fresh ingredients and hygienic preparation',
+            image: require('../../asset/heroic.png'),
+            discount: '15%',
+            validTill: '31 Jan 2027',
+        },
+        {
+            id: '4',
+            title: 'Kitchen & Utensil cleaning',
+            description: 'Expert kitchen and utensil cleaning with hygienic care',
+            image: require('../../asset/heroic.png'),
+            discount: '15%',
+            validTill: '31 Jan 2027',
+        },
+        {
+            id: '5',
+            title: 'Washing & Ironing cloths',
+            description: 'Professional laundry washing and ironing with premium fabric care',
+            image: require('../../asset/heroic.png'),
+            discount: '15%',
+            validTill: '31 Jan 2027',
+        },
+        {
+            id: '6',
+            title: 'House Maid',
+            description: 'Professional house maid services with reliable everyday home care',
+            image: require('../../asset/heroic.png'),
             discount: '15%',
             validTill: '31 Jan 2027',
         },
@@ -136,7 +160,7 @@ const DashboardScreen = ({ navigation }) => {
         },
         {
             id: '3',
-            name: 'Sofa Cleaning',
+            name: 'Kitchen & Utensil cleaning',
             icon: require('../../asset/sofa.png'),
             color: COLORS.purple,
             bg: COLORS.purple + '15',
@@ -154,29 +178,54 @@ const DashboardScreen = ({ navigation }) => {
             icon: require('../../asset/home.png'),
             color: COLORS.gold,
         },
+        
         {
-            id: '3',
-            name: 'Sofa Cleaning',
-            icon: require('../../asset/sofa.png'),
-            color: COLORS.purple,
-        },
-        {
-            id: '4',
+            id: '2',
             name: 'Bathroom Cleaning',
             icon: require('../../asset/shower.png'),
             color: COLORS.blue,
         },
         {
-            id: '5',
-            name: 'Kitchen Cleaning',
+            id: '3',
+            name: 'Cooking',
+            icon: require('../../asset/chef.png'),
+            color: COLORS.indigo,
+        },
+         {
+            id: '4',
+            name: 'Kitchen & Utensil cleaning',
             icon: require('../../asset/kitchen.png'),
-            color: COLORS.orange,
+            color: COLORS.goldDark,
         },
         {
+            id: '5',
+            name: 'Washing & Ironing cloths',
+            icon: require('../../asset/iron.png'),
+            color: COLORS.gold,
+        },
+         {
             id: '6',
-            name: 'Carpet Cleaning',
-            icon: require('../../asset/power-washing.png'),
-            color: COLORS.purple,
+            name: 'House Maid',
+            icon: require('../../asset/maid.png'),
+            color: COLORS.coral,
+        },
+        {
+            id: '7',
+            name: 'Home Organizing ',
+            icon: require('../../asset/helping.png'),
+            color: COLORS.textLight,
+        },
+         {
+            id: '8',
+            name: 'Packers Helpers',
+            icon: require('../../asset/box.png'),
+            color: COLORS.blue,
+        },
+        {
+            id: '9',
+            name: 'Elder Care & Companion',
+            icon: require('../../asset/old-man.png'),
+            color: COLORS.goldLight,
         },
     ];
     // On the Spot Services
@@ -204,8 +253,8 @@ const DashboardScreen = ({ navigation }) => {
     const rebookServices = [
         {
             id: '1',
-            name: 'Deep Cleaning',
-            provider: 'CleanMaster Services',
+            name: 'Bathroom Cleaning',
+            provider: 'HomeHelp',
             image: require('../../asset/deepclean.png'),
             date: 'Last booked: 15 Dec 2026',
             rating: 4.9,
@@ -214,8 +263,8 @@ const DashboardScreen = ({ navigation }) => {
 
         {
             id: '3',
-            name: 'Sofa Cleaning',
-            provider: 'SofaCare Experts',
+            name: 'Cooking',
+            provider: 'HomeHelp',
             image: require('../../asset/sofa-clean.png'),
             date: 'Last booked: 5 Dec 2026',
             rating: 4.7,
@@ -323,10 +372,10 @@ const DashboardScreen = ({ navigation }) => {
 
     // Search hints
     const searchHints = [
+        'Search for Home Cleaning Services...',
         'Search for Bathroom Cleaning...',
-        'Search for Sofa Cleaning...',
-        'Search for AC Service...',
-        'Search for Deep Cleaning...',
+        'Search for Kitchen & Utensil cleaning...',
+        'Search for Washing & Ironing cloths...',
     ];
 
     // FlatList refs
@@ -652,7 +701,7 @@ const DashboardScreen = ({ navigation }) => {
                                 showsVerticalScrollIndicator={false}
                                 contentContainerStyle={styles.modalGrid}
                                 renderItem={({ item }) => (
-                                    <TouchableOpacity style={styles.modalServiceItem}>
+                                    <TouchableOpacity style={styles.modalServiceItem} onPress={()=>navigation.navigate('ServiceBookingScreen')}>
                                         <View style={[styles.modalServiceIcon, { backgroundColor: item.color + '15' }]}>
                                             <Image
                                                 source={item.icon}

@@ -53,6 +53,10 @@ const CancelOrderScreen = ({ navigation, route }) => {
         customerName: 'Rahul Sharma',
         mobileNumber: '+91 98765 43210',
         amount: '₹0',
+        cancelReason: 'Changed my mind',
+        cancelReasonIcon: '🔄',
+        cancelReasonDetail: 'I no longer need this service .',
+        cancelledAt: '15 Jan 2027, 08:30 AM',
     };
 
     useEffect(() => {
@@ -153,7 +157,11 @@ const CancelOrderScreen = ({ navigation, route }) => {
                     <Text style={styles.sectionTitle}>Booking Details</Text>
                     <View style={styles.detailsCard}>
                         {/* Row 1: Date & Time */}
+
+
+                        
                         <View style={styles.detailRow}>
+                        
                             <View style={styles.detailIconBox}>
                                 <Image
                                     source={require('../../asset/calendar-outline.png')} // Update the path as needed
@@ -219,7 +227,7 @@ const CancelOrderScreen = ({ navigation, route }) => {
                         {/* Row 4: Amount - ₹0 */}
                         <View style={[styles.detailRow, styles.detailRowLast]}>
                             <View style={[styles.detailIconBox, { backgroundColor: COLORS.red + '15' }]}>
-                                
+
                                 <Image
                                     source={require('../../asset/rupee.png')} // Update the path as needed
                                     style={{
@@ -235,6 +243,47 @@ const CancelOrderScreen = ({ navigation, route }) => {
                             <View style={styles.detailContent}>
                                 <Text style={[styles.detailLabel, { color: COLORS.red }]}>Amount</Text>
                                 <Text style={[styles.detailValue, styles.refundAmount]}>₹0</Text>
+                            </View>
+                        </View>
+
+                        <View style={[styles.detailRow, styles.detailRowLast]}>
+                            <View style={[styles.detailIconBox, { backgroundColor: COLORS.red + '15' }]}>
+
+                                <Image
+                                    source={require('../../asset/close-circle.png')} // Update the path as needed
+                                    style={{
+                                        width: 16,
+                                        height: 16,
+                                        resizeMode: 'contain',
+                                        tintColor: COLORS.red
+
+
+                                    }}
+                                />
+                            </View>
+                            <View style={styles.detailContent}>
+                                <Text style={[styles.detailLabel, { color: COLORS.red }]}>Cancellation Reason</Text>
+                                <Text style={[styles.detailValue]}>{bookingData.cancelReason}</Text>
+                            </View>
+                        </View>
+                        <View style={[styles.detailRow, styles.detailRowLast]}>
+                            <View style={[styles.detailIconBox, { backgroundColor: COLORS.red + '15' }]}>
+
+                                <Image
+                                    source={require('../../asset/close-circle.png')} // Update the path as needed
+                                    style={{
+                                        width: 16,
+                                        height: 16,
+                                        resizeMode: 'contain',
+                                        tintColor: COLORS.red
+
+
+                                    }}
+                                />
+                            </View>
+                            <View style={styles.detailContent}>
+                                <Text style={[styles.detailLabel, { color: COLORS.red }]}>Cancellation Details</Text>
+                                <Text style={[styles.detailValue]}>{bookingData.cancelReasonDetail}</Text>
                             </View>
                         </View>
                     </View>

@@ -22,6 +22,7 @@ const ProfileScreen = ({ navigation }) => {
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(30)).current;
+    const progressAnim = useRef(new Animated.Value(0)).current;
 
     const COLORS = {
         gold: '#C9A84C',
@@ -49,12 +50,13 @@ const ProfileScreen = ({ navigation }) => {
         mobileNumber: '+91 98765 43210',
         email: 'rahul@email.com',
         isProfileComplete: false,
+        completionPercentage: 70,
         avatar: 'https://ui-avatars.com/api/?name=Arpan+Saha&background=C9A84C&color=fff&size=100',
     };
 
     // Profile menu items
     const profileMenuItems = [
-         {
+        {
             id: '6',
             icon: require('../../asset/monthly-subscription.png'),
             title: 'Monthly Subscription',
@@ -128,11 +130,30 @@ const ProfileScreen = ({ navigation }) => {
                 duration: 600,
                 useNativeDriver: true,
             }),
+            Animated.timing(progressAnim, {
+                toValue: userData.completionPercentage / 100,
+                duration: 1000,
+                useNativeDriver: false,
+            }),
         ]).start();
     }, []);
 
     const handleCompleteProfile = () => {
         navigation.navigate('ProfileUpdateScreen');
+    };
+
+    const getCompletionStatus = (percentage) => {
+        if (percentage >= 100) return { text: 'Complete', color: COLORS.success };
+        if (percentage >= 50) return { text: 'In Progress', color: COLORS.warning };
+        return { text: 'Incomplete', color: COLORS.red };
+    };
+
+    const getProgressColor = (percentage) => {
+        if (percentage >= 100) return COLORS.success;
+        if (percentage >= 70) return '#2ECC71';
+        if (percentage >= 50) return COLORS.warning;
+        if (percentage >= 30) return '#F39C12';
+        return COLORS.red;
     };
 
     const handleMyBookings = () => {
@@ -240,8 +261,33 @@ const ProfileScreen = ({ navigation }) => {
                                 />
                             )}
                         </View>
-                        <Text style={styles.profileStatusTitle}>
-                            {userData.isProfileComplete ? 'Profile Complete' : 'Profile Incomplete'}
+                        <View style={styles.profileStatusInfo}>
+                            <Text style={styles.profileStatusTitle}>
+                                {userData.isProfileComplete ? 'Profile Complete' : 'Profile Incomplete'}
+                            </Text>
+                            <Text style={styles.profileStatusPercentage}>
+                                {userData.completionPercentage}% Complete
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.progressContainer}>
+                        <View style={styles.progressBar}>
+                            <Animated.View
+                                style={[
+                                    styles.progressFill,
+                                    {
+                                        width: progressAnim.interpolate({
+                                            inputRange: [0, 1],
+                                            outputRange: ['0%', '100%'],
+                                        }),
+                                        backgroundColor: getProgressColor(userData.completionPercentage),
+                                    }
+                                ]}
+                            />
+                        </View>
+                        <Text style={styles.progressLabel}>
+                            {userData.isProfileComplete ? '✅ Profile Complete' : `⚠️ ${100 - userData.completionPercentage}% remaining`}
                         </Text>
                     </View>
                     {!userData.isProfileComplete && (
@@ -770,6 +816,34 @@ const styles = StyleSheet.create({
     },
     footerSpacer: {
         height: 20,
+    },
+    profileStatusInfo: {
+        flex: 1,
+    },
+    profileStatusPercentage: {
+        fontSize: 12,
+        color: '#666666',
+        marginTop: 1,
+    },
+
+     progressContainer: {
+        marginTop: 12,
+    },
+    progressBar: {
+        height: 6,
+        backgroundColor: '#E8E3D8',
+        borderRadius: 3,
+        overflow: 'hidden',
+    },
+    progressFill: {
+        height: '100%',
+        borderRadius: 3,
+    },
+    progressLabel: {
+        fontSize: 11,
+        color: '#666666',
+        marginTop: 4,
+        textAlign: 'right',
     },
 });
 
