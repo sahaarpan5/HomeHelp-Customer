@@ -16,6 +16,11 @@ import {
     RefreshControl,
 } from 'react-native';
 import Video from 'react-native-video';
+import API from '../../util/API';
+import Loader from '../../util/Loader';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const { width, height } = Dimensions.get('window');
@@ -30,6 +35,13 @@ const DashboardScreen = ({ navigation }) => {
     const [isAllServicesModalVisible, setIsAllServicesModalVisible] = useState(false);
     const [currentOfferIndex, setCurrentOfferIndex] = useState(0);
     const [currentThoughtfulIndex, setCurrentThoughtfulIndex] = useState(0);
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [profileImage, setProfileImage] = useState(null);
+
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [phone, setPhone] = useState('');
 
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -178,7 +190,7 @@ const DashboardScreen = ({ navigation }) => {
             icon: require('../../asset/home.png'),
             color: COLORS.gold,
         },
-        
+
         {
             id: '2',
             name: 'Bathroom Cleaning',
@@ -191,7 +203,7 @@ const DashboardScreen = ({ navigation }) => {
             icon: require('../../asset/chef.png'),
             color: COLORS.indigo,
         },
-         {
+        {
             id: '4',
             name: 'Kitchen & Utensil cleaning',
             icon: require('../../asset/kitchen.png'),
@@ -203,7 +215,7 @@ const DashboardScreen = ({ navigation }) => {
             icon: require('../../asset/iron.png'),
             color: COLORS.gold,
         },
-         {
+        {
             id: '6',
             name: 'House Maid',
             icon: require('../../asset/maid.png'),
@@ -215,7 +227,7 @@ const DashboardScreen = ({ navigation }) => {
             icon: require('../../asset/helping.png'),
             color: COLORS.textLight,
         },
-         {
+        {
             id: '8',
             name: 'Packers Helpers',
             icon: require('../../asset/box.png'),
@@ -397,6 +409,8 @@ const DashboardScreen = ({ navigation }) => {
             }),
         ]).start();
 
+     
+
         const interval = setInterval(() => {
             if (offers.length > 0) {
                 setCurrentOfferIndex((prev) => (prev + 1) % offers.length);
@@ -469,6 +483,159 @@ const DashboardScreen = ({ navigation }) => {
         }
 
     }, [currentThoughtfulIndex]);
+
+       useFocusEffect(
+            useCallback(() => {
+                fetchProfile();
+            }, [])
+        );
+
+
+
+        const fetchProfile = async () => {
+            try {
+
+
+                const token = await AsyncStorage.getItem('token');
+
+                console.log('TOKEN:', token ? 'Token Found' : 'Token Not Found');
+                console.log('PROFILE API URL:', API.CUSTOMER_PROFILE);
+
+                if (!token) {
+                    Alert.alert('Error', 'Authentication token not found');
+                    return;
+                }
+
+                setIsLoading(true);
+
+                const response = await fetch(API.CUSTOMER_PROFILE, {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                console.log('HTTP STATUS:', response.status);
+                console.log('HTTP OK:', response.ok);
+
+                // IMPORTANT: Get raw response first
+                const responseText = await response.text();
+
+                console.log('RAW PROFILE RESPONSE:', responseText);
+
+                if (!response.ok) {
+                    console.log('PROFILE API FAILED');
+
+                    if (response.status === 401) {
+                        Alert.alert(
+                            'Session Expired',
+                            'Your session has expired. Please login again.'
+                        );
+                    } else {
+                        Alert.alert(
+                            'Error',
+                            `Profile API failed. Status: ${response.status}`
+                        );
+                    }
+
+                    return;
+                }
+
+                // Convert raw response to JSON
+                let data;
+
+                try {
+                    data = JSON.parse(responseText);
+                } catch (jsonError) {
+                    console.log('JSON PARSE ERROR:', jsonError);
+                    console.log('SERVER RESPONSE:', responseText);
+
+                    Alert.alert(
+                        'Error',
+                        'Invalid response received from server.'
+                    );
+
+                    return;
+                }
+
+                console.log('PROFILE DATA:', data);
+                console.log('PROFILE SUCCESS:', data?.success);
+                console.log('FIRST NAME:', data?.firstName);
+                console.log('LAST NAME:', data?.lastName);
+                console.log('EMAIL:', data?.email);
+                console.log('MOBILE:', data?.mobileNo);
+                console.log('GENDER:', data?.gender);
+                console.log('DOB:', data?.dob);
+                console.log('IMAGE:', data?.profileImage);
+
+                if (data?.success !== true) {
+                    Alert.alert(
+                        'Error',
+                        data?.message || 'Unable to fetch profile'
+                    );
+                    return;
+                }
+
+                // ==============================
+                // PROFILE DATA
+                // ==============================
+
+                const profileFirstName = data.firstName || '';
+                const profileLastName = data.lastName || '';
+                const profileEmail = data.email || '';
+                const profilePhone = data.mobileNo || '';
+                const profileGender = data.gender || '';
+
+
+
+                setFirstName(profileFirstName);
+                setLastName(profileLastName);
+                setPhone(profilePhone);
+
+
+                // ==============================
+                // SAVE ORIGINAL DATA
+                // ==============================
+
+
+
+                // ==============================
+                // PROFILE IMAGE
+                // ==============================
+
+                if (data.profileImage) {
+                    setProfileImage(data.profileImage);
+                    setProfileImage(
+                        data.profileImage.startsWith('http')
+                            ? data.profileImage
+                            : `https://www.geniushomehelp.com/${data.profileImage}`
+                    );
+                } else {
+                    const fullName =
+                        `${profileFirstName} ${profileLastName}`.trim();
+
+                    setProfileImage(
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                            fullName || 'User'
+                        )}&background=C9A84C&color=fff&size=200`
+                    );
+                }
+
+                console.log('PROFILE DATA SET SUCCESSFULLY');
+
+            } catch (error) {
+                console.log('FETCH PROFILE ERROR:', error);
+                console.log('ERROR MESSAGE:', error?.message);
+
+                Alert.alert(
+                    'Error',
+                    error?.message || 'Something went wrong while loading profile.'
+                );
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
     const handleQuickAction = (item) => {
         switch (item.name) {
@@ -555,14 +722,14 @@ const DashboardScreen = ({ navigation }) => {
                                     <View style={styles.sidebarAvatarContainer}>
 
                                         <Image
-                                            source={userData.avatar}
+                                            source={{ uri: profileImage }}
                                             style={styles.sidebarAvatar}
                                             resizeMode="cover"
                                         />
                                         <View style={styles.sidebarStatus} />
                                     </View>
-                                    <Text style={styles.sidebarName}>{userData.name}</Text>
-                                    <Text style={styles.sidebarEmail}>{userData.email}</Text>
+                                    <Text style={styles.sidebarName}>{firstName} {lastName}</Text>
+                                    <Text style={styles.sidebarEmail}>{phone}</Text>
                                 </TouchableOpacity>
 
                                 <View style={styles.sidebarMenu}>
@@ -625,7 +792,7 @@ const DashboardScreen = ({ navigation }) => {
                                             />
                                         </TouchableOpacity>
                                     ))}
-                                    <TouchableOpacity style={[styles.sidebarMenuItem, styles.sidebarLogout]}>
+                                    <TouchableOpacity style={[styles.sidebarMenuItem, styles.sidebarLogout]} onPress={() => navigation.replace('LoginScreen')}>
                                         <View style={[styles.sidebarMenuIcon, { backgroundColor: COLORS.red + '15' }]}>
 
                                             <Image
@@ -701,7 +868,7 @@ const DashboardScreen = ({ navigation }) => {
                                 showsVerticalScrollIndicator={false}
                                 contentContainerStyle={styles.modalGrid}
                                 renderItem={({ item }) => (
-                                    <TouchableOpacity style={styles.modalServiceItem} onPress={()=>navigation.navigate('ServiceBookingScreen')}>
+                                    <TouchableOpacity style={styles.modalServiceItem} onPress={() => navigation.navigate('ServiceBookingScreen')}>
                                         <View style={[styles.modalServiceIcon, { backgroundColor: item.color + '15' }]}>
                                             <Image
                                                 source={item.icon}
@@ -1041,7 +1208,7 @@ const DashboardScreen = ({ navigation }) => {
                     </TouchableOpacity>
                     <View>
                         <Text style={styles.headerGreeting}>Good Morning 👋</Text>
-                        <Text style={styles.headerName}>{userData.name}</Text>
+                        <Text style={styles.headerName}>{firstName} {lastName}</Text>
                     </View>
                 </View>
                 <View style={styles.headerRight}>
@@ -1065,6 +1232,12 @@ const DashboardScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
+
+            {isLoading && (
+                <View style={styles.loaderOverlay}>
+                    <Loader />
+                </View>
+            )}
 
             <FlatList
                 ref={flatListRef}
@@ -2299,6 +2472,17 @@ const styles = StyleSheet.create({
     sidebarVersion: {
         fontSize: 11,
         color: '#999999',
+    },
+    loaderOverlay: {
+        flex: 1,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+
+        backgroundColor: 'rgba(255,255,255,0.7)',
+        zIndex: 999,
     },
 });
 

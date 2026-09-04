@@ -19,6 +19,10 @@ import {
 } from 'react-native';
 import API from '../../util/API';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+    GoogleSignin,
+    statusCodes,
+} from '@react-native-google-signin/google-signin';
 
 
 const { width, height } = Dimensions.get('window');
@@ -123,6 +127,15 @@ const LoginScreen = ({ navigation }) => {
         }
         return () => clearInterval(interval);
     }, [timer, isOtpModalVisible]);
+
+
+    useEffect(() => {
+        GoogleSignin.configure({
+            webClientId: '1012631010926-ha4hin2e5uo9sne9tu57bsm28a42rbk7.apps.googleusercontent.com',
+
+            offlineAccess: false,
+        });
+    }, []);
 
     const handlePhoneChange = (text) => {
         const cleaned = text.replace(/[^0-9]/g, '');
@@ -268,15 +281,16 @@ const LoginScreen = ({ navigation }) => {
                     navigation.replace('CreateAccountScreen', {
                         mobileNo: response.data?.uniqueMobileNo || phoneNumber,
                         mobileVerified: response.data?.mobileVerified,
-                        token:response.data?.token,
-                        
+                        token: response.data?.token,
+                        googleLogin: false,
+
                     });
-                    
+
 
                 }
                 // Existing customer → Dashboard
                 else if (response.data?.isRegistered === true) {
-                     await AsyncStorage.setItem(
+                    await AsyncStorage.setItem(
                         'customerMob',
                         String(response.data?.uniqueMobileNo || phoneNumber)
                     );
@@ -436,8 +450,88 @@ const LoginScreen = ({ navigation }) => {
         });
     };
 
-    const handleGoogleLogin = () => {
-        Alert.alert('Google Login', 'Connecting to Google...');
+    // const handleGoogleLogin = () => {
+    //     Alert.alert('Google Login', 'Connecting to Google...');
+    // };
+
+
+    const handleGoogleLogin = async () => {
+        try {
+            setIsLoading(true);
+
+            await GoogleSignin.hasPlayServices({
+                showPlayServicesUpdateDialog: true,
+            });
+
+            const userInfo = await GoogleSignin.signIn();
+
+            console.log('========== GOOGLE USER ==========');
+            console.log(JSON.stringify(userInfo, null, 2));
+
+            const googleUser =
+                userInfo?.data?.user ||
+                userInfo?.user;
+
+            if (!googleUser) {
+                Alert.alert(
+                    'Google Login',
+                    'Unable to fetch Google account details.'
+                );
+                return;
+            }
+
+            const googleId = googleUser.id || '';
+            const firstName = googleUser.givenName || '';
+            const lastName = googleUser.familyName || '';
+            const email = googleUser.email || '';
+            const profileImage = googleUser.photo || '';
+
+            console.log('Google ID:', googleId);
+            console.log('First Name:', firstName);
+            console.log('Last Name:', lastName);
+            console.log('Email:', email);
+            console.log('Profile Image:', profileImage);
+
+            navigation.replace('CreateAccountScreen', {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                profileImage: profileImage,
+                googleId: googleId,
+                googleLogin: true,
+            });
+
+        } catch (error) {
+
+            console.log('Google Sign-In Error:', error);
+
+            if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
+                console.log('User cancelled Google Sign-In');
+
+            } else if (error?.code === statusCodes.IN_PROGRESS) {
+                Alert.alert(
+                    'Please Wait',
+                    'Google Sign-In is already in progress.'
+                );
+
+            } else if (
+                error?.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE
+            ) {
+                Alert.alert(
+                    'Google Play Services',
+                    'Google Play Services is not available.'
+                );
+
+            } else {
+                Alert.alert(
+                    'Google Login Error',
+                    error?.message || 'Unable to sign in with Google.'
+                );
+            }
+
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleFacebookLogin = () => {

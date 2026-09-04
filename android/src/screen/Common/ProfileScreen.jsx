@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useRef, useEffect } from 'react';
 import {
     View,
@@ -11,6 +12,10 @@ import {
     Animated,
     Alert,
 } from 'react-native';
+import API from '../../util/API';
+import Loader from '../../util/Loader';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 
 const { width, height } = Dimensions.get('window');
@@ -18,6 +23,11 @@ const { width, height } = Dimensions.get('window');
 const ProfileScreen = ({ navigation }) => {
     // States
     const [isLoading, setIsLoading] = useState(false);
+    const [profileImage, setProfileImage] = useState(null);
+
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [phone, setPhone] = useState('');
 
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -138,6 +148,159 @@ const ProfileScreen = ({ navigation }) => {
         ]).start();
     }, []);
 
+    useFocusEffect(
+        useCallback(() => {
+            fetchProfile();
+        }, [])
+    );
+
+
+
+    const fetchProfile = async () => {
+        try {
+
+
+            const token = await AsyncStorage.getItem('token');
+
+            console.log('TOKEN:', token ? 'Token Found' : 'Token Not Found');
+            console.log('PROFILE API URL:', API.CUSTOMER_PROFILE);
+
+            if (!token) {
+                Alert.alert('Error', 'Authentication token not found');
+                return;
+            }
+
+            setIsLoading(true);
+
+            const response = await fetch(API.CUSTOMER_PROFILE, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            console.log('HTTP STATUS:', response.status);
+            console.log('HTTP OK:', response.ok);
+
+            // IMPORTANT: Get raw response first
+            const responseText = await response.text();
+
+            console.log('RAW PROFILE RESPONSE:', responseText);
+
+            if (!response.ok) {
+                console.log('PROFILE API FAILED');
+
+                if (response.status === 401) {
+                    Alert.alert(
+                        'Session Expired',
+                        'Your session has expired. Please login again.'
+                    );
+                } else {
+                    Alert.alert(
+                        'Error',
+                        `Profile API failed. Status: ${response.status}`
+                    );
+                }
+
+                return;
+            }
+
+            // Convert raw response to JSON
+            let data;
+
+            try {
+                data = JSON.parse(responseText);
+            } catch (jsonError) {
+                console.log('JSON PARSE ERROR:', jsonError);
+                console.log('SERVER RESPONSE:', responseText);
+
+                Alert.alert(
+                    'Error',
+                    'Invalid response received from server.'
+                );
+
+                return;
+            }
+
+            console.log('PROFILE DATA:', data);
+            console.log('PROFILE SUCCESS:', data?.success);
+            console.log('FIRST NAME:', data?.firstName);
+            console.log('LAST NAME:', data?.lastName);
+            console.log('EMAIL:', data?.email);
+            console.log('MOBILE:', data?.mobileNo);
+            console.log('GENDER:', data?.gender);
+            console.log('DOB:', data?.dob);
+            console.log('IMAGE:', data?.profileImage);
+
+            if (data?.success !== true) {
+                Alert.alert(
+                    'Error',
+                    data?.message || 'Unable to fetch profile'
+                );
+                return;
+            }
+
+            // ==============================
+            // PROFILE DATA
+            // ==============================
+
+            const profileFirstName = data.firstName || '';
+            const profileLastName = data.lastName || '';
+            const profileEmail = data.email || '';
+            const profilePhone = data.mobileNo || '';
+            const profileGender = data.gender || '';
+
+
+
+            setFirstName(profileFirstName);
+            setLastName(profileLastName);
+            setPhone(profilePhone);
+
+
+            // ==============================
+            // SAVE ORIGINAL DATA
+            // ==============================
+
+
+
+            // ==============================
+            // PROFILE IMAGE
+            // ==============================
+
+            if (data.profileImage) {
+                setProfileImage(data.profileImage);
+                setProfileImage(
+                    data.profileImage.startsWith('http')
+                        ? data.profileImage
+                        : `https://www.geniushomehelp.com/${data.profileImage}`
+                );
+            } else {
+                const fullName =
+                    `${profileFirstName} ${profileLastName}`.trim();
+
+                setProfileImage(
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                        fullName || 'User'
+                    )}&background=C9A84C&color=fff&size=200`
+                );
+            }
+
+            console.log('PROFILE DATA SET SUCCESSFULLY');
+
+        } catch (error) {
+            console.log('FETCH PROFILE ERROR:', error);
+            console.log('ERROR MESSAGE:', error?.message);
+
+            Alert.alert(
+                'Error',
+                error?.message || 'Something went wrong while loading profile.'
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleCompleteProfile = () => {
         navigation.navigate('ProfileUpdateScreen');
     };
@@ -210,6 +373,12 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={styles.headerTitle}>Profile</Text>
             </View>
 
+            {isLoading && (
+                <View style={styles.loaderOverlay}>
+                    <Loader />
+                </View>
+            )}
+
             <Animated.ScrollView
                 style={[
                     styles.content,
@@ -222,10 +391,10 @@ const ProfileScreen = ({ navigation }) => {
             >
                 {/* Profile Card */}
                 <View style={styles.profileCard}>
-                    <Image source={{ uri: userData.avatar }} style={styles.profileAvatar} />
+                    <Image source={{ uri: profileImage }} style={styles.profileAvatar} />
                     <View style={styles.profileInfo}>
-                        <Text style={styles.profileName}>{userData.name}</Text>
-                        <Text style={styles.profileMobile}>{userData.mobileNumber}</Text>
+                        <Text style={styles.profileName}> {firstName} {lastName}</Text>
+                        <Text style={styles.profileMobile}>{phone}</Text>
                     </View>
                 </View>
 
@@ -826,7 +995,7 @@ const styles = StyleSheet.create({
         marginTop: 1,
     },
 
-     progressContainer: {
+    progressContainer: {
         marginTop: 12,
     },
     progressBar: {
@@ -844,6 +1013,17 @@ const styles = StyleSheet.create({
         color: '#666666',
         marginTop: 4,
         textAlign: 'right',
+    },
+    loaderOverlay: {
+        flex: 1,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+
+        backgroundColor: 'rgba(255,255,255,0.7)',
+        zIndex: 999,
     },
 });
 

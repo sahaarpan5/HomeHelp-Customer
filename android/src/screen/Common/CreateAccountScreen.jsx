@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import API from '../../util/API';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNFS from 'react-native-fs';
 
 
 const { width, height } = Dimensions.get('window');
@@ -37,7 +38,8 @@ const CreateAccountScreen = ({ navigation, route }) => {
     const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+    const [googleLogin, setGoogleLogin] = useState(false);
+    const [profileImage, setProfileImage] = useState(null);
 
     // Profile Form States
     const [firstName, setFirstName] = useState('');
@@ -110,7 +112,16 @@ const CreateAccountScreen = ({ navigation, route }) => {
         const mobileNo = route.params?.mobileNo;
         const verified = route.params?.mobileVerified;
         const token = route.params?.token
-
+        const firstName = route.params?.firstName;
+        const lastName = route.params?.lastName;
+        const emailID = route.params?.email;
+        const profileImage = route.params?.profileImage;
+        const googleLogin = route.params?.googleLogin;
+        setFirstName(firstName || '');
+        setLastName(lastName || '');
+        setEmailID(emailID || '');
+        setProfileImage(profileImage || null);
+        setGoogleLogin(googleLogin || false);
 
         console.log('Mobile No:', mobileNo);
         console.log('Mobile Verified:', verified);
@@ -659,6 +670,49 @@ const CreateAccountScreen = ({ navigation, route }) => {
         }).start();
     };
 
+
+    const downloadGoogleImage = async (imageUrl) => {
+        try {
+            console.log('Downloading Google image:', imageUrl);
+
+            const fileName = `google_profile_${Date.now()}.jpg`;
+            const filePath = `${RNFS.CachesDirectoryPath}/${fileName}`;
+
+            const result = await RNFS.downloadFile({
+                fromUrl: imageUrl,
+                toFile: filePath,
+                headers: {
+                    'User-Agent':
+                        'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 Chrome/120.0 Mobile Safari/537.36',
+                    Accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+                },
+            }).promise;
+
+            console.log('Google image download status:', result.statusCode);
+            console.log('Google image path:', filePath);
+
+            if (result.statusCode !== 200) {
+                throw new Error(
+                    `Image download failed: ${result.statusCode}`
+                );
+            }
+
+            return {
+                uri: `file://${filePath}`,
+                name: fileName,
+                type: 'image/jpeg',
+            };
+
+        } catch (error) {
+            console.log(
+                'Google image download error:',
+                error
+            );
+
+            return null;
+        }
+    };
+
     const handleCreateAccount = async () => {
         if (!firstName.trim()) {
             Alert.alert('Required', 'Please enter your first name');
@@ -712,12 +766,12 @@ const CreateAccountScreen = ({ navigation, route }) => {
             confirmPasswordRef.current?.focus();
             return;
         }
-        console.log('token',token);
+        console.log('token', token);
 
         try {
             setIsLoading(true);
 
-           
+
 
             const requestBody = {
                 firstName: firstName.trim(),
@@ -748,42 +802,255 @@ const CreateAccountScreen = ({ navigation, route }) => {
             if (response.data?.success === true) {
 
                 // Save new token
-                if (response.data?.token) {
+                // if (response.data?.token) {
+                //     await AsyncStorage.setItem(
+                //         'token',
+                //         response.data.token
+                //     );
+                // }
+
+                // // Save User ID
+                // if (response.data?.userId) {
+                //     await AsyncStorage.setItem(
+                //         'userId',
+                //         String(response.data.userId)
+                //     );
+                // }
+
+                // // Save Customer ID
+                // if (response.data?.customerId) {
+                //     await AsyncStorage.setItem(
+                //         'customerId',
+                //         String(response.data.customerId)
+                //     );
+                // }
+
+                // await AsyncStorage.setItem(
+                //     'customerMob',
+                //     String(phoneNumber)
+                // );
+
+                // Alert.alert(
+                //     'Success',
+                //     response.data?.message ||
+                //     'Customer registered successfully.'
+                // );
+
+                // navigation.replace('DashboardScreen');
+                // animateProgress();
+
+
+
+                const responseData = response.data;
+
+                // Save token
+                if (responseData?.token) {
                     await AsyncStorage.setItem(
                         'token',
-                        response.data.token
+                        responseData.token
                     );
                 }
 
-                // Save User ID
-                if (response.data?.userId) {
+                if (responseData?.userId) {
                     await AsyncStorage.setItem(
                         'userId',
-                        String(response.data.userId)
+                        String(responseData.userId)
                     );
                 }
 
-                // Save Customer ID
-                if (response.data?.customerId) {
+                if (responseData?.customerId) {
                     await AsyncStorage.setItem(
                         'customerId',
-                        String(response.data.customerId)
+                        String(responseData.customerId)
                     );
                 }
 
                 await AsyncStorage.setItem(
-                        'customerMob',
-                        String(phoneNumber)
+                    'customerMob',
+                    String(phoneNumber)
+                );
+
+                // ==================================================
+                // GOOGLE REGISTRATION
+                // ==================================================
+
+                if (googleLogin === true) {
+
+                    const googleProfileImage =
+                        profileImage || route.params?.profileImage;
+
+                    console.log(
+                        'Google Profile Image:',
+                        googleProfileImage
                     );
+
+                    try {
+
+                        const formData = new FormData();
+
+                        formData.append(
+                            'FirstName',
+                            firstName.trim()
+                        );
+
+                        formData.append(
+                            'LastName',
+                            lastName.trim()
+                        );
+
+                        formData.append(
+                            'Gender',
+                            gender
+                        );
+
+                        // Google registration DOB should be blank
+                        formData.append(
+                            'Dob',
+                            ''
+                        );
+
+                        formData.append(
+                            'Email',
+                            emailID.trim()
+                        );
+
+                        // ------------------------------------------
+                        // DOWNLOAD GOOGLE PROFILE IMAGE
+                        // ------------------------------------------
+
+                        if (
+                            googleProfileImage &&
+                            googleProfileImage.startsWith('http')
+                        ) {
+
+                            const imageFile =
+                                await downloadGoogleImage(
+                                    googleProfileImage
+                                );
+
+                            if (imageFile) {
+
+                                formData.append(
+                                    'ProfileImage',
+                                    {
+                                        uri: imageFile.uri,
+                                        name: imageFile.name,
+                                        type: imageFile.type,
+                                    }
+                                );
+
+                                console.log(
+                                    'Google image added to FormData'
+                                );
+                            }
+                        }
+
+                        // ------------------------------------------
+                        // CALL EDIT PROFILE API
+                        // ------------------------------------------
+
+                        const profileResponse =
+                            await fetch(
+                                API.CUSTOMER_PROFILE,
+                                {
+                                    method: 'PUT',
+
+                                    headers: {
+                                        Accept: '*/*',
+                                        Authorization:
+                                            `Bearer ${responseData.token}`,
+                                    },
+
+                                    body: formData,
+                                }
+                            );
+
+                        const profileResponseText =
+                            await profileResponse.text();
+
+                        console.log(
+                            'Edit Profile Response:',
+                            profileResponseText
+                        );
+
+                        let profileData = null;
+
+                        try {
+                            profileData =
+                                JSON.parse(profileResponseText);
+                        } catch (error) {
+                            console.log(
+                                'Profile response is not JSON'
+                            );
+                        }
+
+                        if (!profileResponse.ok) {
+                            throw new Error(
+                                profileData?.message ||
+                                `Profile update failed: ${profileResponse.status}`
+                            );
+                        }
+
+                        if (profileData?.success === true) {
+
+                            Alert.alert(
+                                'Success',
+                                'Account created successfully.',
+                                [
+                                    {
+                                        text: 'OK',
+                                        onPress: () =>
+                                            navigation.replace(
+                                                'DashboardScreen'
+                                            ),
+                                    },
+                                ]
+                            );
+
+                        } else {
+
+                            Alert.alert(
+                                'Error',
+                                profileData?.message ||
+                                'Profile update failed.'
+                            );
+                        }
+
+                    } catch (error) {
+
+                        console.log(
+                            'Google profile update error:',
+                            error
+                        );
+
+                        Alert.alert(
+                            'Error',
+                            error.message ||
+                            'Failed to update Google profile.'
+                        );
+                    }
+
+                    return;
+                }
+
+                // ==================================================
+                // NORMAL REGISTRATION
+                // ==================================================
 
                 Alert.alert(
                     'Success',
-                    response.data?.message ||
-                    'Customer registered successfully.'
+                    responseData?.message ||
+                    'Customer registered successfully.',
+                    [
+                        {
+                            text: 'OK',
+                            onPress: () =>
+                                navigation.replace(
+                                    'DashboardScreen'
+                                ),
+                        },
+                    ]
                 );
-
-                navigation.replace('DashboardScreen');
-                animateProgress();
 
             } else {
 
@@ -1378,6 +1645,32 @@ const CreateAccountScreen = ({ navigation, route }) => {
                         <Text style={styles.inputRequired}>*</Text>
                     </View>
                     <View style={styles.genderContainer}>
+
+                        <TouchableOpacity
+                            style={[
+                                styles.genderOption,
+                                gender === 'Female' && styles.genderOptionSelected,
+                            ]}
+                            onPress={() => setGender('Female')}
+                            activeOpacity={0.7}
+                        >
+
+
+                            <Image
+                                source={require('../../asset/female.png')} // Update the path as needed
+                                style={{
+                                    width: 24,
+                                    height: 24,
+                                    resizeMode: 'contain',
+                                    tintColor: gender === 'Female' ? COLORS.white : COLORS.gold, // Remove if the PNG is already colored
+                                }}
+                            />
+                            <Text style={[
+                                styles.genderText,
+                                gender === 'Female' && styles.genderTextSelected,
+                            ]}>Female</Text>
+                        </TouchableOpacity>
+
                         <TouchableOpacity
                             style={[
                                 styles.genderOption,
@@ -1404,30 +1697,6 @@ const CreateAccountScreen = ({ navigation, route }) => {
                             ]}>Male</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={[
-                                styles.genderOption,
-                                gender === 'Female' && styles.genderOptionSelected,
-                            ]}
-                            onPress={() => setGender('Female')}
-                            activeOpacity={0.7}
-                        >
-
-
-                            <Image
-                                source={require('../../asset/female.png')} // Update the path as needed
-                                style={{
-                                    width: 24,
-                                    height: 24,
-                                    resizeMode: 'contain',
-                                    tintColor: gender === 'Female' ? COLORS.white : COLORS.gold, // Remove if the PNG is already colored
-                                }}
-                            />
-                            <Text style={[
-                                styles.genderText,
-                                gender === 'Female' && styles.genderTextSelected,
-                            ]}>Female</Text>
-                        </TouchableOpacity>
 
                         <TouchableOpacity
                             style={[
