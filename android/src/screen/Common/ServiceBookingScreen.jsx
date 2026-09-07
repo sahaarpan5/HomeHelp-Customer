@@ -59,23 +59,14 @@ const ServiceBookingScreen = ({ navigation, route }) => {
     // Sample Service Data
     const serviceData = {
         id: '1',
-        name: 'Home Cleaning',
+        name: 'House Maid',
         tagline: '✨ A spotless home, just a tap away',
-        coverImage: require('../../asset/heroic.png'),
+        coverImage: require('../../asset/housemaid.png'),
         rating: 4.9,
         totalReviews: 1240,
         bookingCount: 15420,
         price: '₹499',
-        whatIsCovered: [
-            'Living Room Deep Cleaning',
-            'Kitchen Degreasing',
-            'Bathroom Sanitization',
-            'Bedroom Cleaning',
-            'Floor Mopping',
-            'Dusting of all surfaces',
-            'Cobweb Removal',
-            'Waste Disposal',
-        ],
+        whatIsCovered: ['House Cleaning', 'Dusting of all surfaces', 'Sweeping & Floor Mopping', 'Kitchen Cleaning', 'Bathroom Cleaning', 'Bedroom Cleaning', 'Utensil Washing', 'Laundry & Clothes Folding', 'Cobweb Removal', 'Waste Disposal',],
         ourProcess: [
             {
                 step: '1',
@@ -103,33 +94,9 @@ const ServiceBookingScreen = ({ navigation, route }) => {
             'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
         ],
         childServices: [
-            {
-                id: 'c1',
-                name: 'Living Room Deep Cleaning',
-                price: '₹299',
-                coverImage: require('../../asset/heroic.png'),
-                description: 'Professional deep cleaning of your living room including sofas, carpets, and all surfaces.',
-                whatIsCovered: ['Sofa Cleaning', 'Carpet Vacuuming', 'Surface Dusting', 'Floor Mopping'],
-                duration: '2 hours',
-            },
-            {
-                id: 'c2',
-                name: 'Kitchen Deep Cleaning',
-                price: '₹349',
-                coverImage: require('../../asset/kitchen-clean.png'),
-                description: 'Complete kitchen cleaning including cabinets, countertops, and appliances.',
-                whatIsCovered: ['Cabinet Cleaning', 'Countertop Cleaning', 'Appliance Cleaning', 'Floor Mopping'],
-                duration: '1.5 hours',
-            },
-            {
-                id: 'c3',
-                name: 'Bathroom Deep Cleaning',
-                price: '₹249',
-                coverImage: require('../../asset/bathroom-clean.png'),
-                description: 'Thorough bathroom cleaning and sanitization.',
-                whatIsCovered: ['Tile Cleaning', 'Fixture Sanitization', 'Mirror Cleaning', 'Floor Mopping'],
-                duration: '1 hour',
-            },
+            { id: 'c2', name: 'House Maid', price: '₹399', coverImage: require('../../asset/housemaid.png'), description: 'Reliable house maid service for everyday household chores, cleaning, and maintaining a neat and comfortable home.', whatIsCovered: ['General House Cleaning', 'Dusting & Sweeping', 'Floor Mopping', 'Kitchen Cleaning', 'Bathroom Cleaning', 'Utensil Washing'], duration: '3 hours', },
+
+
         ],
         faqs: [
             {
@@ -799,7 +766,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                         </View>
                     ))}
                 </View>
-             
+
 
                 {/* Our Process - Updated with Images */}
                 <View style={styles.sectionContainer}>

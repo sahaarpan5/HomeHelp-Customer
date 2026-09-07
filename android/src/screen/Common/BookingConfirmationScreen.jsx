@@ -61,9 +61,8 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
       { date: '16 Jan 2027', time: '11:00 AM - 01:00 PM', professional: 'Priya Sharma' },
     ],
     selectedServices: [
-      { name: 'Living Room Deep Cleaning', price: '₹299', quantity: 1 },
-      { name: 'Kitchen Deep Cleaning', price: '₹349', quantity: 1 },
-      { name: 'Bathroom Deep Cleaning', price: '₹249', quantity: 1 },
+      { name: 'House maid service', price: '₹299/hr', quantity: 1 },
+    
     ],
     payment: {
       subtotal: '₹897',

@@ -100,7 +100,7 @@ const DashboardScreen = ({ navigation }) => {
             id: '1',
             title: 'Home Cleaning Services',
             description: 'Get your home sparkling clean with our professional deep cleaning service',
-            image: require('../../asset/deepclean.png'),
+            image: require('../../asset/homeclean.png'),
             discount: '20%',
             validTill: '31 Dec 2026',
         },
@@ -108,7 +108,7 @@ const DashboardScreen = ({ navigation }) => {
             id: '2',
             title: 'Bathroom Cleaning',
             description: 'Professional bathroom cleaning with stain removal and complete sanitization',
-            image: require('../../asset/bathroom-clean.png'),
+            image: require('../../asset/bathroomclean.png'),
             discount: '25%',
             validTill: '15 Jan 2027',
         },
@@ -116,7 +116,7 @@ const DashboardScreen = ({ navigation }) => {
             id: '3',
             title: 'Cooking',
             description: 'Expert cooking with fresh ingredients and hygienic preparation',
-            image: require('../../asset/heroic.png'),
+            image: require('../../asset/cooking.png'),
             discount: '15%',
             validTill: '31 Jan 2027',
         },
@@ -124,7 +124,7 @@ const DashboardScreen = ({ navigation }) => {
             id: '4',
             title: 'Kitchen & Utensil cleaning',
             description: 'Expert kitchen and utensil cleaning with hygienic care',
-            image: require('../../asset/heroic.png'),
+            image: require('../../asset/kitchenclean.png'),
             discount: '15%',
             validTill: '31 Jan 2027',
         },
@@ -140,7 +140,7 @@ const DashboardScreen = ({ navigation }) => {
             id: '6',
             title: 'House Maid',
             description: 'Professional house maid services with reliable everyday home care',
-            image: require('../../asset/heroic.png'),
+            image: require('../../asset/housemaid.png'),
             discount: '15%',
             validTill: '31 Jan 2027',
         },
@@ -267,7 +267,7 @@ const DashboardScreen = ({ navigation }) => {
             id: '1',
             name: 'Bathroom Cleaning',
             provider: 'HomeHelp',
-            image: require('../../asset/deepclean.png'),
+            image: require('../../asset/bathroomclean.png'),
             date: 'Last booked: 15 Dec 2026',
             rating: 4.9,
             price: '₹499',
@@ -277,7 +277,7 @@ const DashboardScreen = ({ navigation }) => {
             id: '3',
             name: 'Cooking',
             provider: 'HomeHelp',
-            image: require('../../asset/sofa-clean.png'),
+            image: require('../../asset/cooking.png'),
             date: 'Last booked: 5 Dec 2026',
             rating: 4.7,
             price: '₹599',
@@ -340,7 +340,7 @@ const DashboardScreen = ({ navigation }) => {
         },
         {
             id: '2',
-            name: 'Saved Services',
+            name: 'My Favorites Services',
             icon: require('../../asset/heart.png'),
             color: COLORS.pink,
             bg: COLORS.pink + '15',
@@ -643,7 +643,7 @@ const DashboardScreen = ({ navigation }) => {
                 navigation.navigate('MyBookingsScreen');
                 break;
 
-            case 'Saved Services':
+            case 'My Favorites Services':
                 navigation.navigate('SavedServicesScreen');
                 break;
 
@@ -733,7 +733,7 @@ const DashboardScreen = ({ navigation }) => {
                                 </TouchableOpacity>
 
                                 <View style={styles.sidebarMenu}>
-                                    {['My Account', 'My Bookings', 'Saved Services', 'Monthly Subscription', 'Help & Support'].map((item, index) => (
+                                    {['My Account', 'My Bookings', 'My Favorites Services', 'Monthly Subscription', 'Help & Support'].map((item, index) => (
                                         <TouchableOpacity key={index} style={styles.sidebarMenuItem}
                                             onPress={() => {
                                                 switch (item) {
@@ -747,7 +747,7 @@ const DashboardScreen = ({ navigation }) => {
                                                         setIsSidebarOpen(false);
                                                         break;
 
-                                                    case 'Saved Services':
+                                                    case 'My Favorites Services':
                                                         navigation.navigate('SavedServicesScreen');
                                                         setIsSidebarOpen(false);
                                                         break;

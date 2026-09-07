@@ -24,9 +24,13 @@ const WelcomeScreen = ({ navigation }) => {
   const taglineSlideAnim = useRef(new Animated.Value(20)).current;
   const shimmerAnim = useRef(new Animated.Value(0)).current;
 
-  const GOLD_COLOR = '#C9A84C';
-  const GOLD_DARK = '#B8943E';
-  const GOLD_LIGHT = '#D4AF37';
+  // const GOLD_COLOR = '#C9A84C';
+  // const GOLD_DARK = '#B8943E';
+  // const GOLD_LIGHT = '#D4AF37';
+
+   const GOLD_COLOR = '#7E354D';
+   const GOLD_DARK = '#7E354D';
+   const GOLD_LIGHT = '#7E354D';
 
   useEffect(() => {
     // Start shimmer animation
@@ -300,7 +304,7 @@ const WelcomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C9A84C',
+    backgroundColor: '#7E354D',
   },
   background: {
     position: 'absolute',
@@ -308,7 +312,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#C9A84C',
+    backgroundColor: '#7E354D',
     overflow: 'hidden',
   },
   content: {

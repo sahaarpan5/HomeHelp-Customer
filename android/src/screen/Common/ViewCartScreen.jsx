@@ -24,8 +24,8 @@ const ViewCartScreen = ({ navigation, route }) => {
     const [selectedServices, setSelectedServices] = useState([
         {
             id: 'c1',
-            name: 'Living Room Deep Cleaning',
-            price: '₹299',
+            name: 'House maid service',
+            price: '₹299/hr',
             coverImage: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
             duration: '2 hours',
         },

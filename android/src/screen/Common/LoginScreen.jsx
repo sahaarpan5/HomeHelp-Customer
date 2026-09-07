@@ -57,11 +57,11 @@ const LoginScreen = ({ navigation }) => {
     const pulseAnim = useRef(new Animated.Value(1)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
-        goldFadeStrong: 'rgba(201, 168, 76, 0.2)',
+        gold: '#7E354D',
+        goldLight: '#E8C9B8',
+        goldDark: '#C48A7A',
+        goldFade: 'rgba(222, 161, 147, 0.1)',
+        goldFadeStrong: 'rgba(222, 161, 147, 0.2)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -1120,7 +1120,7 @@ const LoginScreen = ({ navigation }) => {
                                             width: 40,
                                             height: 40,
                                             resizeMode: 'contain',
-                                            tintColor: '#FFFFFF'
+                                            tintColor: '#020202'
 
 
 
@@ -1162,15 +1162,30 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingBottom: 20,
     },
+    // header: {
+    //     backgroundColor: '#C9A84C',
+    //     marginHorizontal: -20,
+    //     paddingHorizontal: 20,
+    //     paddingTop: 50,
+    //     paddingBottom: 20,
+    //     borderBottomLeftRadius: 24,
+    //     borderBottomRightRadius: 24,
+    //     shadowColor: 'rgba(201, 168, 76, 0.3)',
+    //     shadowOffset: { width: 0, height: 4 },
+    //     shadowOpacity: 0.2,
+    //     shadowRadius: 12,
+    //     elevation: 8,
+    //     marginBottom: 24,
+    // },
     header: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#7E354D',
         marginHorizontal: -20,
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 20,
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(142, 49, 87, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 12,
@@ -1198,7 +1213,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#000000',
         letterSpacing: -0.5,
     },
     headerBadge: {
@@ -1209,7 +1224,7 @@ const styles = StyleSheet.create({
     },
     headerBadgeText: {
         fontSize: 11,
-        color: '#FFFFFF',
+        color: '#030303',
         fontWeight: '600',
         letterSpacing: 0.5,
     },
@@ -1249,11 +1264,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 16,
     },
+    // stepIconContainer: {
+    //     width: 44,
+    //     height: 44,
+    //     borderRadius: 12,
+    //     backgroundColor: '#C9A84C',
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    //     marginRight: 12,
+    // },
     stepIconContainer: {
         width: 44,
         height: 44,
         borderRadius: 12,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#7E354D',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
@@ -1306,12 +1330,28 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#7E354D',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
         width: '100%',
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(126, 53, 77, 0.3)',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    primaryButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        backgroundColor: '#7E354D',
+        paddingVertical: 16,
+        paddingHorizontal: 32,
+        borderRadius: 14,
+        width: '100%',
+        shadowColor: 'rgba(126, 53, 77, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -1561,8 +1601,9 @@ const styles = StyleSheet.create({
         lineHeight: 20,
     },
     modalHighlight: {
-        color: '#C9A84C',
+        // color: '#C9A84C',
         fontWeight: '600',
+        color: '#7E354D',
     },
     otpContainer: {
         flexDirection: 'row',
@@ -1584,7 +1625,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8F6F0',
     },
     otpInputFocused: {
-        borderColor: '#C9A84C',
+        // borderColor: '#C9A84C',
+        borderColor: '#7E354D',
         backgroundColor: '#FFFFFF',
         shadowColor: 'rgba(201, 168, 76, 0.15)',
         shadowOffset: { width: 0, height: 4 },
@@ -1601,12 +1643,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#7E354D',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
         width: '100%',
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(126, 53, 77, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -1634,7 +1676,7 @@ const styles = StyleSheet.create({
     },
     resendLink: {
         fontSize: 13,
-        color: '#C9A84C',
+        color: '#7E354D',
         fontWeight: '600',
     },
     modalCloseButton: {
@@ -1660,7 +1702,7 @@ const styles = StyleSheet.create({
     },
     showMpinText: {
         fontSize: 13,
-        color: '#C9A84C',
+        color: '#7E354D',
         fontWeight: '500',
     },
     backToSetMpin: {
@@ -1676,7 +1718,7 @@ const styles = StyleSheet.create({
     },
     backToSetMpinText: {
         fontSize: 13,
-        color: '#C9A84C',
+        color: '#7E354D',
         fontWeight: '500',
     },
 });
