@@ -28,9 +28,9 @@ const WelcomeScreen = ({ navigation }) => {
   // const GOLD_DARK = '#B8943E';
   // const GOLD_LIGHT = '#D4AF37';
 
-   const GOLD_COLOR = '#7E354D';
-   const GOLD_DARK = '#7E354D';
-   const GOLD_LIGHT = '#7E354D';
+   const GOLD_COLOR = '#C9A84C';
+   const GOLD_DARK = '#C9A84C';
+   const GOLD_LIGHT = '#C9A84C';
 
   useEffect(() => {
     // Start shimmer animation
@@ -304,7 +304,7 @@ const WelcomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#7E354D',
+    backgroundColor: '#C9A84C',
   },
   background: {
     position: 'absolute',
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#7E354D',
+    backgroundColor: '#C9A84C',
     overflow: 'hidden',
   },
   content: {

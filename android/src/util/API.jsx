@@ -5,6 +5,8 @@ const API = {
      VERIFY_OTP: `${BASE_URL}/Auth/verify-otp`,
      REGISTER_CUSTOMER: `${BASE_URL}/Customer/register`,
      CUSTOMER_PROFILE: `${BASE_URL}/Customer/Profile`,
+     CUSTOMER_ADDRESS: `${BASE_URL}/Customer/Address`,
+     CUSTOMER_ADDRESSES: `${BASE_URL}/Customer/Addresses`,
 };
 
 // Add more endpoints here as needed

@@ -15,7 +15,14 @@ import {
     Modal,
     TouchableWithoutFeedback,
     ActivityIndicator,
+    PermissionsAndroid,
+    Platform
 } from 'react-native';
+import Geolocation from '@react-native-community/geolocation';
+import MapView, { Marker } from 'react-native-maps';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import API from '../../util/API';
+import axios from 'axios';
 
 
 const { width, height } = Dimensions.get('window');
@@ -50,10 +57,27 @@ const AddAddressScreen = ({ navigation }) => {
     const [showAddForm, setShowAddForm] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const [locationSuggestions, setLocationSuggestions] = useState([]);
+    const [isSearchingLocation, setIsSearchingLocation] = useState(false);
+    const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+
+    const [latitude, setLatitude] = useState(null);
+    const [longitude, setLongitude] = useState(null);
+    const [area, setArea] = useState('');
+    const [pincode, setPincode] = useState('');
+    const [city, setCity] = useState('');
+    const [state, setState] = useState('');
+
+
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(30)).current;
     const modalSlideAnim = useRef(new Animated.Value(height)).current;
+
+    const GOOGLE_MAPS_API_KEY =
+        'AIzaSyBuxUn1s4S2yv8fqwd0wGUTFegxNyASL1g'
+
+    const searchTimeout = useRef(null);
 
     const COLORS = {
         gold: '#C9A84C',
@@ -122,9 +146,284 @@ const AddAddressScreen = ({ navigation }) => {
         });
     };
 
+
+
+    const searchLocation = (text) => {
+        setSelectedAddress(text);
+
+        if (searchTimeout.current) {
+            clearTimeout(searchTimeout.current);
+        }
+
+        if (!text.trim() || text.trim().length < 3) {
+            setLocationSuggestions([]);
+            setShowLocationSuggestions(false);
+            return;
+        }
+
+        searchTimeout.current = setTimeout(() => {
+            searchGooglePlaces(text.trim());
+        }, 500);
+    };
+
+    const searchGooglePlaces = async (text) => {
+        try {
+            setIsSearchingLocation(true);
+
+            const response = await fetch(
+                `https://maps.googleapis.com/maps/api/place/autocomplete/json` +
+                `?input=${encodeURIComponent(text)}` +
+                `&components=country:in` +
+                `&key=${GOOGLE_MAPS_API_KEY}`
+            );
+
+            const data = await response.json();
+
+            console.log('Autocomplete Response:', data);
+
+            if (
+                data.status !== 'OK' &&
+                data.status !== 'ZERO_RESULTS'
+            ) {
+                console.log(
+                    'Google Places error:',
+                    data.status,
+                    data.error_message
+                );
+
+                setLocationSuggestions([]);
+                setShowLocationSuggestions(false);
+                return;
+            }
+
+            const predictions = data.predictions || [];
+
+            setLocationSuggestions(predictions);
+            setShowLocationSuggestions(predictions.length > 0);
+
+        } catch (error) {
+            console.log(
+                'Google Places search error:',
+                error
+            );
+
+            setLocationSuggestions([]);
+            setShowLocationSuggestions(false);
+
+        } finally {
+            setIsSearchingLocation(false);
+        }
+    };
+
+    const handleLocationSelect = async (item) => {
+        try {
+            setIsSearchingLocation(true);
+
+            setShowLocationSuggestions(false);
+            setLocationSuggestions([]);
+
+            const response = await fetch(
+                `https://maps.googleapis.com/maps/api/place/details/json` +
+                `?place_id=${item.place_id}` +
+                `&fields=formatted_address,geometry,address_components,name` +
+                `&key=${GOOGLE_MAPS_API_KEY}`
+            );
+
+            const data = await response.json();
+
+            console.log('Place Details:', data);
+
+            if (data.status !== 'OK') {
+                Alert.alert(
+                    'Location Error',
+                    data.error_message ||
+                    'Unable to get location details.'
+                );
+                return;
+            }
+
+            const result = data.result;
+
+            // --------------------------------
+            // LATITUDE / LONGITUDE
+            // --------------------------------
+
+            const selectedLatitude =
+                result.geometry?.location?.lat;
+
+            const selectedLongitude =
+                result.geometry?.location?.lng;
+
+            // --------------------------------
+            // FULL ADDRESS
+            // --------------------------------
+
+            const address =
+                result.formatted_address ||
+                item.description ||
+                '';
+
+            // --------------------------------
+            // ADDRESS COMPONENTS
+            // --------------------------------
+
+            const components =
+                result.address_components || [];
+
+            console.log(
+                'Address Components:',
+                components
+            );
+
+            // --------------------------------
+            // AREA
+            // --------------------------------
+
+            const areaComponent =
+                components.find(component =>
+                    component.types?.includes(
+                        'sublocality_level_1'
+                    )
+                ) ||
+                components.find(component =>
+                    component.types?.includes(
+                        'sublocality'
+                    )
+                ) ||
+                components.find(component =>
+                    component.types?.includes(
+                        'neighborhood'
+                    )
+                );
+
+            const selectedArea =
+                areaComponent?.long_name || '';
+
+            // --------------------------------
+            // CITY
+            // --------------------------------
+
+            const cityComponent =
+                components.find(component =>
+                    component.types?.includes(
+                        'locality'
+                    )
+                ) ||
+                components.find(component =>
+                    component.types?.includes(
+                        'administrative_area_level_2'
+                    )
+                );
+
+            const selectedCity =
+                cityComponent?.long_name || '';
+
+            // --------------------------------
+            // STATE
+            // --------------------------------
+
+            const stateComponent =
+                components.find(component =>
+                    component.types?.includes(
+                        'administrative_area_level_1'
+                    )
+                );
+
+            const selectedState =
+                stateComponent?.long_name || '';
+
+            // --------------------------------
+            // LANDMARK
+            // --------------------------------
+
+            const landmarkComponent =
+                components.find(component =>
+                    component.types?.includes(
+                        'point_of_interest'
+                    )
+                ) ||
+                components.find(component =>
+                    component.types?.includes(
+                        'establishment'
+                    )
+                );
+
+            const selectedLandmark =
+                landmarkComponent?.long_name || '';
+
+            // --------------------------------
+            // PIN CODE
+            // --------------------------------
+
+            const pincodeComponent =
+                components.find(component =>
+                    component.types?.includes(
+                        'postal_code'
+                    )
+                );
+
+            const selectedPincode =
+                pincodeComponent?.long_name || '';
+
+            // --------------------------------
+            // SAVE DATA
+            // --------------------------------
+
+            setSelectedAddress(address);
+
+            setArea(selectedArea);
+
+            setCity(selectedCity);
+
+            setState(selectedState);
+
+            setLandmark(selectedLandmark);
+
+            setPincode(selectedPincode);
+
+            setLatitude(selectedLatitude);
+
+            setLongitude(selectedLongitude);
+
+
+            setShowSearchModal(false);
+
+            // --------------------------------
+            // LOG
+            // --------------------------------
+
+            console.log('Selected Location:', {
+                address,
+                area: selectedArea,
+                city: selectedCity,
+                state: selectedState,
+                landmark: selectedLandmark,
+                pincode: selectedPincode,
+                latitude: selectedLatitude,
+                longitude: selectedLongitude,
+            });
+
+            // --------------------------------
+            // SHOW MAP
+            // --------------------------------
+
+            setShowMap(true);
+
+        } catch (error) {
+
+            console.log(
+                'Place details error:',
+                error
+            );
+
+        } finally {
+            setIsSearchingLocation(false);
+        }
+    };
+
     const openSearchModal = () => {
         setShowSearchModal(true);
-        setSearchText('');
+        setSelectedAddress('');
         setTimeout(() => animateModalIn(), 100);
     };
 
@@ -140,14 +439,213 @@ const AddAddressScreen = ({ navigation }) => {
         closeSearchModal();
     };
 
-    const handleUseCurrentLocation = () => {
+
+
+
+
+
+    const requestLocationPermission = async () => {
+        if (Platform.OS !== 'android') {
+            return true;
+        }
+
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    title: 'Location Permission',
+                    message:
+                        'HomeHelp Partner needs your location to find nearby opportunities and set your service location.',
+                    buttonPositive: 'Allow',
+                    buttonNegative: 'Cancel',
+                }
+            );
+
+            return granted === PermissionsAndroid.RESULTS.GRANTED;
+        } catch (error) {
+            console.log('Permission error:', error);
+            return false;
+        }
+    };
+
+
+    const handleUseCurrentLocation = async () => {
         setIsLoading(true);
-        // Simulate getting current location
-        setTimeout(() => {
-            setSelectedAddress('Current Location, Mumbai');
+
+        const hasPermission = await requestLocationPermission();
+
+        if (!hasPermission) {
             setIsLoading(false);
-            setShowMap(true);
-        }, 1500);
+
+            Alert.alert(
+                'Location Permission Required',
+                'Please allow location permission from your phone settings to continue.'
+            );
+
+            return;
+        }
+
+        Geolocation.getCurrentPosition(
+            async (position) => {
+                console.log('Current position:', position);
+
+                const { latitude, longitude } = position.coords;
+
+                setLatitude(latitude);
+                setLongitude(longitude);
+
+                try {
+                    const response = await fetch(
+                        `https://maps.googleapis.com/maps/api/geocode/json?` +
+                        `latlng=${latitude},${longitude}` +
+                        `&key=${GOOGLE_MAPS_API_KEY}`
+                    );
+
+                    const data = await response.json();
+
+                    console.log('Google Address:', data);
+
+                    if (
+                        data.status === 'OK' &&
+                        data.results?.length > 0
+                    ) {
+                        const result = data.results[0];
+
+                        const components = result.address_components || [];
+
+                        // Full address
+                        const address = result.formatted_address || '';
+
+                        // Area
+                        const areaComponent = components.find(component =>
+                            component.types?.includes('sublocality_level_1')
+                        ) || components.find(component =>
+                            component.types?.includes('sublocality')
+                        ) || components.find(component =>
+                            component.types?.includes('neighborhood')
+                        ) || components.find(component =>
+                            component.types?.includes('locality')
+                        );
+
+                        // PIN Code
+                        const pincodeComponent = components.find(component =>
+                            component.types?.includes('postal_code')
+                        );
+
+
+                        // City
+                        const cityComponent =
+                            components.find(component =>
+                                component.types?.includes('locality')
+                            ) ||
+                            components.find(component =>
+                                component.types?.includes('administrative_area_level_2')
+                            );
+
+                        // State
+                        const stateComponent = components.find(component =>
+                            component.types?.includes('administrative_area_level_1')
+                        );
+
+                        // Landmark
+                        const landmarkComponent =
+                            components.find(component =>
+                                component.types?.includes('point_of_interest')
+                            ) ||
+                            components.find(component =>
+                                component.types?.includes('establishment')
+                            ) ||
+                            components.find(component =>
+                                component.types?.includes('neighborhood')
+                            ) ||
+                            components.find(component =>
+                                component.types?.includes('sublocality_level_1')
+                            );
+
+                        const selectedArea =
+                            areaComponent?.long_name || '';
+
+                        const selectedPincode =
+                            pincodeComponent?.long_name || '';
+
+
+                        const city = cityComponent?.long_name || '';
+                        const state = stateComponent?.long_name || '';
+                        const landmark = landmarkComponent?.long_name || '';
+
+                        console.log('Address:', address);
+                        console.log('Area:', selectedArea);
+                        console.log('Pincode:', selectedPincode);
+                        console.log('Latitude:', latitude);
+                        console.log('Longitude:', longitude);
+                        console.log('City:', city);
+                        console.log('State:', state);
+                        console.log('Landmark:', landmark);
+
+                        setSelectedAddress(address);
+                        setArea(selectedArea);
+                        setPincode(selectedPincode);
+                        setCity(city);
+                        setState(state);
+                        // setLandmark(landmark);
+                        setShowMap(true);
+                        setShowSearchModal(false);
+                    } else {
+                        console.log(
+                            'Google Geocoding Error:',
+                            data.status,
+                            data.error_message
+                        );
+
+                        setSelectedAddress(
+                            `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+                        );
+                    }
+
+                } catch (error) {
+                    console.log(
+                        'Google Address Error:',
+                        error
+                    );
+
+                    setSelectedAddress(
+                        `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+                    );
+                }
+
+                setIsLoading(false);
+            },
+
+            (error) => {
+                console.log('Location error:', error);
+
+                setIsLoading(false);
+
+                if (error.code === 3) {
+                    Alert.alert(
+                        'Location Timeout',
+                        'Unable to get your current location. Please make sure GPS/Location is turned on and try again.'
+                    );
+                } else if (error.code === 1) {
+                    Alert.alert(
+                        'Permission Denied',
+                        'Please allow location permission to continue.'
+                    );
+                } else {
+                    Alert.alert(
+                        'Location Error',
+                        'Unable to determine your current location. Please try again.'
+                    );
+                }
+            },
+
+            {
+                enableHighAccuracy: false,
+                timeout: 30000,
+                maximumAge: 60000,
+                distanceFilter: 10,
+            }
+        );
     };
 
     const handleConfirmLocation = () => {
@@ -160,29 +658,203 @@ const AddAddressScreen = ({ navigation }) => {
         setShowMap(true);
     };
 
-    const handleSubmitAddress = () => {
+    const handleSubmitAddress = async () => {
+        // --------------------------------
+        // VALIDATION
+        // --------------------------------
+
         if (!houseFlat.trim()) {
-            Alert.alert('Error', 'Please enter house/flat number');
-            return;
-        }
-        if (!selectedAddress) {
-            Alert.alert('Error', 'Please select an address');
+            Alert.alert(
+                'Error',
+                'Please enter house/flat number'
+            );
             return;
         }
 
-        setIsSubmitting(true);
-        setTimeout(() => {
-            const newAddress = {
-                id: Date.now().toString(),
-                type: addressType,
-                address: `${houseFlat}, ${selectedAddress}${landmark ? `, ${landmark}` : ''}`,
-                isDefault: addresses.length === 0,
+        if (!selectedAddress) {
+            Alert.alert(
+                'Error',
+                'Please select an address'
+            );
+            return;
+        }
+
+        if (!landmark.trim()) {
+            Alert.alert(
+                'Error',
+                'Please enter a landmark'
+            );
+            return;
+        }
+
+        if (latitude === null || longitude === null) {
+            Alert.alert(
+                'Error',
+                'Location coordinates are missing. Please select the location again.'
+            );
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+
+            // --------------------------------
+            // GET TOKEN
+            // --------------------------------
+
+            const token =
+                await AsyncStorage.getItem('token');
+
+            if (!token) {
+                Alert.alert(
+                    'Error',
+                    'Authentication token not found. Please login again.'
+                );
+                return;
+            }
+
+            // --------------------------------
+            // GET EXISTING ADDRESSES
+            // --------------------------------
+
+            const addressResponse = await axios.get(
+                API.CUSTOMER_ADDRESSES,
+                {
+                    headers: {
+                        Accept: '*/*',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log(
+                'Existing Addresses:',
+                addressResponse.data
+            );
+
+            const existingAddresses =
+                addressResponse.data?.addresses || [];
+
+            // --------------------------------
+            // DEFAULT ADDRESS
+            // --------------------------------
+
+            const isDefault =
+                existingAddresses.length === 0;
+
+            console.log(
+                'Existing Address Count:',
+                existingAddresses.length
+            );
+
+            console.log(
+                'isDefault:',
+                isDefault
+            );
+
+            // --------------------------------
+            // REQUEST BODY
+            // --------------------------------
+
+            const requestBody = {
+                addressTitle: addressType,
+
+                addressLine1: selectedAddress,
+
+                addressLine2: houseFlat.trim(),
+
+                pinCode: pincode,
+
+                city: city,
+
+                state: state,
+
+                latitude: latitude,
+
+                longitude: longitude,
+
+                isDefault: isDefault,
+
+                landMark: landmark.trim(),
             };
-            setAddresses([...addresses, newAddress]);
+
+            console.log(
+                'Add Address Request:',
+                requestBody
+            );
+
+            // --------------------------------
+            // ADD ADDRESS API
+            // --------------------------------
+
+            const response = await axios.post(
+                API.CUSTOMER_ADDRESS,
+                requestBody,
+                {
+                    headers: {
+                        Accept: '*/*',
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log(
+                'Add Address Response:',
+                response.data
+            );
+
+            // --------------------------------
+            // SUCCESS
+            // --------------------------------
+
+            if (response.data?.success === true) {
+
+                Alert.alert(
+                    'Success',
+                    response.data?.message ||
+                    'Address added successfully.',
+                    [
+                        {
+                            text: 'OK',
+                            onPress: () => {
+                                navigation.goBack();
+                            },
+                        },
+                    ]
+                );
+
+            } else {
+
+                Alert.alert(
+                    'Error',
+                    response.data?.message ||
+                    'Unable to add address.'
+                );
+            }
+
+        } catch (error) {
+
+            console.log(
+                'Add Address API Error:',
+                error
+            );
+
+            console.log(
+                'API Error Response:',
+                error.response?.data
+            );
+
+            Alert.alert(
+                'Error',
+                error.response?.data?.message ||
+                error.message ||
+                'Something went wrong while adding the address.'
+            );
+
+        } finally {
             setIsSubmitting(false);
-            Alert.alert('Success', 'Address added successfully');
-            navigation.goBack();
-        }, 1500);
+        }
     };
 
     // Search Modal
@@ -224,28 +896,95 @@ const AddAddressScreen = ({ navigation }) => {
                                 />
                                 <TextInput
                                     style={styles.searchInput}
-                                    placeholder="Search for area, street, landmark..."
+                                    placeholder="Search your location"
                                     placeholderTextColor="#999"
-                                    value={searchText}
-                                    onChangeText={setSearchText}
+                                    value={selectedAddress}
+                                    onChangeText={searchLocation}
+                                    onFocus={() => {
+                                        if (locationSuggestions.length > 0) {
+                                            setShowLocationSuggestions(true);
+                                        }
+                                    }}
+                                    autoCorrect={false}
+                                    autoCapitalize="none"
                                 />
-                                {searchText.length > 0 && (
-                                    <TouchableOpacity onPress={() => setSearchText('')}>
 
+                                {selectedAddress.length > 0 && (
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            setSelectedAddress('');
+                                            setLocationSuggestions([]);
+                                            setShowLocationSuggestions(false);
+                                        }}
+                                    >
                                         <Image
-                                            source={require('../../asset/close-circle.png')} // Update the path as needed
+                                            source={require('../../asset/close-circle.png')}
                                             style={{
                                                 width: 20,
                                                 height: 20,
                                                 resizeMode: 'contain',
-                                                tintColor: COLORS.textLight
-
-
                                             }}
                                         />
                                     </TouchableOpacity>
                                 )}
+
+                                {isSearchingLocation && (
+                                    <ActivityIndicator
+                                        size="small"
+                                        color="#FF8C00"
+                                    />
+                                )}
+
+
+
+
                             </View>
+
+
+                            {showLocationSuggestions && (
+                                <View style={styles.suggestionsContainer}>
+                                    <FlatList
+                                        data={locationSuggestions}
+                                        keyExtractor={(item) => item.place_id}
+                                        keyboardShouldPersistTaps="handled"
+                                        renderItem={({ item }) => (
+                                            <TouchableOpacity
+                                                style={styles.suggestionItem}
+                                                onPress={() =>
+                                                    handleLocationSelect(item)
+                                                }
+                                            >
+                                                <Image
+                                                    source={require('../../asset/location-outline.png')}
+                                                    style={{
+                                                        width: 20,
+                                                        height: 20,
+                                                        resizeMode: 'contain',
+                                                        tintColor: COLORS.gold,
+                                                    }}
+                                                />
+
+                                                <View style={{ flex: 1 }}>
+                                                    <Text
+                                                        style={styles.suggestionMainText}
+                                                        numberOfLines={1}
+                                                    >
+                                                        {item.structured_formatting?.main_text ||
+                                                            item.description}
+                                                    </Text>
+
+                                                    <Text
+                                                        style={styles.suggestionSecondaryText}
+                                                        numberOfLines={2}
+                                                    >
+                                                        {item.structured_formatting?.secondary_text || ''}
+                                                    </Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        )}
+                                    />
+                                </View>
+                            )}
 
                             <TouchableOpacity
                                 style={styles.currentLocationButton}
@@ -267,38 +1006,7 @@ const AddAddressScreen = ({ navigation }) => {
                                 {isLoading && <ActivityIndicator size="small" color={COLORS.gold} />}
                             </TouchableOpacity>
 
-                            <FlatList
-                                data={searchResults}
-                                keyExtractor={(item) => item.id}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity
-                                        style={styles.searchResultItem}
-                                        onPress={() => handleSearchAddress(item.address)}
-                                    >
-                                       
-                                        <Image
-                                            source={require('../../asset/location-outline.png')} // Update the path as needed
-                                            style={{
-                                                width: 20,
-                                                height: 20,
-                                                resizeMode: 'contain',
-                                                tintColor: COLORS.gold
 
-
-                                            }}
-                                        />
-                                        <Text style={styles.searchResultText}>{item.address}</Text>
-                                    </TouchableOpacity>
-                                )}
-                                showsVerticalScrollIndicator={false}
-                                ListEmptyComponent={
-                                    searchText.length > 0 ? (
-                                        <View style={styles.noResults}>
-                                            <Text style={styles.noResultsText}>No results found</Text>
-                                        </View>
-                                    ) : null
-                                }
-                            />
 
                             <TouchableOpacity style={styles.modalCloseButton} onPress={closeSearchModal}>
                                 <Text style={styles.modalCloseText}>Cancel</Text>
@@ -333,7 +1041,48 @@ const AddAddressScreen = ({ navigation }) => {
             </View>
 
             <View style={styles.mapPlaceholder}>
-                <Image
+
+
+                {latitude && longitude ? (
+                    <MapView
+                        style={styles.map}
+                        initialRegion={{
+                            latitude: latitude,
+                            longitude: longitude,
+                            latitudeDelta: 0.005,
+                            longitudeDelta: 0.005,
+                        }}
+                        region={{
+                            latitude: latitude,
+                            longitude: longitude,
+                            latitudeDelta: 0.005,
+                            longitudeDelta: 0.005,
+                        }}
+                        showsUserLocation={true}
+                        showsMyLocationButton={true}
+                        zoomEnabled={true}
+                        scrollEnabled={true}
+
+
+                    >
+                        <Marker
+                            coordinate={{
+                                latitude: latitude,
+                                longitude: longitude,
+                            }}
+                            title="Your Location"
+                            description={selectedAddress}
+                        />
+                    </MapView>
+                ) : (
+                    <View style={styles.mapLoadingContainer}>
+                        <ActivityIndicator size="large" color="#FF8C00" />
+                        <Text style={styles.mapPlaceholderText}>
+                            Fetching your location...
+                        </Text>
+                    </View>
+                )}
+                {/* <Image
                     source={{ uri: 'https://maps.googleapis.com/maps/api/staticmap?center=19.0760,72.8777&zoom=14&size=400x400&markers=color:red%7C19.0760,72.8777' }}
                     style={styles.mapImage}
                     resizeMode="cover"
@@ -342,8 +1091,8 @@ const AddAddressScreen = ({ navigation }) => {
                     <View style={styles.mapMarkerPin}>
                         <View style={styles.mapMarkerDot} />
                     </View>
-                </View>
-                <View style={styles.mapOverlayText}>
+                </View> */}
+                {/* <View style={styles.mapOverlayText}>
 
                     <Image
                         source={require('../../asset/location-outline.png')} // Update the path as needed
@@ -357,7 +1106,7 @@ const AddAddressScreen = ({ navigation }) => {
                         }}
                     />
                     <Text style={styles.mapOverlayTitle}>Drag to move pin</Text>
-                </View>
+                </View> */}
             </View>
 
             <View style={styles.mapBottomBar}>
@@ -403,7 +1152,7 @@ const AddAddressScreen = ({ navigation }) => {
                             tintColor: COLORS.dark
                         }}
                     />
-                    
+
                 </TouchableOpacity>
                 <Text style={styles.formHeaderTitle}>Add Address Details</Text>
                 <View style={styles.formHeaderRight} />
@@ -446,13 +1195,23 @@ const AddAddressScreen = ({ navigation }) => {
                 </View>
 
                 <View style={styles.formCard}>
-                    <Text style={styles.formLabel}>Landmark (Optional)</Text>
+                    <Text style={styles.formLabel}>Landmark</Text>
                     <TextInput
                         style={styles.formInput}
                         placeholder="Nearby landmark"
                         placeholderTextColor="#999"
                         value={landmark}
                         onChangeText={setLandmark}
+                    />
+                </View>
+                <View style={styles.formCard}>
+                    <Text style={styles.formLabel}>Pincode</Text>
+                    <TextInput
+                        style={styles.formInput}
+                        placeholder="Enter pincode"
+                        placeholderTextColor="#999"
+                        value={pincode}
+                        onChangeText={setPincode}
                     />
                 </View>
 
@@ -509,7 +1268,7 @@ const AddAddressScreen = ({ navigation }) => {
                             tintColor: COLORS.white
                         }}
                     />
-                    
+
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Add Address</Text>
             </View>
@@ -990,6 +1749,55 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: '#FFFFFF',
     },
+    map: {
+        width: '100%',
+        height: '100%',
+    },
+
+    mapLoadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    mapPlaceholderText: {
+        fontSize: 16,
+        color: '#666',
+        marginTop: 8,
+    },
+    suggestionsContainer: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: '#E8E3D8',
+        borderRadius: 12,
+        marginTop: -8,
+        marginBottom: 16,
+        maxHeight: 250,
+        overflow: 'hidden',
+    },
+
+    suggestionItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 14,
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0EDE8',
+        gap: 10,
+    },
+
+    suggestionMainText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#1A1A1A',
+    },
+
+    suggestionSecondaryText: {
+        fontSize: 12,
+        color: '#666666',
+        marginTop: 3,
+    },
+
 });
 
 export default AddAddressScreen;

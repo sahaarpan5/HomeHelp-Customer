@@ -452,10 +452,7 @@ const ProfileUpdateScreen = ({ navigation }) => {
                 return;
             }
 
-            if (!dob.trim()) {
-                Alert.alert('Error', 'Please enter your date of birth');
-                return;
-            }
+            
 
             if (!gender) {
                 Alert.alert('Error', 'Please select gender');
@@ -464,17 +461,21 @@ const ProfileUpdateScreen = ({ navigation }) => {
 
             const dobParts = dob.split('/');
 
-            if (
-                dobParts.length !== 3 ||
-                dobParts[0].length !== 2 ||
-                dobParts[1].length !== 2 ||
-                dobParts[2].length !== 4
-            ) {
-                Alert.alert(
-                    'Error',
-                    'Please enter date of birth in DD/MM/YYYY format'
-                );
-                return;
+            if (dob.trim()) {
+                const dobParts = dob.trim().split('/');
+
+                if (
+                    dobParts.length !== 3 ||
+                    dobParts[0].length !== 2 ||
+                    dobParts[1].length !== 2 ||
+                    dobParts[2].length !== 4
+                ) {
+                    Alert.alert(
+                        'Error',
+                        'Please enter date of birth in DD/MM/YYYY format'
+                    );
+                    return;
+                }
             }
 
             setIsProfileUpdateLoading(true);
@@ -798,6 +799,14 @@ const ProfileUpdateScreen = ({ navigation }) => {
             const profileEmail = data.email || '';
             const profilePhone = data.mobileNo || '';
             const profileGender = data.gender || '';
+            const profileCompletenessPercentage = data.profileCompletenessPercentage || 0;
+            if (profileCompletenessPercentage === 100) {
+
+                setIsEditing(false);
+
+            }else{
+                setIsEditing(true);
+            }
 
             // ==============================
             // DOB

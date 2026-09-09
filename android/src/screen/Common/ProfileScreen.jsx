@@ -28,6 +28,7 @@ const ProfileScreen = ({ navigation }) => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [phone, setPhone] = useState('');
+    const [completenessPercentage, setCompletenessPercentage] = useState(0);
 
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -141,12 +142,12 @@ const ProfileScreen = ({ navigation }) => {
                 useNativeDriver: true,
             }),
             Animated.timing(progressAnim, {
-                toValue: userData.completionPercentage / 100,
+                toValue: completenessPercentage / 100,
                 duration: 1000,
                 useNativeDriver: false,
             }),
         ]).start();
-    }, []);
+    }, [completenessPercentage]);
 
     useFocusEffect(
         useCallback(() => {
@@ -250,13 +251,15 @@ const ProfileScreen = ({ navigation }) => {
             const profileEmail = data.email || '';
             const profilePhone = data.mobileNo || '';
             const profileGender = data.gender || '';
+            const profileCompletenessPercentage = data.profileCompletenessPercentage || 0;
+           
 
 
 
             setFirstName(profileFirstName);
             setLastName(profileLastName);
             setPhone(profilePhone);
-
+            setCompletenessPercentage(profileCompletenessPercentage);
 
             // ==============================
             // SAVE ORIGINAL DATA
@@ -336,7 +339,7 @@ const ProfileScreen = ({ navigation }) => {
                 {
                     text: 'Logout', style: 'destructive', onPress: () => {
                         Alert.alert('Logged Out', 'You have been logged out successfully');
-                        navigation.replace('Login');
+                        navigation.replace('LoginScreen');
                     }
                 },
             ]
@@ -402,7 +405,7 @@ const ProfileScreen = ({ navigation }) => {
                 <View style={styles.profileStatusContainer}>
                     <View style={styles.profileStatusRow}>
                         <View style={styles.profileStatusIcon}>
-                            {userData.isProfileComplete ? (
+                           {Number(completenessPercentage) === 100 ? (
 
                                 <Image
                                     source={require('../../asset/checked.png')} // Update the path as needed
@@ -432,10 +435,10 @@ const ProfileScreen = ({ navigation }) => {
                         </View>
                         <View style={styles.profileStatusInfo}>
                             <Text style={styles.profileStatusTitle}>
-                                {userData.isProfileComplete ? 'Profile Complete' : 'Profile Incomplete'}
+                                {Number(completenessPercentage) === 100 ? 'Profile Complete' : 'Profile Incomplete'}
                             </Text>
                             <Text style={styles.profileStatusPercentage}>
-                                {userData.completionPercentage}% Complete
+                                {completenessPercentage}% Complete
                             </Text>
                         </View>
                     </View>
@@ -450,18 +453,22 @@ const ProfileScreen = ({ navigation }) => {
                                             inputRange: [0, 1],
                                             outputRange: ['0%', '100%'],
                                         }),
-                                        backgroundColor: getProgressColor(userData.completionPercentage),
+                                        backgroundColor: getProgressColor(completenessPercentage),
                                     }
                                 ]}
                             />
                         </View>
                         <Text style={styles.progressLabel}>
-                            {userData.isProfileComplete ? '✅ Profile Complete' : `⚠️ ${100 - userData.completionPercentage}% remaining`}
+                            {Number(completenessPercentage) === 100 ? '✅ Profile Complete' : `⚠️ ${100 - completenessPercentage}% remaining`}
                         </Text>
                     </View>
-                    {!userData.isProfileComplete && (
+                   
                         <TouchableOpacity style={styles.completeProfileButton} onPress={handleCompleteProfile}>
-                            <Text style={styles.completeProfileText}>Complete Profile</Text>
+                            <Text style={styles.completeProfileText}>
+                                {Number(completenessPercentage) === 100 ? 'View Profile' : 'Complete Profile'}
+                            </Text>
+
+                             
 
                             <Image
                                 source={require('../../asset/arrow-forward.png')} // Update the path as needed
@@ -475,7 +482,7 @@ const ProfileScreen = ({ navigation }) => {
                                 }}
                             />
                         </TouchableOpacity>
-                    )}
+                    
                 </View>
 
                 {/* My Bookings & Help & Support */}

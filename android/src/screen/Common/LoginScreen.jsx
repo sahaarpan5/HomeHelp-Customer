@@ -57,11 +57,11 @@ const LoginScreen = ({ navigation }) => {
     const pulseAnim = useRef(new Animated.Value(1)).current;
 
     const COLORS = {
-        gold: '#7E354D',
+        gold: '#C9A84C',
         goldLight: '#E8C9B8',
         goldDark: '#C48A7A',
-        goldFade: 'rgba(222, 161, 147, 0.1)',
-        goldFadeStrong: 'rgba(222, 161, 147, 0.2)',
+        goldFade: 'rgba(201, 168, 76, 0.1)',
+        goldFadeStrong: 'rgba(201, 168, 76, 0.2)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -1120,7 +1120,7 @@ const LoginScreen = ({ navigation }) => {
                                             width: 40,
                                             height: 40,
                                             resizeMode: 'contain',
-                                            tintColor: '#020202'
+                                            tintColor: '#FFFFFF'
 
 
 
@@ -1178,7 +1178,7 @@ const styles = StyleSheet.create({
     //     marginBottom: 24,
     // },
     header: {
-        backgroundColor: '#7E354D',
+        backgroundColor: '#C9A84C',
         marginHorizontal: -20,
         paddingHorizontal: 20,
         paddingTop: 50,
@@ -1213,7 +1213,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#000000',
+        color: '#FFFFFF',
         letterSpacing: -0.5,
     },
     headerBadge: {
@@ -1224,7 +1224,7 @@ const styles = StyleSheet.create({
     },
     headerBadgeText: {
         fontSize: 11,
-        color: '#030303',
+        color: '#FFFFFF',
         fontWeight: '600',
         letterSpacing: 0.5,
     },
@@ -1277,7 +1277,7 @@ const styles = StyleSheet.create({
         width: 44,
         height: 44,
         borderRadius: 12,
-        backgroundColor: '#7E354D',
+        backgroundColor: '#C9A84C',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
@@ -1330,12 +1330,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#7E354D',
+        backgroundColor: '#C9A84C',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
         width: '100%',
-        shadowColor: 'rgba(126, 53, 77, 0.3)',
+        shadowColor: 'rgba(201, 168, 76, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -1346,7 +1346,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#7E354D',
+        backgroundColor: '#C9A84C',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
@@ -1603,7 +1603,7 @@ const styles = StyleSheet.create({
     modalHighlight: {
         // color: '#C9A84C',
         fontWeight: '600',
-        color: '#7E354D',
+        color: '#C9A84C',
     },
     otpContainer: {
         flexDirection: 'row',
@@ -1626,7 +1626,7 @@ const styles = StyleSheet.create({
     },
     otpInputFocused: {
         // borderColor: '#C9A84C',
-        borderColor: '#7E354D',
+        borderColor: '#C9A84C',
         backgroundColor: '#FFFFFF',
         shadowColor: 'rgba(201, 168, 76, 0.15)',
         shadowOffset: { width: 0, height: 4 },
@@ -1643,12 +1643,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#7E354D',
+        backgroundColor: '#C9A84C',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
         width: '100%',
-        shadowColor: 'rgba(126, 53, 77, 0.3)',
+        shadowColor: 'rgba(201, 168, 76, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -1676,7 +1676,7 @@ const styles = StyleSheet.create({
     },
     resendLink: {
         fontSize: 13,
-        color: '#7E354D',
+        color: '#C9A84C',
         fontWeight: '600',
     },
     modalCloseButton: {
@@ -1702,7 +1702,7 @@ const styles = StyleSheet.create({
     },
     showMpinText: {
         fontSize: 13,
-        color: '#7E354D',
+        color: '#C9A84C',
         fontWeight: '500',
     },
     backToSetMpin: {
@@ -1718,7 +1718,7 @@ const styles = StyleSheet.create({
     },
     backToSetMpinText: {
         fontSize: 13,
-        color: '#7E354D',
+        color: '#C9A84C',
         fontWeight: '500',
     },
 });

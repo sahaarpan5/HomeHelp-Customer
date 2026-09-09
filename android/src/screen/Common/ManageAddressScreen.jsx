@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     View,
     Text,
@@ -15,41 +17,36 @@ import {
     Modal,
     TouchableWithoutFeedback,
 } from 'react-native';
+import API from '../../util/API';
+import {
+    useFocusEffect
+} from '@react-navigation/native';
+import Loader from '../../util/Loader';
 
 
 const { width, height } = Dimensions.get('window');
 
 const ManageAddressScreen = ({ navigation }) => {
     // States
-    const [addresses, setAddresses] = useState([
-        {
-            id: '1',
-            type: 'Home',
-            address: '123, Main Street, Mumbai, Maharashtra - 400001',
-            isDefault: true,
-        },
-        {
-            id: '2',
-            type: 'Office',
-            address: '456, Park Avenue, Mumbai, Maharashtra - 400002',
-            isDefault: false,
-        },
-        {
-            id: '3',
-            type: 'Other',
-            address: '789, Lake View, Mumbai, Maharashtra - 400003',
-            isDefault: false,
-        },
-    ]);
+    const [addresses, setAddresses] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [newAddressType, setNewAddressType] = useState('Home');
     const [newAddress, setNewAddress] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isAddressUpdating, setIsAddressUpdating] = useState(false);
     const [editAddressType, setEditAddressType] = useState('');
     const [editAddress, setEditAddress] = useState('');
     const [editAddressId, setEditAddressId] = useState(null);
+    const [editFlatNo, setEditFlatNo] = useState('');
+    const [editLandmark, setEditLandmark] = useState('');
+    const [editPincode, setEditPincode] = useState('');
+    const [editCity, setEditCity] = useState('');
+    const [editState, setEditState] = useState('');
+    const [editIsDefault, setEditIsDefault] = useState(false);
+    const [editLatt, setEditLatt] = useState(false);
+    const [editLong, setEditLong] = useState(false);
 
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -94,6 +91,92 @@ const ManageAddressScreen = ({ navigation }) => {
         ]).start();
     }, []);
 
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchAddresses();
+        }, [])
+    );
+
+
+    const fetchAddresses = async () => {
+        try {
+            setIsLoading(true);
+
+            const token = await AsyncStorage.getItem('token');
+
+            if (!token) {
+                Alert.alert(
+                    'Error',
+                    'Authentication token not found. Please login again.'
+                );
+                return;
+            }
+
+            const response = await axios.get(
+                API.CUSTOMER_ADDRESSES,
+                {
+                    headers: {
+                        Accept: '*/*',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log(
+                'Customer Addresses:',
+                response.data
+            );
+
+            if (response.data?.success === true) {
+
+                const apiAddresses =
+                    response.data?.addresses || [];
+
+                const formattedAddresses =
+                    apiAddresses.map((item) => ({
+                        id: item.addressId,
+                        type: item.addressTitle,
+                        address: item.addressLine1,
+                        addressLine2: item.addressLine2,
+                        pinCode: item.pinCode,
+                        city: item.city,
+                        state: item.state,
+                        latitude: item.latitude,
+                        longitude: item.longitude,
+                        landmark: item.landMark,
+                        isDefault: item.isDefault,
+                    }));
+
+                setAddresses(formattedAddresses);
+
+            } else {
+                setAddresses([]);
+            }
+
+        } catch (error) {
+
+            console.log(
+                'Fetch addresses error:',
+                error
+            );
+
+            console.log(
+                'Fetch addresses response:',
+                error.response?.data
+            );
+
+            Alert.alert(
+                'Error',
+                error.response?.data?.message ||
+                'Unable to load addresses.'
+            );
+
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const animateModalIn = () => {
         modalSlideAnim.setValue(height);
         Animated.spring(modalSlideAnim, {
@@ -132,6 +215,14 @@ const ManageAddressScreen = ({ navigation }) => {
         setEditAddressId(item.id);
         setEditAddressType(item.type);
         setEditAddress(item.address);
+        setEditFlatNo(item.addressLine2 || '');
+        setEditLandmark(item.landmark || '');
+        setEditPincode(item.pinCode || '');
+        setEditCity(item.city || '');
+        setEditState(item.state || '');
+        setEditLatt(item.latitude || '');
+        setEditLong(item.longitude || '');
+        setEditIsDefault(item.isDefault || false);
         setShowEditModal(true);
         setTimeout(() => animateModalIn(), 100);
     };
@@ -163,28 +254,155 @@ const ManageAddressScreen = ({ navigation }) => {
         }, 1000);
     };
 
-    const handleEditAddress = () => {
-        if (!editAddress.trim()) {
-            Alert.alert('Error', 'Please enter an address');
+  
+
+
+    const handleEditAddress = async () => {
+
+         if (!editFlatNo.trim()) {
+            Alert.alert('Error', 'Please enter a flat number');
             return;
         }
-        setIsLoading(true);
-        setTimeout(() => {
-            const updatedAddresses = addresses.map((item) => {
-                if (item.id === editAddressId) {
-                    return {
-                        ...item,
-                        type: editAddressType,
-                        address: editAddress,
-                    };
+        if (!editLandmark.trim()) {
+            Alert.alert('Error', 'Please enter a landmark');
+            return;
+        }
+
+         if (!editPincode.trim()) {
+            Alert.alert('Error', 'Please enter a pincode');
+            return;
+        }
+        try {
+            setIsAddressUpdating(true);
+
+            // --------------------------------
+            // GET TOKEN
+            // --------------------------------
+
+            const token =
+                await AsyncStorage.getItem('token');
+
+            if (!token) {
+                Alert.alert(
+                    'Error',
+                    'Authentication token not found. Please login again.'
+                );
+                return;
+            }
+
+            // --------------------------------
+            // FIND SELECTED ADDRESS
+            // --------------------------------
+
+            
+
+            console.log('Address ID:', editAddressId);
+            
+
+            
+
+            // --------------------------------
+            // PUT REQUEST BODY
+            // --------------------------------
+
+            const requestBody = {
+                addressTitle: editAddressType || '',
+
+                addressLine1: editAddress || '',
+
+                addressLine2:
+                    editFlatNo || '',
+
+                pinCode:
+                    editPincode || '',
+
+                city:
+                    editCity || '',
+
+                state:
+                    editState || '',
+
+                latitude:
+                    editLatt || 0,
+
+                longitude:
+                    editLong || 0,
+
+                isDefault:  editIsDefault || false,
+
+                landMark:
+                    editLandmark || '',
+            };
+
+            console.log(
+                'Set Default Address Request:',
+                requestBody
+            );
+
+            // --------------------------------
+            // UPDATE ADDRESS API
+            // --------------------------------
+
+            const response = await axios.put(
+                `${API.CUSTOMER_ADDRESS}/${editAddressId}`,
+                requestBody,
+                {
+                    headers: {
+                        Accept: '*/*',
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
-                return item;
-            });
-            setAddresses(updatedAddresses);
-            setIsLoading(false);
-            closeEditModal();
-            Alert.alert('Success', 'Address updated successfully');
-        }, 1000);
+            );
+
+            console.log(
+                'Set Default Address Response:',
+                response.data
+            );
+
+            // --------------------------------
+            // SUCCESS
+            // --------------------------------
+
+            if (response.data?.success === true) {
+
+                // Refresh from API.
+                // Backend will return default address first.
+                setShowEditModal(false);
+                await fetchAddresses();
+
+                
+
+            } else {
+
+                Alert.alert(
+                    'Error',
+                    response.data?.message ||
+                    'Unable to set default address.'
+                );
+            }
+
+        } catch (error) {
+
+            console.log(
+                'Set default address error:',
+                error
+            );
+
+            console.log(
+                'Set default address response:',
+                error.response?.data
+            );
+
+            Alert.alert(
+                'Error',
+                error.response?.data?.message ||
+                'Unable to set default address.'
+            );
+
+        } finally {
+            setIsAddressUpdating(false);
+        }
     };
 
     const handleDeleteAddress = (id) => {
@@ -210,12 +428,149 @@ const ManageAddressScreen = ({ navigation }) => {
         );
     };
 
-    const handleSetDefault = (id) => {
-        const updatedAddresses = addresses.map((item) => ({
-            ...item,
-            isDefault: item.id === id,
-        }));
-        setAddresses(updatedAddresses);
+    const handleSetDefault = async (id) => {
+        try {
+            setIsLoading(true);
+
+            // --------------------------------
+            // GET TOKEN
+            // --------------------------------
+
+            const token =
+                await AsyncStorage.getItem('token');
+
+            if (!token) {
+                Alert.alert(
+                    'Error',
+                    'Authentication token not found. Please login again.'
+                );
+                return;
+            }
+
+            // --------------------------------
+            // FIND SELECTED ADDRESS
+            // --------------------------------
+
+            const selectedItem = addresses.find(
+                item => item.id === id
+            );
+
+            console.log('Address ID:', id);
+            console.log('Selected Address:', selectedItem);
+
+            if (!selectedItem) {
+                Alert.alert(
+                    'Error',
+                    'Address not found.'
+                );
+                return;
+            }
+
+            // --------------------------------
+            // PUT REQUEST BODY
+            // --------------------------------
+
+            const requestBody = {
+                addressTitle: selectedItem.type || '',
+
+                addressLine1: selectedItem.address || '',
+
+                addressLine2:
+                    selectedItem.addressLine2 || '',
+
+                pinCode:
+                    selectedItem.pinCode || '',
+
+                city:
+                    selectedItem.city || '',
+
+                state:
+                    selectedItem.state || '',
+
+                latitude:
+                    selectedItem.latitude || 0,
+
+                longitude:
+                    selectedItem.longitude || 0,
+
+                isDefault: true,
+
+                landMark:
+                    selectedItem.landmark || '',
+            };
+
+            console.log(
+                'Set Default Address Request:',
+                requestBody
+            );
+
+            // --------------------------------
+            // UPDATE ADDRESS API
+            // --------------------------------
+
+            const response = await axios.put(
+                `${API.CUSTOMER_ADDRESS}/${id}`,
+                requestBody,
+                {
+                    headers: {
+                        Accept: '*/*',
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log(
+                'Set Default Address Response:',
+                response.data
+            );
+
+            // --------------------------------
+            // SUCCESS
+            // --------------------------------
+
+            if (response.data?.success === true) {
+
+                // Refresh from API.
+                // Backend will return default address first.
+                await fetchAddresses();
+
+                Alert.alert(
+                    'Success',
+                    response.data?.message ||
+                    'Default address updated successfully.'
+                );
+
+            } else {
+
+                Alert.alert(
+                    'Error',
+                    response.data?.message ||
+                    'Unable to set default address.'
+                );
+            }
+
+        } catch (error) {
+
+            console.log(
+                'Set default address error:',
+                error
+            );
+
+            console.log(
+                'Set default address response:',
+                error.response?.data
+            );
+
+            Alert.alert(
+                'Error',
+                error.response?.data?.message ||
+                'Unable to set default address.'
+            );
+
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const getAddressTypeIcon = (type) => {
@@ -445,6 +800,45 @@ const ManageAddressScreen = ({ navigation }) => {
                                     value={editAddress}
                                     onChangeText={setEditAddress}
                                     multiline
+                                    editable={false}
+                                    numberOfLines={3}
+                                />
+
+                                <Text style={[styles.modalLabel, { marginTop: 10 }]}>House/Flat Number</Text>
+                                <TextInput
+                                    style={[styles.modalInput, { minHeight: 50 }]}
+                                    placeholder="Enter your house/flat number"
+                                    placeholderTextColor="#999"
+                                    value={editFlatNo}
+                                    onChangeText={setEditFlatNo}
+                                    multiline
+
+                                    numberOfLines={3}
+                                />
+
+
+
+                                <Text style={[styles.modalLabel, { marginTop: 10 }]}>Landmark</Text>
+                                <TextInput
+                                    style={[styles.modalInput, { minHeight: 50 }]}
+                                    placeholder="Enter your landmark"
+                                    placeholderTextColor="#999"
+                                    value={editLandmark}
+                                    onChangeText={setEditLandmark}
+                                    multiline
+
+                                    numberOfLines={3}
+                                />
+
+                                <Text style={[styles.modalLabel, { marginTop: 10 }]}>Pincode</Text>
+                                <TextInput
+                                    style={[styles.modalInput, { minHeight: 50 }]}
+                                    placeholder="Enter your pincode"
+                                    placeholderTextColor="#999"
+                                    value={editPincode}
+                                    onChangeText={setEditPincode}
+                                    multiline
+
                                     numberOfLines={3}
                                 />
                             </View>
@@ -455,7 +849,7 @@ const ManageAddressScreen = ({ navigation }) => {
                                 disabled={isLoading}
                             >
                                 <Text style={styles.modalPrimaryButtonText}>
-                                    {isLoading ? 'Updating...' : 'Update Address'}
+                                    {isAddressUpdating ? 'Updating...' : 'Update Address'}
                                 </Text>
                             </TouchableOpacity>
 
@@ -494,6 +888,13 @@ const ManageAddressScreen = ({ navigation }) => {
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Manage Address</Text>
             </View>
+
+
+            {isLoading && (
+                <View style={styles.loaderOverlay}>
+                    <Loader />
+                </View>
+            )}
 
             <Animated.View
                 style={[
@@ -538,7 +939,7 @@ const ManageAddressScreen = ({ navigation }) => {
             </Animated.View>
 
             {/* Add Address Button - Floating */}
-            <TouchableOpacity style={styles.addButton} onPress={()=>navigation.navigate('AddAddressScreen')}>
+            <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddAddressScreen')}>
 
                 <Image
                     source={require('../../asset/add.png')} // Update the path as needed
@@ -828,6 +1229,17 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#999',
         fontWeight: '500',
+    },
+    loaderOverlay: {
+        flex: 1,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+
+        backgroundColor: 'rgba(255,255,255,0.7)',
+        zIndex: 999,
     },
 });
 
