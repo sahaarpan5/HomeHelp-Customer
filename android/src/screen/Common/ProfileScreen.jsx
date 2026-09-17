@@ -36,10 +36,10 @@ const ProfileScreen = ({ navigation }) => {
     const progressAnim = useRef(new Animated.Value(0)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+        gold: '#d6bceb',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -252,7 +252,7 @@ const ProfileScreen = ({ navigation }) => {
             const profilePhone = data.mobileNo || '';
             const profileGender = data.gender || '';
             const profileCompletenessPercentage = data.profileCompletenessPercentage || 0;
-           
+
 
 
 
@@ -352,7 +352,7 @@ const ProfileScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#C9A84C" />
+            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
 
             {/* Header - Left Aligned */}
             <View style={styles.header}>
@@ -367,7 +367,7 @@ const ProfileScreen = ({ navigation }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: '#403746'
 
 
                         }}
@@ -405,7 +405,7 @@ const ProfileScreen = ({ navigation }) => {
                 <View style={styles.profileStatusContainer}>
                     <View style={styles.profileStatusRow}>
                         <View style={styles.profileStatusIcon}>
-                           {Number(completenessPercentage) === 100 ? (
+                            {Number(completenessPercentage) === 100 ? (
 
                                 <Image
                                     source={require('../../asset/checked.png')} // Update the path as needed
@@ -462,27 +462,27 @@ const ProfileScreen = ({ navigation }) => {
                             {Number(completenessPercentage) === 100 ? '✅ Profile Complete' : `⚠️ ${100 - completenessPercentage}% remaining`}
                         </Text>
                     </View>
-                   
-                        <TouchableOpacity style={styles.completeProfileButton} onPress={handleCompleteProfile}>
-                            <Text style={styles.completeProfileText}>
-                                {Number(completenessPercentage) === 100 ? 'View Profile' : 'Complete Profile'}
-                            </Text>
 
-                             
-
-                            <Image
-                                source={require('../../asset/arrow-forward.png')} // Update the path as needed
-                                style={{
-                                    width: 12,
-                                    height: 12,
-                                    resizeMode: 'contain',
-                                    tintColor: COLORS.white
+                    <TouchableOpacity style={styles.completeProfileButton} onPress={handleCompleteProfile}>
+                        <Text style={styles.completeProfileText}>
+                            {Number(completenessPercentage) === 100 ? 'View Profile' : 'Complete Profile'}
+                        </Text>
 
 
-                                }}
-                            />
-                        </TouchableOpacity>
-                    
+
+                        <Image
+                            source={require('../../asset/arrow-forward.png')} // Update the path as needed
+                            style={{
+                                width: 12,
+                                height: 12,
+                                resizeMode: 'contain',
+                                tintColor: '#403746'
+
+
+                            }}
+                        />
+                    </TouchableOpacity>
+
                 </View>
 
                 {/* My Bookings & Help & Support */}
@@ -496,7 +496,7 @@ const ProfileScreen = ({ navigation }) => {
                                     width: 24,
                                     height: 24,
                                     resizeMode: 'contain',
-                                    tintColor: COLORS.gold
+                                    tintColor: COLORS.purple
 
 
                                 }}
@@ -682,7 +682,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -693,7 +693,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
         flex: 1,
     },
     content: {
@@ -767,7 +767,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         paddingVertical: 10,
         borderRadius: 10,
         marginTop: 12,
@@ -775,7 +775,7 @@ const styles = StyleSheet.create({
     completeProfileText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     // Quick Actions
     quickActionsContainer: {
@@ -867,7 +867,7 @@ const styles = StyleSheet.create({
         marginTop: 16,
     },
     referCard: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         borderRadius: 16,
         padding: 20,
         marginTop: 4,

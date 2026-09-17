@@ -7,6 +7,9 @@ const API = {
      CUSTOMER_PROFILE: `${BASE_URL}/Customer/Profile`,
      CUSTOMER_ADDRESS: `${BASE_URL}/Customer/Address`,
      CUSTOMER_ADDRESSES: `${BASE_URL}/Customer/Addresses`,
+
+         // Delete address
+    CUSTOMER_DELETE_ADDRESS: `${BASE_URL}/Customer/Address`,
 };
 
 // Add more endpoints here as needed

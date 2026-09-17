@@ -89,11 +89,11 @@ const CreateAccountScreen = ({ navigation, route }) => {
     const accountIconBounce = useRef(new Animated.Value(0)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
-        goldFadeStrong: 'rgba(201, 168, 76, 0.2)',
+        gold: '#d6bceb',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
+        goldFadeStrong: 'rgba(179, 154, 199, 0.2)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -1111,7 +1111,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                             width: 28,
                             height: 28,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: '#403746'
 
 
                         }}
@@ -1153,7 +1153,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                             width: 32,
                             height: 32,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor:  '#403746'
 
 
                         }}
@@ -1195,7 +1195,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                             width: 32,
                             height: 32,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor:  COLORS.gold
 
 
                         }}
@@ -1237,7 +1237,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                             width: 32,
                             height: 32,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor:  '#403746'
 
 
                         }}
@@ -1317,7 +1317,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                             width: 20,
                                             height: 20,
                                             resizeMode: 'contain',
-                                            tintColor: COLORS.white
+                                            tintColor:  '#403746'
 
 
                                         }}
@@ -1333,7 +1333,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                         width: 18,
                                         height: 18,
                                         resizeMode: 'contain',
-                                        tintColor: COLORS.textLight
+                                        tintColor:  '#403746'
 
 
                                     }}
@@ -1456,7 +1456,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.white
+                                tintColor:  '#403746'
 
 
                             }}
@@ -1551,7 +1551,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.gold,
+                                tintColor:  '#403746',
                                 marginRight: 12
 
 
@@ -1585,7 +1585,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.gold,
+                                tintColor:  '#403746',
                                 marginRight: 12
 
 
@@ -1618,7 +1618,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.gold,
+                                tintColor:  '#403746',
                                 marginRight: 12
 
 
@@ -1662,7 +1662,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                     width: 24,
                                     height: 24,
                                     resizeMode: 'contain',
-                                    tintColor: gender === 'Female' ? COLORS.white : COLORS.gold, // Remove if the PNG is already colored
+                                    tintColor: gender === 'Female' ?  '#403746' : COLORS.gold, // Remove if the PNG is already colored
                                 }}
                             />
                             <Text style={[
@@ -1687,7 +1687,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                     width: 24,
                                     height: 24,
                                     resizeMode: 'contain',
-                                    tintColor: gender === 'Male' ? COLORS.white : COLORS.gold, // Remove if the PNG is already colored
+                                    tintColor: gender === 'Male' ?  '#403746' : COLORS.gold, // Remove if the PNG is already colored
                                 }}
                             />
 
@@ -1714,7 +1714,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                     width: 24,
                                     height: 24,
                                     resizeMode: 'contain',
-                                    tintColor: gender === 'Other' ? COLORS.white : COLORS.gold, // Remove if the PNG is already colored
+                                    tintColor: gender === 'Other' ?  '#403746' : COLORS.gold, // Remove if the PNG is already colored
                                 }}
                             />
                             <Text style={[
@@ -1741,7 +1741,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.gold,
+                                tintColor:  '#403746',
                                 marginRight: 12
                             }}
                         />
@@ -1814,7 +1814,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.gold,
+                                tintColor:  '#403746',
                                 marginRight: 12
                             }}
                         />
@@ -1874,7 +1874,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.white, // Remove if the PNG is already colored
+                                tintColor:  '#403746', // Remove if the PNG is already colored
                             }}
                         />
                     </TouchableOpacity>
@@ -1919,7 +1919,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                     <View style={styles.header}>
                         <View style={styles.headerContent}>
                             <View style={styles.headerLogo}>
-                                <View style={styles.headerIcon}>
+                                {/* <View style={styles.headerIcon}>
 
                                     <Image
                                         source={require('../../asset/genlogo.png')} // Update the path as needed
@@ -1933,7 +1933,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
 
                                         }}
                                     />
-                                </View>
+                                </View> */}
                                 <Text style={styles.headerTitle}>HomeHelp</Text>
                             </View>
                             <View style={styles.headerBadge}>
@@ -1968,7 +1968,7 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
     },
     header: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         marginHorizontal: -20,
         paddingHorizontal: 20,
         paddingTop: 50,
@@ -2003,7 +2003,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
         letterSpacing: -0.5,
     },
     headerBadge: {
@@ -2014,7 +2014,7 @@ const styles = StyleSheet.create({
     },
     headerBadgeText: {
         fontSize: 11,
-        color: '#FFFFFF',
+        color: '#403746',
         fontWeight: '600',
         letterSpacing: 0.5,
     },
@@ -2037,7 +2037,7 @@ const styles = StyleSheet.create({
         width: 44,
         height: 44,
         borderRadius: 14,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: 'rgba(201, 168, 76, 0.3)',
@@ -2099,7 +2099,7 @@ const styles = StyleSheet.create({
         width: 52,
         height: 52,
         borderRadius: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: 'rgba(201, 168, 76, 0.3)',
@@ -2164,7 +2164,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
@@ -2180,7 +2180,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
     },
     primaryButtonText: {
-        color: '#FFFFFF',
+        color: '#403746',
         fontSize: 16,
         fontWeight: '700',
     },
@@ -2214,7 +2214,7 @@ const styles = StyleSheet.create({
     },
     progressFill: {
         height: '100%',
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderRadius: 3,
     },
     progressText: {
@@ -2280,8 +2280,8 @@ const styles = StyleSheet.create({
         borderColor: '#E8E3D8',
     },
     genderOptionSelected: {
-        backgroundColor: '#C9A84C',
-        borderColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
+        borderColor: '#d6bceb',
         shadowColor: 'rgba(201, 168, 76, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
@@ -2294,7 +2294,7 @@ const styles = StyleSheet.create({
         color: '#666666',
     },
     genderTextSelected: {
-        color: '#FFFFFF',
+        color: '#403746',
     },
     // Modal Styles
     modalOverlay: {
@@ -2344,7 +2344,7 @@ const styles = StyleSheet.create({
         lineHeight: 20,
     },
     modalHighlight: {
-        color: '#C9A84C',
+        color: '#d6bceb',
         fontWeight: '600',
     },
     otpContainer: {
@@ -2367,7 +2367,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8F6F0',
     },
     otpInputFocused: {
-        borderColor: '#C9A84C',
+        borderColor: '#d6bceb',
         backgroundColor: '#FFFFFF',
         shadowColor: 'rgba(201, 168, 76, 0.15)',
         shadowOffset: { width: 0, height: 4 },
@@ -2384,7 +2384,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
@@ -2400,7 +2400,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
     },
     modalPrimaryButtonText: {
-        color: '#FFFFFF',
+        color: '#403746',
         fontSize: 16,
         fontWeight: '700',
     },
@@ -2417,7 +2417,7 @@ const styles = StyleSheet.create({
     },
     resendLink: {
         fontSize: 13,
-        color: '#C9A84C',
+        color: '#d6bceb',
         fontWeight: '600',
     },
     modalCloseButton: {

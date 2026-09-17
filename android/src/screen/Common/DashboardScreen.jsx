@@ -56,17 +56,18 @@ const DashboardScreen = ({ navigation }) => {
         require('../../asset/person-outline.png'),
         require('../../asset/calendar-outline.png'),
         require('../../asset/heart.png'),
-        require('../../asset/calendar.png'),
+        require('../../asset/monthly-subscription.png'),
         require('../../asset/person-outline.png'),
         require('../../asset/gift.png'),
         require('../../asset/information.png'),
     ];
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+        gold: '#d6bceb',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
+        goldFadeStrong: 'rgba(179, 154, 199, 0.2)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -335,7 +336,7 @@ const DashboardScreen = ({ navigation }) => {
             id: '1',
             name: 'My Bookings',
             icon: require('../../asset/calendar-outline.png'),
-            color: COLORS.gold,
+            color: COLORS.coral,
             bg: COLORS.goldFade,
         },
         {
@@ -409,7 +410,7 @@ const DashboardScreen = ({ navigation }) => {
             }),
         ]).start();
 
-     
+
 
         const interval = setInterval(() => {
             if (offers.length > 0) {
@@ -484,158 +485,158 @@ const DashboardScreen = ({ navigation }) => {
 
     }, [currentThoughtfulIndex]);
 
-       useFocusEffect(
-            useCallback(() => {
-                fetchProfile();
-            }, [])
-        );
+    useFocusEffect(
+        useCallback(() => {
+            fetchProfile();
+        }, [])
+    );
 
 
 
-        const fetchProfile = async () => {
-            try {
+    const fetchProfile = async () => {
+        try {
 
 
-                const token = await AsyncStorage.getItem('token');
+            const token = await AsyncStorage.getItem('token');
 
-                console.log('TOKEN:', token ? 'Token Found' : 'Token Not Found');
-                console.log('PROFILE API URL:', API.CUSTOMER_PROFILE);
+            console.log('TOKEN:', token ? 'Token Found' : 'Token Not Found');
+            console.log('PROFILE API URL:', API.CUSTOMER_PROFILE);
 
-                if (!token) {
-                    Alert.alert('Error', 'Authentication token not found');
-                    return;
-                }
+            if (!token) {
+                Alert.alert('Error', 'Authentication token not found');
+                return;
+            }
 
-                setIsLoading(true);
+            setIsLoading(true);
 
-                const response = await fetch(API.CUSTOMER_PROFILE, {
-                    method: 'GET',
-                    headers: {
-                        Accept: 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+            const response = await fetch(API.CUSTOMER_PROFILE, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-                console.log('HTTP STATUS:', response.status);
-                console.log('HTTP OK:', response.ok);
+            console.log('HTTP STATUS:', response.status);
+            console.log('HTTP OK:', response.ok);
 
-                // IMPORTANT: Get raw response first
-                const responseText = await response.text();
+            // IMPORTANT: Get raw response first
+            const responseText = await response.text();
 
-                console.log('RAW PROFILE RESPONSE:', responseText);
+            console.log('RAW PROFILE RESPONSE:', responseText);
 
-                if (!response.ok) {
-                    console.log('PROFILE API FAILED');
+            if (!response.ok) {
+                console.log('PROFILE API FAILED');
 
-                    if (response.status === 401) {
-                        Alert.alert(
-                            'Session Expired',
-                            'Your session has expired. Please login again.'
-                        );
-                    } else {
-                        Alert.alert(
-                            'Error',
-                            `Profile API failed. Status: ${response.status}`
-                        );
-                    }
-
-                    return;
-                }
-
-                // Convert raw response to JSON
-                let data;
-
-                try {
-                    data = JSON.parse(responseText);
-                } catch (jsonError) {
-                    console.log('JSON PARSE ERROR:', jsonError);
-                    console.log('SERVER RESPONSE:', responseText);
-
+                if (response.status === 401) {
                     Alert.alert(
-                        'Error',
-                        'Invalid response received from server.'
-                    );
-
-                    return;
-                }
-
-                console.log('PROFILE DATA:', data);
-                console.log('PROFILE SUCCESS:', data?.success);
-                console.log('FIRST NAME:', data?.firstName);
-                console.log('LAST NAME:', data?.lastName);
-                console.log('EMAIL:', data?.email);
-                console.log('MOBILE:', data?.mobileNo);
-                console.log('GENDER:', data?.gender);
-                console.log('DOB:', data?.dob);
-                console.log('IMAGE:', data?.profileImage);
-
-                if (data?.success !== true) {
-                    Alert.alert(
-                        'Error',
-                        data?.message || 'Unable to fetch profile'
-                    );
-                    return;
-                }
-
-                // ==============================
-                // PROFILE DATA
-                // ==============================
-
-                const profileFirstName = data.firstName || '';
-                const profileLastName = data.lastName || '';
-                const profileEmail = data.email || '';
-                const profilePhone = data.mobileNo || '';
-                const profileGender = data.gender || '';
-
-
-
-                setFirstName(profileFirstName);
-                setLastName(profileLastName);
-                setPhone(profilePhone);
-
-
-                // ==============================
-                // SAVE ORIGINAL DATA
-                // ==============================
-
-
-
-                // ==============================
-                // PROFILE IMAGE
-                // ==============================
-
-                if (data.profileImage) {
-                    setProfileImage(data.profileImage);
-                    setProfileImage(
-                        data.profileImage.startsWith('http')
-                            ? data.profileImage
-                            : `https://www.geniushomehelp.com/${data.profileImage}`
+                        'Session Expired',
+                        'Your session has expired. Please login again.'
                     );
                 } else {
-                    const fullName =
-                        `${profileFirstName} ${profileLastName}`.trim();
-
-                    setProfileImage(
-                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                            fullName || 'User'
-                        )}&background=C9A84C&color=fff&size=200`
+                    Alert.alert(
+                        'Error',
+                        `Profile API failed. Status: ${response.status}`
                     );
                 }
 
-                console.log('PROFILE DATA SET SUCCESSFULLY');
+                return;
+            }
 
-            } catch (error) {
-                console.log('FETCH PROFILE ERROR:', error);
-                console.log('ERROR MESSAGE:', error?.message);
+            // Convert raw response to JSON
+            let data;
+
+            try {
+                data = JSON.parse(responseText);
+            } catch (jsonError) {
+                console.log('JSON PARSE ERROR:', jsonError);
+                console.log('SERVER RESPONSE:', responseText);
 
                 Alert.alert(
                     'Error',
-                    error?.message || 'Something went wrong while loading profile.'
+                    'Invalid response received from server.'
                 );
-            } finally {
-                setIsLoading(false);
+
+                return;
             }
-        };
+
+            console.log('PROFILE DATA:', data);
+            console.log('PROFILE SUCCESS:', data?.success);
+            console.log('FIRST NAME:', data?.firstName);
+            console.log('LAST NAME:', data?.lastName);
+            console.log('EMAIL:', data?.email);
+            console.log('MOBILE:', data?.mobileNo);
+            console.log('GENDER:', data?.gender);
+            console.log('DOB:', data?.dob);
+            console.log('IMAGE:', data?.profileImage);
+
+            if (data?.success !== true) {
+                Alert.alert(
+                    'Error',
+                    data?.message || 'Unable to fetch profile'
+                );
+                return;
+            }
+
+            // ==============================
+            // PROFILE DATA
+            // ==============================
+
+            const profileFirstName = data.firstName || '';
+            const profileLastName = data.lastName || '';
+            const profileEmail = data.email || '';
+            const profilePhone = data.mobileNo || '';
+            const profileGender = data.gender || '';
+
+
+
+            setFirstName(profileFirstName);
+            setLastName(profileLastName);
+            setPhone(profilePhone);
+
+
+            // ==============================
+            // SAVE ORIGINAL DATA
+            // ==============================
+
+
+
+            // ==============================
+            // PROFILE IMAGE
+            // ==============================
+
+            if (data.profileImage) {
+                setProfileImage(data.profileImage);
+                setProfileImage(
+                    data.profileImage.startsWith('http')
+                        ? data.profileImage
+                        : `https://www.geniushomehelp.com/${data.profileImage}`
+                );
+            } else {
+                const fullName =
+                    `${profileFirstName} ${profileLastName}`.trim();
+
+                setProfileImage(
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                        fullName || 'User'
+                    )}&background=C9A84C&color=fff&size=200`
+                );
+            }
+
+            console.log('PROFILE DATA SET SUCCESSFULLY');
+
+        } catch (error) {
+            console.log('FETCH PROFILE ERROR:', error);
+            console.log('ERROR MESSAGE:', error?.message);
+
+            Alert.alert(
+                'Error',
+                error?.message || 'Something went wrong while loading profile.'
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleQuickAction = (item) => {
         switch (item.name) {
@@ -772,7 +773,7 @@ const DashboardScreen = ({ navigation }) => {
                                                         width: 22,
                                                         height: 22,
                                                         resizeMode: 'contain',
-                                                        tintColor: COLORS.gold, // Remove if your PNGs are already colored
+                                                        tintColor: '#403746', // Remove if your PNGs are already colored
                                                     }}
                                                 />
                                             </View>
@@ -936,7 +937,7 @@ const DashboardScreen = ({ navigation }) => {
                                     width: 14,
                                     height: 14,
                                     resizeMode: 'contain',
-                                    tintColor: COLORS.white,
+                                    tintColor: '#403746',
 
 
 
@@ -968,7 +969,7 @@ const DashboardScreen = ({ navigation }) => {
                             width: 12,
                             height: 12,
                             resizeMode: 'contain',
-                            tintColor: COLORS.orange,
+                            tintColor: '#403746',
 
 
 
@@ -1093,7 +1094,7 @@ const DashboardScreen = ({ navigation }) => {
                             width: 16,
                             height: 16,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white,
+                            tintColor: '#403746',
 
 
 
@@ -1131,7 +1132,7 @@ const DashboardScreen = ({ navigation }) => {
                             width: 16,
                             height: 16,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white,
+                            tintColor: '#403746',
 
 
 
@@ -1151,7 +1152,7 @@ const DashboardScreen = ({ navigation }) => {
                                 width: 16,
                                 height: 16,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.white,
+                                tintColor: '#403746',
 
 
 
@@ -1472,7 +1473,7 @@ const DashboardScreen = ({ navigation }) => {
                                             width: 24,
                                             height: 24,
                                             resizeMode: 'contain',
-                                            tintColor: COLORS.white,
+                                            tintColor:'#FFF',
 
 
 
@@ -1498,7 +1499,7 @@ const DashboardScreen = ({ navigation }) => {
                                                 width: 20,
                                                 height: 20,
                                                 resizeMode: 'contain',
-                                                tintColor: COLORS.white,
+                                                tintColor:'#FFF',
 
 
 
@@ -1518,7 +1519,7 @@ const DashboardScreen = ({ navigation }) => {
                                         width: 18,
                                         height: 18,
                                         resizeMode: 'contain',
-                                        tintColor: COLORS.white,
+                                        tintColor: '#FFF',
 
 
 
@@ -1674,7 +1675,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     offerDiscountBadge: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 20,
@@ -1686,12 +1687,12 @@ const styles = StyleSheet.create({
     offerDiscountText: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     offerDiscountLabel: {
         fontSize: 10,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
         opacity: 0.8,
     },
     offerContent: {
@@ -1700,7 +1701,7 @@ const styles = StyleSheet.create({
     offerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#FFF',
         marginBottom: 4,
     },
     offerDescription: {
@@ -1727,7 +1728,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 20,
@@ -1735,7 +1736,7 @@ const styles = StyleSheet.create({
     bookNowText: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     offerDots: {
         flexDirection: 'row',
@@ -1750,7 +1751,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#D4D4D4',
     },
     offerDotActive: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         width: 24,
     },
     sectionHeader: {
@@ -1773,7 +1774,7 @@ const styles = StyleSheet.create({
     viewAllText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#C9A84C',
+        color: '#403746',
     },
     servicesList: {
         paddingBottom: 4,
@@ -1830,7 +1831,7 @@ const styles = StyleSheet.create({
     popularServicePrice: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#403746',
     },
     popularServiceIcon: {
         width: 28,
@@ -1909,7 +1910,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         paddingHorizontal: 10,
         paddingVertical: 4,
         borderRadius: 12,
@@ -1918,7 +1919,7 @@ const styles = StyleSheet.create({
     onTheSpotBadgeText: {
         fontSize: 10,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     onTheSpotContent: {
         justifyContent: 'flex-end',
@@ -1926,7 +1927,7 @@ const styles = StyleSheet.create({
     onTheSpotName: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#FFFF',
     },
     onTheSpotDescription: {
         fontSize: 11,
@@ -1947,7 +1948,7 @@ const styles = StyleSheet.create({
     onTheSpotPrice: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#FFF',
     },
     onTheSpotRating: {
         flexDirection: 'row',
@@ -1956,11 +1957,11 @@ const styles = StyleSheet.create({
     },
     onTheSpotRatingText: {
         fontSize: 11,
-        color: '#FFFFFF',
+        color: '#FFF',
         fontWeight: '500',
     },
     onTheSpotBookButton: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         paddingHorizontal: 14,
         paddingVertical: 6,
         borderRadius: 16,
@@ -1968,7 +1969,7 @@ const styles = StyleSheet.create({
     onTheSpotBookText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     rebookList: {
         paddingBottom: 4,
@@ -2029,14 +2030,14 @@ const styles = StyleSheet.create({
     rebookPrice: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#d6bceb',
     },
     rebookButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 6,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         paddingVertical: 6,
         paddingHorizontal: 12,
         borderRadius: 8,
@@ -2045,7 +2046,7 @@ const styles = StyleSheet.create({
     rebookButtonText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     thoughtfulContainer: {
         marginBottom: 24,
@@ -2081,7 +2082,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
-        backgroundColor: 'rgba(201, 168, 76, 0.9)',
+        backgroundColor: '#d6bceb',
         paddingHorizontal: 10,
         paddingVertical: 4,
         borderRadius: 12,
@@ -2090,7 +2091,7 @@ const styles = StyleSheet.create({
     thoughtfulBadgeText: {
         fontSize: 10,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     thoughtfulContent: {
         justifyContent: 'flex-end',
@@ -2098,7 +2099,7 @@ const styles = StyleSheet.create({
     thoughtfulTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#FFF',
     },
     thoughtfulDescription: {
         fontSize: 12,
@@ -2109,7 +2110,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 20,
@@ -2119,7 +2120,7 @@ const styles = StyleSheet.create({
     thoughtfulButtonText: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     thoughtfulDots: {
         flexDirection: 'row',
@@ -2134,7 +2135,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#D4D4D4',
     },
     thoughtfulDotActive: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         width: 24,
     },
     whyChooseContainer: {
@@ -2171,7 +2172,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     referCard: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         borderRadius: 16,
         padding: 20,
         marginTop: 8,
@@ -2199,11 +2200,11 @@ const styles = StyleSheet.create({
     referTitle: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#FFF',
     },
     referDescription: {
         fontSize: 13,
-        color: 'rgba(255,255,255,0.85)',
+        color: '#FFF',
         lineHeight: 18,
         marginBottom: 16,
     },
@@ -2212,7 +2213,7 @@ const styles = StyleSheet.create({
     },
     referCodeLabel: {
         fontSize: 11,
-        color: 'rgba(255,255,255,0.7)',
+        color: '#FFF',
         marginBottom: 6,
     },
     referCode: {
@@ -2229,7 +2230,7 @@ const styles = StyleSheet.create({
     referCodeText: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#FFF',
         letterSpacing: 1.5,
     },
     referCopyButton: {
@@ -2243,7 +2244,7 @@ const styles = StyleSheet.create({
     },
     referCopyText: {
         fontSize: 12,
-        color: '#FFFFFF',
+        color: '#FFF',
         fontWeight: '500',
     },
     referButton: {
@@ -2260,7 +2261,7 @@ const styles = StyleSheet.create({
     referButtonText: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#FFF',
     },
     footerTextContainer: {
         alignItems: 'center',
@@ -2286,7 +2287,7 @@ const styles = StyleSheet.create({
     footerDivider: {
         width: 40,
         height: 2,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         marginVertical: 12,
     },
     footerVersion: {
@@ -2300,7 +2301,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
     },
     modalContent: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#FFF',
         borderTopLeftRadius: 28,
         borderTopRightRadius: 28,
         paddingHorizontal: 20,
@@ -2378,7 +2379,7 @@ const styles = StyleSheet.create({
         left: 0,
         bottom: 0,
         width: width * 0.8,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#FFFF',
         shadowColor: 'rgba(0,0,0,0.2)',
         shadowOffset: { width: 4, height: 0 },
         shadowOpacity: 0.2,
@@ -2414,7 +2415,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         backgroundColor: '#2ECC71',
         borderWidth: 2,
-        borderColor: '#FFFFFF',
+        borderColor: '#403746',
     },
     sidebarName: {
         fontSize: 18,

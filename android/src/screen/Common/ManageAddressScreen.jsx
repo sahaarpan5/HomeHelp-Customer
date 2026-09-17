@@ -254,12 +254,12 @@ const ManageAddressScreen = ({ navigation }) => {
         }, 1000);
     };
 
-  
+
 
 
     const handleEditAddress = async () => {
 
-         if (!editFlatNo.trim()) {
+        if (!editFlatNo.trim()) {
             Alert.alert('Error', 'Please enter a flat number');
             return;
         }
@@ -268,7 +268,7 @@ const ManageAddressScreen = ({ navigation }) => {
             return;
         }
 
-         if (!editPincode.trim()) {
+        if (!editPincode.trim()) {
             Alert.alert('Error', 'Please enter a pincode');
             return;
         }
@@ -294,12 +294,12 @@ const ManageAddressScreen = ({ navigation }) => {
             // FIND SELECTED ADDRESS
             // --------------------------------
 
-            
+
 
             console.log('Address ID:', editAddressId);
-            
 
-            
+
+
 
             // --------------------------------
             // PUT REQUEST BODY
@@ -328,7 +328,7 @@ const ManageAddressScreen = ({ navigation }) => {
                 longitude:
                     editLong || 0,
 
-                isDefault:  editIsDefault || false,
+                isDefault: editIsDefault || false,
 
                 landMark:
                     editLandmark || '',
@@ -371,7 +371,7 @@ const ManageAddressScreen = ({ navigation }) => {
                 setShowEditModal(false);
                 await fetchAddresses();
 
-                
+
 
             } else {
 
@@ -405,24 +405,75 @@ const ManageAddressScreen = ({ navigation }) => {
         }
     };
 
-    const handleDeleteAddress = (id) => {
+    const handleDeleteAddress = async (id) => {
+        console.log('Delete Address ID:', id);
+
+        try {
+            setIsLoading(true);
+
+            const token = await AsyncStorage.getItem('token');
+
+            if (!token) {
+                Alert.alert(
+                    'Error',
+                    'Authentication token not found. Please login again.'
+                );
+                return;
+            }
+
+            const response = await axios.delete(
+                `${API.CUSTOMER_DELETE_ADDRESS}/${id}`,
+                {
+                    headers: {
+                        Accept: '*/*',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log('Delete Address Response:', response.data);
+
+            if (response.data?.success === true) {
+                Alert.alert(
+                    'Success',
+                    response.data?.message || 'Address deleted successfully.'
+                );
+
+                // Refresh address list
+                await fetchAddresses();
+            } else {
+                Alert.alert(
+                    'Error',
+                    response.data?.message || 'Unable to delete address.'
+                );
+            }
+
+        } catch (error) {
+            console.log('Delete Address Error:', error);
+            console.log('Delete Address Response:', error.response?.data);
+
+            Alert.alert(
+                'Error',
+                error.response?.data?.message || 'Unable to delete address.'
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const confirmDeleteAddress = (id) => {
         Alert.alert(
             'Delete Address',
             'Are you sure you want to delete this address?',
             [
-                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
                 {
                     text: 'Delete',
                     style: 'destructive',
-                    onPress: () => {
-                        setIsLoading(true);
-                        setTimeout(() => {
-                            const filteredAddresses = addresses.filter((item) => item.id !== id);
-                            setAddresses(filteredAddresses);
-                            setIsLoading(false);
-                            Alert.alert('Success', 'Address deleted successfully');
-                        }, 1000);
-                    },
+                    onPress: () => handleDeleteAddress(id),
                 },
             ]
         );
@@ -643,7 +694,7 @@ const ManageAddressScreen = ({ navigation }) => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.actionButton}
-                        onPress={() => handleDeleteAddress(item.id)}
+                        onPress={() => confirmDeleteAddress(item.id)}
                     >
 
                         <Image

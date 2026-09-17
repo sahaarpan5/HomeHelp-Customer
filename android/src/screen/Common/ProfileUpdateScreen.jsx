@@ -1333,7 +1333,7 @@ const ProfileUpdateScreen = ({ navigation }) => {
         <View style={styles.container}>
             <StatusBar
                 barStyle="light-content"
-                backgroundColor="#C9A84C"
+                backgroundColor="#d6bceb"
             />
 
 
@@ -1349,7 +1349,7 @@ const ProfileUpdateScreen = ({ navigation }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white,
+                            tintColor: '#403746',
                         }}
                     />
                 </TouchableOpacity>
@@ -1367,7 +1367,7 @@ const ProfileUpdateScreen = ({ navigation }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.white,
+                                tintColor: '#403746',
                             }}
                         />
 
@@ -1907,7 +1907,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -1919,7 +1919,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
     },
 
     editButton: {
@@ -1936,7 +1936,7 @@ const styles = StyleSheet.create({
     editButtonText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
         marginLeft: 4,
     },
 
@@ -1955,24 +1955,24 @@ const styles = StyleSheet.create({
 
     cancelButton: {
         backgroundColor: 'rgba(255,255,255,0.1)',
-        borderColor: 'rgba(255,255,255,0.3)',
+        borderColor: '#403746',
     },
 
     cancelButtonText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
     },
 
     saveButton: {
         backgroundColor: 'rgba(255,255,255,0.2)',
-        borderColor: 'rgba(255,255,255,0.3)',
+        borderColor: '#403746',
     },
 
     saveButtonText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
     },
 
     content: {
@@ -2013,7 +2013,7 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 18,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 3,
@@ -2131,7 +2131,7 @@ const styles = StyleSheet.create({
 
     genderOptionSelected: {
         backgroundColor: 'rgba(201, 168, 76, 0.1)',
-        borderColor: '#C9A84C',
+        borderColor: '#C4B0D3',
     },
 
     genderOptionDisabled: {
@@ -2146,7 +2146,7 @@ const styles = StyleSheet.create({
     },
 
     genderTextSelected: {
-        color: '#C9A84C',
+        color: '#403746',
         fontWeight: '600',
     },
 
@@ -2158,7 +2158,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingVertical: 16,
         borderRadius: 14,
         marginTop: 24,
@@ -2201,14 +2201,14 @@ const styles = StyleSheet.create({
     },
 
     radioCircleSelected: {
-        borderColor: '#C9A84C',
+        borderColor: '#403746',
     },
 
     radioCircleInner: {
         width: 10,
         height: 10,
         borderRadius: 5,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#403746',
     },
     dateHint: {
         fontSize: 11,

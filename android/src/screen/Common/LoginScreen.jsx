@@ -57,12 +57,12 @@ const LoginScreen = ({ navigation }) => {
     const pulseAnim = useRef(new Animated.Value(1)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#E8C9B8',
-        goldDark: '#C48A7A',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
-        goldFadeStrong: 'rgba(201, 168, 76, 0.2)',
-        white: '#FFFFFF',
+        gold: '#B39AC7',
+        goldLight: '#C4B0D3',
+        goldDark: '#76577F',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
+        goldFadeStrong: 'rgba(179, 154, 199, 0.2)',
+        white: '#FFF',
         dark: '#1A1A1A',
         textLight: '#666666',
         lightBg: '#F8F6F0',
@@ -617,7 +617,7 @@ const LoginScreen = ({ navigation }) => {
                                         width: 20,
                                         height: 20,
                                         resizeMode: 'contain',
-                                        tintColor: COLORS.white,
+                                        tintColor: '#403746',
 
                                     }}
                                 />
@@ -917,7 +917,7 @@ const LoginScreen = ({ navigation }) => {
                                 width: 28,
                                 height: 28,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.white,
+                                tintColor: "#403746",
 
                             }}
                         />
@@ -976,7 +976,7 @@ const LoginScreen = ({ navigation }) => {
                             width: 20,
                             height: 20,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white,
+                            tintColor: '#403746',
 
                         }}
                     />
@@ -1047,7 +1047,7 @@ const LoginScreen = ({ navigation }) => {
                                 width: 24,
                                 height: 24,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.white
+                                tintColor: '#FFFFFF'
 
 
                             }}
@@ -1067,7 +1067,7 @@ const LoginScreen = ({ navigation }) => {
                             width: 18,
                             height: 18,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                           tintColor: '#FFFFFF'
 
 
                         }}
@@ -1089,7 +1089,7 @@ const LoginScreen = ({ navigation }) => {
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+            <StatusBar barStyle="dark-content" backgroundColor="#FFF" />
 
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
@@ -1112,21 +1112,7 @@ const LoginScreen = ({ navigation }) => {
                     <View style={styles.header}>
                         <View style={styles.headerContent}>
                             <View style={styles.headerLogo}>
-                                <View style={styles.headerIcon}>
-
-                                    <Image
-                                        source={require('../../asset/genlogo.png')} // Update the path as needed
-                                        style={{
-                                            width: 40,
-                                            height: 40,
-                                            resizeMode: 'contain',
-                                            tintColor: '#FFFFFF'
-
-
-
-                                        }}
-                                    />
-                                </View>
+                                
                                 <Text style={styles.headerTitle}>HomeHelp</Text>
                             </View>
                             <View style={styles.headerBadge}>
@@ -1162,23 +1148,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingBottom: 20,
     },
-    // header: {
-    //     backgroundColor: '#C9A84C',
-    //     marginHorizontal: -20,
-    //     paddingHorizontal: 20,
-    //     paddingTop: 50,
-    //     paddingBottom: 20,
-    //     borderBottomLeftRadius: 24,
-    //     borderBottomRightRadius: 24,
-    //     shadowColor: 'rgba(201, 168, 76, 0.3)',
-    //     shadowOffset: { width: 0, height: 4 },
-    //     shadowOpacity: 0.2,
-    //     shadowRadius: 12,
-    //     elevation: 8,
-    //     marginBottom: 24,
-    // },
+   
     header: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         marginHorizontal: -20,
         paddingHorizontal: 20,
         paddingTop: 50,
@@ -1213,7 +1185,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
         letterSpacing: -0.5,
     },
     headerBadge: {
@@ -1224,7 +1196,7 @@ const styles = StyleSheet.create({
     },
     headerBadgeText: {
         fontSize: 11,
-        color: '#FFFFFF',
+        color: '#403746',
         fontWeight: '600',
         letterSpacing: 0.5,
     },
@@ -1248,7 +1220,7 @@ const styles = StyleSheet.create({
     },
     stepCard: {
         width: '100%',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#FBF9FC',
         borderRadius: 20,
         padding: 24,
         borderWidth: 1,
@@ -1264,20 +1236,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 16,
     },
-    // stepIconContainer: {
-    //     width: 44,
-    //     height: 44,
-    //     borderRadius: 12,
-    //     backgroundColor: '#C9A84C',
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    //     marginRight: 12,
-    // },
+    
     stepIconContainer: {
         width: 44,
         height: 44,
         borderRadius: 12,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
@@ -1330,7 +1294,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
@@ -1346,7 +1310,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
@@ -1362,7 +1326,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
     },
     primaryButtonText: {
-        color: '#FFFFFF',
+        color: '#403746',
         fontSize: 16,
         fontWeight: '700',
     },
@@ -1424,7 +1388,7 @@ const styles = StyleSheet.create({
     },
     // Create Account - After Social Login (Highlighted)
     createAccountHighlight: {
-        backgroundColor: '#6C5CE7',
+        backgroundColor: '#76577F',
         borderRadius: 16,
         padding: 16,
         flexDirection: 'row',
@@ -1460,7 +1424,7 @@ const styles = StyleSheet.create({
     createAccountHighlightTitle: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#FFFF',
         letterSpacing: 0.3,
     },
     createAccountHighlightSubtitle: {
@@ -1601,9 +1565,9 @@ const styles = StyleSheet.create({
         lineHeight: 20,
     },
     modalHighlight: {
-        // color: '#C9A84C',
+        
         fontWeight: '600',
-        color: '#C9A84C',
+        color: '#d6bceb',
     },
     otpContainer: {
         flexDirection: 'row',
@@ -1625,8 +1589,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8F6F0',
     },
     otpInputFocused: {
-        // borderColor: '#C9A84C',
-        borderColor: '#C9A84C',
+        
+        borderColor: '#d6bceb',
         backgroundColor: '#FFFFFF',
         shadowColor: 'rgba(201, 168, 76, 0.15)',
         shadowOffset: { width: 0, height: 4 },
@@ -1643,7 +1607,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
@@ -1659,7 +1623,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
     },
     modalPrimaryButtonText: {
-        color: '#FFFFFF',
+        color: '#403746',
         fontSize: 16,
         fontWeight: '700',
     },
@@ -1676,7 +1640,7 @@ const styles = StyleSheet.create({
     },
     resendLink: {
         fontSize: 13,
-        color: '#C9A84C',
+        color: '#d6bceb',
         fontWeight: '600',
     },
     modalCloseButton: {
@@ -1702,7 +1666,7 @@ const styles = StyleSheet.create({
     },
     showMpinText: {
         fontSize: 13,
-        color: '#C9A84C',
+        color: '#d6bceb',
         fontWeight: '500',
     },
     backToSetMpin: {
@@ -1718,7 +1682,7 @@ const styles = StyleSheet.create({
     },
     backToSetMpinText: {
         fontSize: 13,
-        color: '#C9A84C',
+        color: '#d6bceb',
         fontWeight: '500',
     },
 });

@@ -28,9 +28,9 @@ const WelcomeScreen = ({ navigation }) => {
   // const GOLD_DARK = '#B8943E';
   // const GOLD_LIGHT = '#D4AF37';
 
-   const GOLD_COLOR = '#C9A84C';
-   const GOLD_DARK = '#C9A84C';
-   const GOLD_LIGHT = '#C9A84C';
+   const GOLD_COLOR = '#d6bceb';
+   const GOLD_DARK = '#76577F';
+   const GOLD_LIGHT = '#C4B0D3';
 
   useEffect(() => {
     // Start shimmer animation
@@ -180,8 +180,8 @@ const WelcomeScreen = ({ navigation }) => {
                   <Image
                     source={require('../../asset/genlogo.png')} // Update the path as needed
                     style={{
-                      width: 48,
-                      height: 48,
+                      width: 80,
+                      height: 80,
                       resizeMode: 'contain',
                       
                     }}
@@ -304,7 +304,7 @@ const WelcomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C9A84C',
+    backgroundColor: '#d6bceb',
   },
   background: {
     position: 'absolute',
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#C9A84C',
+    backgroundColor: '#d6bceb',
     overflow: 'hidden',
   },
   content: {
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
   appNameHome: {
     fontSize: 46,
     fontWeight: '700',
-    color: '#1A1A1A',
+    color: '#352B38',
     letterSpacing: -1.5,
     includeFontPadding: false,
     textShadowColor: 'rgba(255, 255, 255, 0.2)',
