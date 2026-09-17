@@ -29,7 +29,7 @@ const ViewCartScreen = ({ navigation, route }) => {
             coverImage: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
             duration: '2 hours',
         },
-       
+
     ]);
     const [couponCode, setCouponCode] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -57,10 +57,10 @@ const ViewCartScreen = ({ navigation, route }) => {
     const couponModalSlideAnim = useRef(new Animated.Value(height)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+        gold: '#d6bceb',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -74,6 +74,7 @@ const ViewCartScreen = ({ navigation, route }) => {
         red: '#E17055',
         orange: '#FDCB6E',
         warning: '#F39C12',
+         txtColor: '#403746',
     };
 
     // Generate next 7 days
@@ -117,7 +118,7 @@ const ViewCartScreen = ({ navigation, route }) => {
 
     // People also like services
     const peopleAlsoLike = [
-        
+
         {
             id: 'p2',
             name: 'House Maid',
@@ -136,10 +137,10 @@ const ViewCartScreen = ({ navigation, route }) => {
             id: 'p4',
             name: 'Kitchen & Utensil cleaning',
             price: '₹449',
-             image: require('../../asset/kitchen-clean.png'),
+            image: require('../../asset/kitchen-clean.png'),
             rating: 4.5,
         },
-        
+
     ];
 
     useEffect(() => {
@@ -682,7 +683,7 @@ const ViewCartScreen = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+            <StatusBar barStyle="dark-content" backgroundColor="#d6bceb" />
 
             {/* Header */}
             <View style={styles.header}>
@@ -697,7 +698,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: COLORS.txtColor
 
 
                         }}
@@ -726,7 +727,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                             <View style={styles.selectedServiceInfo}>
                                 <Text style={styles.selectedServiceName}>{service.name}</Text>
                                 <Text style={styles.selectedServicePrice}>{service.price}</Text>
-                               
+
                             </View>
                             <TouchableOpacity
                                 style={styles.removeButton}
@@ -750,7 +751,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                 </View>
 
                 {/* Add More Service */}
-                <TouchableOpacity style={styles.addMoreButton}>
+                {/* <TouchableOpacity style={styles.addMoreButton}>
 
                     <Image
                         source={require('../../asset/add.png')} // Update the path as needed
@@ -764,7 +765,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                         }}
                     />
                     <Text style={styles.addMoreText}>Add More Services</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 {/* Apply Coupon */}
                 <View style={styles.couponContainer}>
@@ -914,7 +915,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                 </View>
 
                 {/* Tip Section */}
-            
+
 
                 {/* Bill Summary */}
                 {/* <View style={styles.totalContainer}>
@@ -943,8 +944,8 @@ const ViewCartScreen = ({ navigation, route }) => {
                 </View> */}
 
                 {/* Select Date & Time Button - After Bill Summary */}
-                <TouchableOpacity style={styles.selectSlotButton} onPress={()=>navigation.replace("SelectSlotScreen")}>
-                    
+                <TouchableOpacity style={styles.selectSlotButton} onPress={() => navigation.replace("SelectSlotScreen")}>
+
                     <Image
                         source={require('../../asset/calendar.png')} // Update the path as needed
                         style={{
@@ -962,7 +963,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                             <Text style={styles.slotCountText}>{Object.keys(slotSelections).length}</Text>
                         </View>
                     )}
-                    
+
                     <Image
                         source={require('../../asset/arrow-forward.png')} // Update the path as needed
                         style={{
@@ -999,7 +1000,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: '#F0EDE8',
     },
@@ -1009,7 +1010,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#fffcfc',
+        color: '#403746',
     },
     headerRight: {
         width: 32,
@@ -1056,7 +1057,7 @@ const styles = StyleSheet.create({
     selectedServicePrice: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
         marginTop: 2,
     },
     selectedServiceDuration: {
@@ -1098,7 +1099,7 @@ const styles = StyleSheet.create({
         color: '#1A1A1A',
     },
     applyCouponButton: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingHorizontal: 16,
         paddingVertical: 6,
         borderRadius: 8,
@@ -1131,7 +1132,7 @@ const styles = StyleSheet.create({
     },
     viewCouponsText: {
         fontSize: 13,
-        color: '#C9A84C',
+        color: '#76577F',
         fontWeight: '500',
     },
     // People Also Like
@@ -1173,7 +1174,7 @@ const styles = StyleSheet.create({
     peopleLikePrice: {
         fontSize: 13,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
         marginTop: 2,
     },
     peopleLikeAddButton: {
@@ -1183,7 +1184,7 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24,
         borderRadius: 12,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#403746',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -1213,7 +1214,7 @@ const styles = StyleSheet.create({
     },
     changeText: {
         fontSize: 12,
-        color: '#C9A84C',
+        color: '#76577F',
         fontWeight: '500',
         marginLeft: 'auto',
     },
@@ -1237,7 +1238,7 @@ const styles = StyleSheet.create({
     },
     changeAddressText: {
         fontSize: 12,
-        color: '#C9A84C',
+        color: '#76577F',
         fontWeight: '500',
         marginTop: 6,
         alignSelf: 'flex-end',
@@ -1247,7 +1248,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingVertical: 14,
         paddingHorizontal: 18,
         borderRadius: 12,
@@ -1656,7 +1657,7 @@ const styles = StyleSheet.create({
     couponCardDiscount: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
     },
     modalCloseButton: {
         alignItems: 'center',

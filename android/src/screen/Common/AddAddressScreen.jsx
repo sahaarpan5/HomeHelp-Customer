@@ -80,10 +80,10 @@ const AddAddressScreen = ({ navigation }) => {
     const searchTimeout = useRef(null);
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+        gold: '#d6bceb',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -97,6 +97,7 @@ const AddAddressScreen = ({ navigation }) => {
         red: '#E17055',
         orange: '#FDCB6E',
         warning: '#F39C12',
+        txtColor: '#403746',
     };
 
     // Address type options
@@ -960,7 +961,7 @@ const AddAddressScreen = ({ navigation }) => {
                                                         width: 20,
                                                         height: 20,
                                                         resizeMode: 'contain',
-                                                        tintColor: COLORS.gold,
+                                                        tintColor: COLORS.txtColor,
                                                     }}
                                                 />
 
@@ -997,13 +998,13 @@ const AddAddressScreen = ({ navigation }) => {
                                         width: 20,
                                         height: 20,
                                         resizeMode: 'contain',
-                                        tintColor: COLORS.gold
+                                        tintColor: COLORS.txtColor
 
 
                                     }}
                                 />
                                 <Text style={styles.currentLocationText}>Use Current Location</Text>
-                                {isLoading && <ActivityIndicator size="small" color={COLORS.gold} />}
+                                {isLoading && <ActivityIndicator size="small" color={COLORS.txtColor} />}
                             </TouchableOpacity>
 
 
@@ -1118,7 +1119,7 @@ const AddAddressScreen = ({ navigation }) => {
                             width: 20,
                             height: 20,
                             resizeMode: 'contain',
-                            tintColor: COLORS.gold
+                            tintColor: COLORS.txtColor
 
 
                         }}
@@ -1171,7 +1172,7 @@ const AddAddressScreen = ({ navigation }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.gold
+                                tintColor: COLORS.txtColor
 
 
                             }}
@@ -1251,7 +1252,7 @@ const AddAddressScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#C9A84C" />
+            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
 
             {/* Header - Left Aligned */}
             <View style={styles.header}>
@@ -1265,7 +1266,7 @@ const AddAddressScreen = ({ navigation }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: COLORS.txtColor
                         }}
                     />
 
@@ -1293,7 +1294,7 @@ const AddAddressScreen = ({ navigation }) => {
                                         width: 32,
                                         height: 32,
                                         resizeMode: 'contain',
-                                        tintColor: COLORS.gold
+                                        tintColor: COLORS.purple
 
 
                                     }}
@@ -1344,7 +1345,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -1355,7 +1356,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
         flex: 1,
     },
     content: {
@@ -1617,7 +1618,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     confirmLocationButton: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingVertical: 12,
         borderRadius: 12,
         alignItems: 'center',
@@ -1695,7 +1696,7 @@ const styles = StyleSheet.create({
     },
     changeLocationText: {
         fontSize: 13,
-        color: '#C9A84C',
+        color: '#76577F',
         fontWeight: '500',
     },
     formInput: {
@@ -1721,8 +1722,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
     },
     typeOptionSelected: {
-        borderColor: '#C9A84C',
-        backgroundColor: '#C9A84C',
+        borderColor: '#C4B0D3',
+        backgroundColor: '#76577F',
     },
     typeOptionText: {
         fontSize: 14,
@@ -1733,7 +1734,7 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
     },
     submitButton: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingVertical: 16,
         borderRadius: 14,
         alignItems: 'center',

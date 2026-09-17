@@ -37,10 +37,10 @@ const SelectSlotScreen = ({ navigation, route }) => {
     const billModalSlideAnim = useRef(new Animated.Value(height)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+        gold: '#d6bceb',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -54,6 +54,7 @@ const SelectSlotScreen = ({ navigation, route }) => {
         red: '#E17055',
         orange: '#FDCB6E',
         warning: '#F39C12',
+        txtColor: '#403746',
     };
     const starImages = {
         full: require('../../asset/star-fill.png'),
@@ -527,7 +528,7 @@ const SelectSlotScreen = ({ navigation, route }) => {
                                         width: 10,
                                         height: 10,
                                         resizeMode: 'contain',
-                                        tintColor: COLORS.gold
+                                        tintColor: COLORS.txtColor
                                     }}
                                 />
                                 <Text style={styles.lastBookedText}>
@@ -569,7 +570,7 @@ const SelectSlotScreen = ({ navigation, route }) => {
                             width: 18,
                             height: 18,
                             resizeMode: 'contain',
-                            tintColor: COLORS.gold
+                            tintColor: COLORS.txtColor
                         }}
                     />
                 </TouchableOpacity>
@@ -793,7 +794,7 @@ const SelectSlotScreen = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#C9A84C" />
+            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
 
             {/* Header */}
             <View style={styles.header}>
@@ -808,7 +809,7 @@ const SelectSlotScreen = ({ navigation, route }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: COLORS.txtColor
 
 
                         }}
@@ -938,7 +939,7 @@ const SelectSlotScreen = ({ navigation, route }) => {
                                             tintColor:
                                                 selectedDurationType === type.id
                                                     ? COLORS.white
-                                                    : COLORS.gold, // Remove if your PNGs are already colored
+                                                    : COLORS.txtColor, // Remove if your PNGs are already colored
                                         }}
                                     />
                                 </View>
@@ -1159,7 +1160,7 @@ const SelectSlotScreen = ({ navigation, route }) => {
                                         width: 12,
                                         height: 12,
                                         resizeMode: 'contain',
-                                        tintColor: COLORS.gold
+                                        tintColor: COLORS.txtColor
                                     }}
                                 />
                             </View>
@@ -1191,7 +1192,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -1201,7 +1202,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     headerRight: {
         width: 32,
@@ -1242,8 +1243,8 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     dateCardSelected: {
-        backgroundColor: '#C9A84C',
-        borderColor: '#C9A84C',
+        backgroundColor: '#76577F',
+        borderColor: '#C4B0D3',
     },
     dateCardHasSlot: {
         borderColor: '#2ECC71',
@@ -1281,7 +1282,7 @@ const styles = StyleSheet.create({
     },
     selectedDateInfo: {
         fontSize: 13,
-        color: '#C9A84C',
+        color: '#76577F',
         fontWeight: '500',
         marginTop: 8,
         textAlign: 'center',
@@ -1301,8 +1302,8 @@ const styles = StyleSheet.create({
         borderColor: '#E8E3D8',
     },
     timeCardSelected: {
-        backgroundColor: '#C9A84C',
-        borderColor: '#C9A84C',
+        backgroundColor: '#76577F',
+        borderColor: '#C4B0D3',
     },
     timeText: {
         fontSize: 12,
@@ -1327,7 +1328,7 @@ const styles = StyleSheet.create({
         borderColor: '#E8E3D8',
     },
     durationCardSelected: {
-        borderColor: '#C9A84C',
+        borderColor: '#76577F',
         backgroundColor: '#F8F6F0',
     },
     durationIcon: {
@@ -1340,7 +1341,7 @@ const styles = StyleSheet.create({
         marginBottom: 6,
     },
     durationIconSelected: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
     },
     durationLabel: {
         fontSize: 14,
@@ -1348,7 +1349,7 @@ const styles = StyleSheet.create({
         color: '#1A1A1A',
     },
     durationLabelSelected: {
-        color: '#C9A84C',
+        color: '#76577F',
     },
     durationDescription: {
         fontSize: 11,
@@ -1356,7 +1357,7 @@ const styles = StyleSheet.create({
         marginTop: 2,
     },
     durationDescriptionSelected: {
-        color: '#C9A84C',
+        color: '#76577F',
     },
     // Duration Summary
     durationSummary: {
@@ -1390,8 +1391,8 @@ const styles = StyleSheet.create({
         borderColor: '#E8E3D8',
     },
     hoursCardSelected: {
-        backgroundColor: '#C9A84C',
-        borderColor: '#C9A84C',
+        backgroundColor: '#76577F',
+        borderColor: '#C4B0D3',
     },
     hoursText: {
         fontSize: 12,
@@ -1419,7 +1420,7 @@ const styles = StyleSheet.create({
         maxWidth: (width - 40) / 2,
     },
     professionalGridCardSelected: {
-        borderColor: '#C9A84C',
+        borderColor: '#76577F',
         backgroundColor: '#F8F6F0',
         borderWidth: 2,
     },
@@ -1527,7 +1528,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#403746',
         paddingVertical: 12,
         borderRadius: 12,
         marginTop: 4,
@@ -1577,7 +1578,7 @@ const styles = StyleSheet.create({
     addedSlotAmount: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
         marginTop: 2,
     },
     removeSlotButton: {
@@ -1620,7 +1621,7 @@ const styles = StyleSheet.create({
     totalGrandValue: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
     },
     footerSpacer: {
         height: 20,
@@ -1796,7 +1797,7 @@ const styles = StyleSheet.create({
     billSlotAmount: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
     },
     billSlotDetails: {
         fontSize: 12,
@@ -1844,14 +1845,14 @@ const styles = StyleSheet.create({
     billTotalAmount: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
     },
     billConfirmButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingVertical: 16,
         borderRadius: 12,
         marginTop: 16,

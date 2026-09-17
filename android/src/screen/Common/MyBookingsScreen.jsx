@@ -27,10 +27,10 @@ const MyBookingsScreen = ({ navigation }) => {
     const slideAnim = useRef(new Animated.Value(30)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+       gold: '#d6bceb',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         goldBg: '#C9A84C',
         white: '#FFFFFF',
         dark: '#1A1A1A',
@@ -45,6 +45,7 @@ const MyBookingsScreen = ({ navigation }) => {
         red: '#E17055',
         orange: '#FDCB6E',
         warning: '#F39C12',
+        txtColor: '#403746',
     };
 
     // Sample Data - In Progress (Always one item)
@@ -64,12 +65,12 @@ const MyBookingsScreen = ({ navigation }) => {
 
         {
             id: '1',
-            serviceName: 'Sofa Cleaning',
+            serviceName: 'Cooking Support',
             provider: 'HomeHelp',
             date: '10 Dec 2026',
             status: 'Completed',
             rating: 4.5,
-            image: require('../../asset/sofa-clean.png'),
+            image: require('../../asset/cooking.png'),
             price: '₹599',
             feedback: 'Good quality cleaning.',
         },
@@ -80,18 +81,18 @@ const MyBookingsScreen = ({ navigation }) => {
             date: '5 Dec 2026',
             status: 'Completed',
             rating: 4.9,
-            image: require('../../asset/kitchen-clean.png'),
+            image: require('../../asset/kitchenclean.png'),
             price: '₹349',
             feedback: 'Excellent work! Very thorough.',
         },
         {
             id: '2',
-            serviceName: 'Carpet Cleaning',
+            serviceName: 'Bathroom Cleaning',
             provider: 'HomeHelp',
             date: '8 Dec 2025',
             status: 'Cancelled',
             rating: 4.9,
-            image: require('../../asset/carpet-clean.png'),
+            image: require('../../asset/bathroomclean.png'),
             price: '₹0',
             feedback: '-.',
         },
@@ -106,18 +107,18 @@ const MyBookingsScreen = ({ navigation }) => {
             date: '5 Jan 2027',
             time: '09:00 AM',
             status: 'Confirmed',
-            image: require('../../asset/kitchen-clean.png'),
+            image: require('../../asset/kitchenclean.png'),
             address: '123, Main Street, Mumbai',
             price: '₹449',
         },
         {
             id: '6',
-            serviceName: 'Carpet Cleaning',
+            serviceName: 'Bathroom Cleaning',
             provider: 'HomeHelp',
             date: '12 Jan 2027',
             time: '11:00 AM',
             status: 'Confirmed',
-            image: require('../../asset/carpet-clean.png'),
+            image: require('../../asset/bathroomclean.png'),
             address: '456, Park Avenue, Mumbai',
             price: '₹699',
         },
@@ -129,7 +130,7 @@ const MyBookingsScreen = ({ navigation }) => {
             id: 'upcoming',
             title: 'Active & Upcoming Bookings',
             icon: require('../../asset/calendar.png'),
-            iconColor: COLORS.gold,
+            iconColor: COLORS.goldBg,
             data: upcomingBookings,
             type: 'upcoming',
             emptyMessage: 'No upcoming bookings scheduled',
@@ -138,7 +139,7 @@ const MyBookingsScreen = ({ navigation }) => {
             id: 'inprogress',
             title: 'In Progress',
             icon: require('../../asset/time-outline.png'),
-            iconColor: COLORS.orange,
+            iconColor: COLORS.purple,
             data: inProgressData ? [inProgressData] : [],
             type: 'inprogress',
             emptyMessage: 'No services in progress',
@@ -369,7 +370,7 @@ const MyBookingsScreen = ({ navigation }) => {
                                 width: 18,
                                 height: 18,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.white
+                                tintColor: COLORS.txtColor
 
 
                             }}
@@ -384,7 +385,7 @@ const MyBookingsScreen = ({ navigation }) => {
                                 width: 18,
                                 height: 18,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.gold
+                                tintColor: COLORS.txtColor
 
 
                             }}
@@ -434,7 +435,7 @@ const MyBookingsScreen = ({ navigation }) => {
                                 width: 14,
                                 height: 14,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.textLight
+                                tintColor: COLORS.txtColor
 
 
                             }}
@@ -484,7 +485,7 @@ const MyBookingsScreen = ({ navigation }) => {
                                     width: 18,
                                     height: 18,
                                     resizeMode: 'contain',
-                                    tintColor: COLORS.gold
+                                    tintColor: COLORS.txtColor
 
 
                                 }}
@@ -578,7 +579,7 @@ const MyBookingsScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+            <StatusBar barStyle="dark-content" backgroundColor="#d6bceb" />
 
             {/* Header */}
             <View style={styles.header}>
@@ -593,7 +594,7 @@ const MyBookingsScreen = ({ navigation }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: COLORS.txtColor
 
 
                         }}
@@ -657,7 +658,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: '#F0EDE8',
 
@@ -668,7 +669,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     filterButton: {
         padding: 4,
@@ -707,13 +708,13 @@ const styles = StyleSheet.create({
     seeAllText: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#C9A84C',
+        color: '#403746',
     },
     // In Progress Card Styles - Gold Background
     inProgressCard: {
         borderRadius: 16,
         overflow: 'hidden',
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         shadowColor: 'rgba(201, 168, 76, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
@@ -925,7 +926,7 @@ const styles = StyleSheet.create({
     bookingPrice: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#403746',
         marginLeft: 8,
     },
     bookingFeedback: {
@@ -943,7 +944,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#C4B0D3',
         paddingHorizontal: 14,
         paddingVertical: 6,
         borderRadius: 16,
@@ -951,13 +952,13 @@ const styles = StyleSheet.create({
     rebookButtonText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     feedbackButton: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        backgroundColor: 'rgba(201, 168, 76, 0.1)',
+        backgroundColor: '#d6bceb',
         paddingHorizontal: 14,
         paddingVertical: 6,
         borderRadius: 16,
@@ -967,7 +968,7 @@ const styles = StyleSheet.create({
     feedbackButtonText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#C9A84C',
+        color: '#403746',
     },
     // Upcoming Specific Styles
     upcomingDateTime: {
@@ -1015,7 +1016,7 @@ const styles = StyleSheet.create({
     rescheduleButtonText: {
         fontSize: 11,
         fontWeight: '500',
-        color: '#C9A84C',
+        color: '#403746',
     },
     cancelButton: {
         paddingHorizontal: 12,
@@ -1028,7 +1029,7 @@ const styles = StyleSheet.create({
     cancelButtonText: {
         fontSize: 11,
         fontWeight: '500',
-        color: '#E17055',
+        color: '#403746',
     },
     // Empty State
     emptyState: {

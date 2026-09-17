@@ -54,10 +54,10 @@ const ManageAddressScreen = ({ navigation }) => {
     const modalSlideAnim = useRef(new Animated.Value(height)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+        gold: '#d6bceb',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -71,6 +71,7 @@ const ManageAddressScreen = ({ navigation }) => {
         red: '#E17055',
         orange: '#FDCB6E',
         warning: '#F39C12',
+        txtColor: '#403746',
     };
 
     // Address type options
@@ -642,7 +643,7 @@ const ManageAddressScreen = ({ navigation }) => {
     const getAddressTypeColor = (type) => {
         switch (type) {
             case 'Home':
-                return COLORS.gold;
+                return COLORS.green;
             case 'Office':
                 return COLORS.blue;
             case 'Other':
@@ -916,7 +917,7 @@ const ManageAddressScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#C9A84C" />
+            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
 
             {/* Header - Left Aligned */}
             <View style={styles.header}>
@@ -931,7 +932,7 @@ const ManageAddressScreen = ({ navigation }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: COLORS.txtColor
 
 
                         }}
@@ -1026,7 +1027,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -1037,7 +1038,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
         flex: 1,
     },
     content: {
@@ -1099,7 +1100,7 @@ const styles = StyleSheet.create({
         color: '#1A1A1A',
     },
     defaultBadge: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 10,
@@ -1127,7 +1128,7 @@ const styles = StyleSheet.create({
     },
     setDefaultText: {
         fontSize: 13,
-        color: '#C9A84C',
+        color: '#76577F',
         fontWeight: '500',
     },
     // Empty State
@@ -1157,7 +1158,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingVertical: 14,
         borderRadius: 14,
         shadowColor: 'rgba(201, 168, 76, 0.3)',

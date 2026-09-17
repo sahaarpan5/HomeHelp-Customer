@@ -26,10 +26,10 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
 
   const COLORS = {
-    gold: '#C9A84C',
-    goldLight: '#D4AF37',
-    goldDark: '#B8943E',
-    goldFade: 'rgba(201, 168, 76, 0.1)',
+    gold: '#d6bceb',
+    goldLight: '#76577F',
+    goldDark: '#C4B0D3',
+    goldFade: 'rgba(179, 154, 199, 0.1)',
     white: '#FFFFFF',
     dark: '#1A1A1A',
     textLight: '#666666',
@@ -43,6 +43,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
     red: '#E17055',
     orange: '#FDCB6E',
     warning: '#F39C12',
+    txtColor: '#403746',
   };
 
   // Sample booking data
@@ -62,7 +63,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
     ],
     selectedServices: [
       { name: 'House maid service', price: '₹299/hr', quantity: 1 },
-    
+
     ],
     payment: {
       subtotal: '₹897',
@@ -104,7 +105,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
   }, []);
 
   const handleDashboard = () => {
-   navigation.replace('DashboardScreen');
+    navigation.replace('DashboardScreen');
   };
 
   const handleMyBookings = () => {
@@ -143,12 +144,12 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
       <View style={styles.slotContent}>
         <Text style={styles.slotDate}>{slot.date}</Text>
         <Text style={styles.slotTime}>{slot.time}</Text>
-        <TouchableOpacity style={styles.slotProfessionalRow} onPress={()=>navigation.navigate('ProfessionalDetailsScreen', { professional: slot.professional })}>
+        <TouchableOpacity style={styles.slotProfessionalRow} onPress={() => navigation.navigate('ProfessionalDetailsScreen', { professional: slot.professional })}>
           <Image
             source={require('../../asset/profile-one.png')} // Update the path as needed
             style={styles.slotProfessionalImage}
           />
-          
+
           <Text style={styles.slotProfessional}>with {slot.professional}</Text>
         </TouchableOpacity>
       </View>
@@ -160,7 +161,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#C9A84C" />
+      <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
 
       {/* Header */}
       <View style={styles.header}>
@@ -175,7 +176,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
               width: 24,
               height: 24,
               resizeMode: 'contain',
-              tintColor: COLORS.white
+              tintColor: COLORS.txtColor
 
 
             }}
@@ -237,7 +238,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
                   width: 28,
                   height: 28,
                   resizeMode: 'contain',
-                  tintColor: COLORS.gold
+                  tintColor: COLORS.green
 
 
                 }}
@@ -328,7 +329,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
                 width: 20,
                 height: 20,
                 resizeMode: 'contain',
-                tintColor: COLORS.gold
+                tintColor: COLORS.txtColor
 
 
               }}
@@ -405,7 +406,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
                     width: 18,
                     height: 18,
                     resizeMode: 'contain',
-                    tintColor: COLORS.gold
+                    tintColor: COLORS.txtColor
 
 
                   }}
@@ -425,7 +426,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
                     width: 18,
                     height: 18,
                     resizeMode: 'contain',
-                    tintColor: COLORS.gold
+                    tintColor: COLORS.txtColor
 
 
                   }}
@@ -445,7 +446,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
                     width: 18,
                     height: 18,
                     resizeMode: 'contain',
-                    tintColor: COLORS.gold
+                    tintColor: COLORS.txtColor
 
 
                   }}
@@ -477,7 +478,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
                 width: 20,
                 height: 20,
                 resizeMode: 'contain',
-                tintColor: COLORS.gold
+                tintColor: COLORS.txtColor
 
 
               }}
@@ -510,7 +511,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
               width: 18,
               height: 18,
               resizeMode: 'contain',
-              tintColor: COLORS.gold
+              tintColor: COLORS.txtColor
 
 
             }}
@@ -537,7 +538,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
 
           <View style={styles.appreciationTips}>
             <View style={styles.appreciationTip}>
-              <View style={[styles.appreciationTipIcon, { backgroundColor: COLORS.gold }]}>
+              <View style={[styles.appreciationTipIcon, { backgroundColor: COLORS.goldDark }]}>
 
                 <Image
                   source={require('../../asset/happy.png')} // Update the path as needed
@@ -558,7 +559,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
             </View>
 
             <View style={styles.appreciationTip}>
-              <View style={[styles.appreciationTipIcon, { backgroundColor: COLORS.blue }]}>
+              <View style={[styles.appreciationTipIcon, { backgroundColor: COLORS.purple }]}>
 
                 <Image
                   source={require('../../asset/drop.png')} // Update the path as needed
@@ -579,7 +580,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
             </View>
 
             <View style={styles.appreciationTip}>
-              <View style={[styles.appreciationTipIcon, { backgroundColor: COLORS.purple }]}>
+              <View style={[styles.appreciationTipIcon, { backgroundColor: COLORS.green }]}>
 
                 <Image
                   source={require('../../asset/home.png')} // Update the path as needed
@@ -619,7 +620,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 50,
     paddingBottom: 16,
-    backgroundColor: '#C9A84C',
+    backgroundColor: '#d6bceb',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
@@ -629,7 +630,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#403746',
   },
   headerRight: {
     width: 32,
@@ -648,7 +649,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#2ECC71',
+    backgroundColor: '#76577F',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#2ECC71',
@@ -837,7 +838,7 @@ const styles = StyleSheet.create({
   },
   slotProfessional: {
     fontSize: 12,
-    color: '#C9A84C',
+    color: '#76577F',
   },
   // Payment
   paymentToggle: {
@@ -910,7 +911,7 @@ const styles = StyleSheet.create({
   paymentTotalValue: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#C9A84C',
+    color: '#76577F',
   },
   paymentMethodRow: {
     flexDirection: 'row',
@@ -1009,12 +1010,12 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#C9A84C',
+    borderColor: '#76577F',
   },
   rescheduleButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#C9A84C',
+    color: '#76577F',
   },
   cancelButton: {
     flex: 1,
@@ -1026,7 +1027,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E8E3D8',
+    borderColor: '#76577F',
   },
   cancelButtonText: {
     fontSize: 14,
@@ -1044,7 +1045,7 @@ const styles = StyleSheet.create({
   },
   policyLinkText: {
     fontSize: 14,
-    color: '#C9A84C',
+    color: '#76577F',
     fontWeight: '500',
   },
   // Appreciation Section

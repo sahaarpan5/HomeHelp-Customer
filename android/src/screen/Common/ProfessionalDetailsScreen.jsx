@@ -29,10 +29,10 @@ const ProfessionalDetailsScreen = ({ navigation, route }) => {
     const slideAnim = useRef(new Animated.Value(30)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+        gold: '#d6bceb',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -46,14 +46,15 @@ const ProfessionalDetailsScreen = ({ navigation, route }) => {
         red: '#E17055',
         orange: '#FDCB6E',
         warning: '#F39C12',
+        txtColor: '#403746',
     };
 
     // Sample professional data
     const professionalData = {
         id: '1',
         name: 'Rajesh Kumar',
-        photo:  require('../../asset/demo-user.png'),
-        coverImage:  require('../../asset/heroic.png'),
+        photo: require('../../asset/demo-user.png'),
+        coverImage: require('../../asset/heroic.png'),
         rating: 4.9,
         totalReviews: 1240,
         experience: '8 years',
@@ -191,7 +192,7 @@ const ProfessionalDetailsScreen = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#C9A84C" />
+            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
 
             {/* Header */}
             <View style={styles.header}>
@@ -206,7 +207,7 @@ const ProfessionalDetailsScreen = ({ navigation, route }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: COLORS.txtColor
 
 
                         }}
@@ -240,7 +241,7 @@ const ProfessionalDetailsScreen = ({ navigation, route }) => {
                 <View style={styles.profileSection}>
                     <View style={styles.profileImageContainer}>
                         <Image source={professionalData.photo} style={styles.profileImage} />
-                        
+
                     </View>
 
                     <View style={styles.profileInfo}>
@@ -255,7 +256,7 @@ const ProfessionalDetailsScreen = ({ navigation, route }) => {
                                             width: 16,
                                             height: 16,
                                             resizeMode: 'contain',
-                                            tintColor: COLORS.gold
+                                            tintColor: COLORS.goldDark
 
 
                                         }}
@@ -270,7 +271,7 @@ const ProfessionalDetailsScreen = ({ navigation, route }) => {
                             <View style={styles.ratingStars}>
                                 {renderStars(professional?.rating || professionalData?.rating)}
                             </View>
-                            <Text style={styles.ratingText}>{professional?.rating ||professionalData.rating}</Text>
+                            <Text style={styles.ratingText}>{professional?.rating || professionalData.rating}</Text>
                             <Text style={styles.ratingCount}>({professionalData.totalReviews} reviews)</Text>
                         </View>
 
@@ -282,7 +283,7 @@ const ProfessionalDetailsScreen = ({ navigation, route }) => {
                             </View>
                             <View style={styles.statDivider} />
                             <View style={styles.statItem}>
-                                <Text style={styles.statValue}>{professional?.jobsCompleted ||professionalData.jobsCompleted}</Text>
+                                <Text style={styles.statValue}>{professional?.jobsCompleted || professionalData.jobsCompleted}</Text>
                                 <Text style={styles.statLabel}>Jobs Done</Text>
                             </View>
                             <View style={styles.statDivider} />
@@ -363,11 +364,11 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        
+
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -377,7 +378,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     headerRight: {
         width: 32,
@@ -418,7 +419,7 @@ const styles = StyleSheet.create({
         borderBottomColor: '#F0EDE8',
         elevation: 4,
         borderRadius: 12,
-        
+
     },
     profileImageContainer: {
         position: 'relative',
@@ -556,7 +557,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#F0EDE8',
         elevation: 4,
-       
+
     },
     sectionTitle: {
         fontSize: 16,
@@ -571,7 +572,7 @@ const styles = StyleSheet.create({
     },
     readMoreText: {
         fontSize: 14,
-        color: '#C9A84C',
+        color: '#76577F',
         fontWeight: '500',
         marginTop: 4,
     },
@@ -609,7 +610,7 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: '#FFFFFF',
         borderRadius: 12,
-         elevation: 4,
+        elevation: 4,
         borderWidth: 1,
         borderColor: '#F0EDE8',
     },
@@ -621,7 +622,7 @@ const styles = StyleSheet.create({
     },
     viewAllText: {
         fontSize: 14,
-        color: '#C9A84C',
+        color: '#76577F',
         fontWeight: '600',
     },
     reviewCard: {

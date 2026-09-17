@@ -22,18 +22,18 @@ const SavedServicesScreen = ({ navigation }) => {
         {
             id: '1',
             name: 'Home Cleaning',
-            image:  require('../../asset/heroic.png'),
+            image: require('../../asset/homeclean.png'),
             rating: 4.9,
             reviews: 1240,
             price: '₹499',
             category: 'Cleaning',
             savedDate: '15 Jan 2027',
         },
-       
+
         {
             id: '3',
-            name: 'Sofa Cleaning',
-            image: require('../../asset/sofa-clean.png'),
+            name: 'House Maid',
+            image: require('../../asset/housemaid.png'),
             rating: 4.7,
             reviews: 650,
             price: '₹599',
@@ -43,7 +43,7 @@ const SavedServicesScreen = ({ navigation }) => {
         {
             id: '4',
             name: 'Bathroom Cleaning',
-            image: require('../../asset/bathroom-clean.png'),
+            image: require('../../asset/bathroomclean.png'),
             rating: 4.6,
             reviews: 520,
             price: '₹349',
@@ -53,7 +53,7 @@ const SavedServicesScreen = ({ navigation }) => {
         {
             id: '5',
             name: 'Kitchen Cleaning',
-            image: require('../../asset/kitchen-clean.png'),
+            image: require('../../asset/kitchenclean.png'),
             rating: 4.5,
             reviews: 480,
             price: '₹449',
@@ -65,16 +65,7 @@ const SavedServicesScreen = ({ navigation }) => {
             category: 'Cleaning',
             savedDate: '5 Jan 2027',
         },
-        {
-            id: '6',
-            name: 'Carpet Cleaning',
-            image: require('../../asset/carpet-clean.png'),
-            rating: 4.8,
-            reviews: 720,
-            price: '₹699',
-            category: 'Cleaning',
-            savedDate: '3 Jan 2027',
-        },
+
     ]);
 
     const starImages = {
@@ -88,10 +79,10 @@ const SavedServicesScreen = ({ navigation }) => {
     const slideAnim = useRef(new Animated.Value(30)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+        gold: '#d6bceb',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -106,6 +97,7 @@ const SavedServicesScreen = ({ navigation }) => {
         orange: '#FDCB6E',
         warning: '#F39C12',
         heart: '#FF4757',
+        txtColor: '#403746',
     };
 
     useEffect(() => {
@@ -176,7 +168,7 @@ const SavedServicesScreen = ({ navigation }) => {
 
     const renderSavedService = ({ item }) => (
         <View style={styles.serviceCard}>
-            <Image source={item.image } style={styles.serviceImage} />
+            <Image source={item.image} style={styles.serviceImage} />
             <TouchableOpacity
                 style={styles.heartButton}
                 onPress={() => removeSavedService(item.id)}
@@ -210,7 +202,7 @@ const SavedServicesScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#C9A84C" />
+            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
 
             {/* Header */}
             <View style={styles.header}>
@@ -225,7 +217,7 @@ const SavedServicesScreen = ({ navigation }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: COLORS.txtColor
 
 
                         }}
@@ -295,11 +287,11 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        
+
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -309,7 +301,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     headerRight: {
         width: 32,
@@ -391,11 +383,11 @@ const styles = StyleSheet.create({
     servicePrice: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#403746',
         marginBottom: 6,
     },
     bookButton: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingVertical: 6,
         borderRadius: 8,
         alignItems: 'center',
@@ -403,7 +395,7 @@ const styles = StyleSheet.create({
     bookButtonText: {
         fontSize: 11,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#FFF',
     },
     // Empty State
     emptyContainer: {

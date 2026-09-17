@@ -36,10 +36,10 @@ const ServiceBookingScreen = ({ navigation, route }) => {
     const heartAnim = useRef(new Animated.Value(1)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+        gold: '#d6bceb',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -54,6 +54,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
         orange: '#FDCB6E',
         warning: '#F39C12',
         heart: '#FF4757',
+        txtColor: '#403746',
     };
 
     // Sample Service Data
@@ -850,7 +851,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: COLORS.textLight
 
 
                         }}
@@ -864,7 +865,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                             width: 20,
                             height: 20,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: COLORS.txtColor
 
 
                         }}
@@ -983,7 +984,7 @@ const styles = StyleSheet.create({
     servicePrice: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#403746',
     },
     pricePerService: {
         fontSize: 13,
@@ -1051,7 +1052,7 @@ const styles = StyleSheet.create({
     childServicePrice: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#403746',
         marginTop: 2,
     },
     childServiceDuration: {
@@ -1063,12 +1064,12 @@ const styles = StyleSheet.create({
         width: 32,
         height: 32,
         borderRadius: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#403746',
         justifyContent: 'center',
         alignItems: 'center',
     },
     actionButtonAdded: {
-        backgroundColor: '#2ECC71',
+        backgroundColor: '#C4B0D3',
     },
     // List Items
     listItem: {
@@ -1120,7 +1121,7 @@ const styles = StyleSheet.create({
         width: 22,
         height: 22,
         borderRadius: 11,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 2,
@@ -1193,7 +1194,7 @@ const styles = StyleSheet.create({
     },
     viewAllText: {
         fontSize: 14,
-        color: '#C9A84C',
+        color: '#403746',
         fontWeight: '600',
     },
     reviewItem: {
@@ -1215,7 +1216,7 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 18,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#403746',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -1252,7 +1253,7 @@ const styles = StyleSheet.create({
         right: 20,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#1A1A1A',
+        backgroundColor: '#d6bceb',
         paddingVertical: 14,
         paddingHorizontal: 20,
         borderRadius: 14,
@@ -1284,13 +1285,13 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 15,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
         marginLeft: 12,
     },
     cartTotalText: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#403746',
         marginRight: 8,
     },
     // Cart Modal
@@ -1340,7 +1341,7 @@ const styles = StyleSheet.create({
     cartItemPrice: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#403746',
         marginTop: 2,
     },
     cartFooter: {
@@ -1363,14 +1364,14 @@ const styles = StyleSheet.create({
     cartTotalPrice: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#403746',
     },
     cartCheckoutButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#403746',
         paddingVertical: 14,
         borderRadius: 12,
     },
@@ -1466,7 +1467,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#403746',
         paddingVertical: 14,
         borderRadius: 12,
         marginTop: 20,
