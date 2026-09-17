@@ -1013,7 +1013,7 @@ const DashboardScreen = ({ navigation }) => {
                             width: 12,
                             height: 12,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white,
+                            tintColor: COLORS.dark,
 
 
 

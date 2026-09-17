@@ -27,10 +27,10 @@ const MonthlySubscriptionScreen = ({ navigation }) => {
     const slideAnim = useRef(new Animated.Value(30)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+        gold: '#d6bceb',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -44,6 +44,7 @@ const MonthlySubscriptionScreen = ({ navigation }) => {
         red: '#E17055',
         orange: '#FDCB6E',
         warning: '#F39C12',
+        txtColor: '#403746',
     };
 
     // Subscription Plans Data
@@ -214,7 +215,7 @@ const MonthlySubscriptionScreen = ({ navigation }) => {
                                     width: 24,
                                     height: 24,
                                     resizeMode: 'contain',
-                                    tintColor: subscribed ? COLORS.success : COLORS.gold, // Remove if your PNGs are already colored
+                                    tintColor: subscribed ? COLORS.green : COLORS.purple, // Remove if your PNGs are already colored
                                 }}
                             />
                         </View>
@@ -267,7 +268,7 @@ const MonthlySubscriptionScreen = ({ navigation }) => {
                         <View
                             style={[
                                 styles.bookButton,
-                               styles.bookButtonActive,
+                                styles.bookButtonActive,
                                 subscribed && styles.bookButtonSubscribed,
                             ]}
                             onPress={() => handleBookNow(item)}
@@ -299,7 +300,7 @@ const MonthlySubscriptionScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#C9A84C" />
+            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
 
             {/* Header */}
             <View style={styles.header}>
@@ -314,7 +315,7 @@ const MonthlySubscriptionScreen = ({ navigation }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: COLORS.txtColor
 
 
                         }}
@@ -368,7 +369,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -378,7 +379,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     headerRight: {
         width: 32,
@@ -419,7 +420,7 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     planCardSelected: {
-        borderColor: '#C9A84C',
+        borderColor: '#76577F',
     },
     planCardPopular: {
         borderColor: '#C9A84C',
@@ -530,7 +531,7 @@ const styles = StyleSheet.create({
     planPrice: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
     },
     planDuration: {
         fontSize: 11,
@@ -547,7 +548,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     bookButtonActive: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
     },
     bookButtonSubscribed: {
         backgroundColor: '#2ECC71',

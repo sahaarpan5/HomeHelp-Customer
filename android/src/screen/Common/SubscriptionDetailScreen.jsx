@@ -29,10 +29,10 @@ const SubscriptionDetailScreen = ({ navigation }) => {
     const slideAnim = useRef(new Animated.Value(30)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+       gold: '#76577F',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -46,6 +46,7 @@ const SubscriptionDetailScreen = ({ navigation }) => {
         red: '#E17055',
         orange: '#FDCB6E',
         warning: '#F39C12',
+        txtColor: '#403746',
     };
     const starImages = {
         full: require('../../asset/star-fill.png'),
@@ -177,7 +178,7 @@ const SubscriptionDetailScreen = ({ navigation }) => {
     const subscriptionData = {
         id: '1',
         name: 'Home Cleaning',
-        coverImage: require('../../asset/heroic.png'),
+        coverImage: require('../../asset/housemaid.png'),
         rating: 4.9,
         totalReviews: 1240,
         bookings: 15420,
@@ -467,7 +468,7 @@ const SubscriptionDetailScreen = ({ navigation }) => {
                                         width: 18,
                                         height: 18,
                                         resizeMode: 'contain',
-                                        tintColor: COLORS.success
+                                        tintColor: COLORS.purple
 
 
                                     }}
@@ -638,7 +639,7 @@ const styles = StyleSheet.create({
     servicePrice: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
     },
     priceSubtext: {
         fontSize: 13,
@@ -677,7 +678,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingVertical: 16,
         marginHorizontal: 16,
         marginTop: 16,
@@ -765,7 +766,7 @@ const styles = StyleSheet.create({
         width: 28,
         height: 28,
         borderRadius: 14,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -796,7 +797,7 @@ const styles = StyleSheet.create({
     },
     viewAllText: {
         fontSize: 14,
-        color: '#C9A84C',
+        color: '#76577F',
         fontWeight: '600',
     },
     reviewItem: {
@@ -818,7 +819,7 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 18,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -911,7 +912,7 @@ const styles = StyleSheet.create({
         width: 22,
         height: 22,
         borderRadius: 11,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 2,

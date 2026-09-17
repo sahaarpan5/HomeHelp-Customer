@@ -21,7 +21,7 @@ import {
 const { width, height } = Dimensions.get('window');
 
 const COLORS = {
-    gold: '#C9A84C',
+    gold: '#76577F',
     white: '#FFFFFF',
     dark: '#1A1A1A',
     textLight: '#666666',
@@ -45,7 +45,7 @@ const SubscribedServiceScreen = ({ navigation, route }) => {
     const serviceData = {
         id: 'SUB-2027-001',
         serviceName: 'Premium Home Cleaning',
-        coverImage: require('../../asset/heroic.png'),
+        coverImage: require('../../asset/housemaid.png'),
         professional: {
             name: 'Priya Patel',
             role: 'Senior Cleaning Specialist',
@@ -802,12 +802,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
     },
     invoiceBtn: {
-        borderColor: '#C9A84C',
+        borderColor: '#76577F',
     },
     invoiceBtnText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#C9A84C',
+        color: '#76577F',
     },
     helpBtn: {
         borderColor: '#0984E3',
@@ -1018,7 +1018,7 @@ const styles = StyleSheet.create({
     billTotalValue: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
     },
     spacer: {
         height: 20,

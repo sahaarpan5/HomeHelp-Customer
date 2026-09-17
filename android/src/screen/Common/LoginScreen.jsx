@@ -1067,7 +1067,7 @@ const LoginScreen = ({ navigation }) => {
                             width: 18,
                             height: 18,
                             resizeMode: 'contain',
-                           tintColor: '#FFFFFF'
+                            tintColor: '#FFFFFF'
 
 
                         }}
@@ -1112,7 +1112,22 @@ const LoginScreen = ({ navigation }) => {
                     <View style={styles.header}>
                         <View style={styles.headerContent}>
                             <View style={styles.headerLogo}>
-                                
+                                <View style={styles.headerIcon}>
+
+                                    <Image
+                                        source={require('../../asset/genlogo.png')} // Update the path as needed
+                                        style={{
+                                            width: 55,
+                                            height: 55,
+                                            resizeMode: 'contain',
+                                            tintColor: COLORS.goldDark
+
+
+
+                                        }}
+                                    />
+                                </View>
+
                                 <Text style={styles.headerTitle}>HomeHelp</Text>
                             </View>
                             <View style={styles.headerBadge}>
@@ -1148,7 +1163,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingBottom: 20,
     },
-   
+
     header: {
         backgroundColor: '#d6bceb',
         marginHorizontal: -20,
@@ -1175,8 +1190,8 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     headerIcon: {
-        width: 40,
-        height: 40,
+        width: 60,
+        height: 60,
         borderRadius: 10,
         backgroundColor: 'rgba(255,255,255,0.2)',
         justifyContent: 'center',
@@ -1236,7 +1251,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 16,
     },
-    
+
     stepIconContainer: {
         width: 44,
         height: 44,
@@ -1565,7 +1580,7 @@ const styles = StyleSheet.create({
         lineHeight: 20,
     },
     modalHighlight: {
-        
+
         fontWeight: '600',
         color: '#d6bceb',
     },
@@ -1589,7 +1604,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8F6F0',
     },
     otpInputFocused: {
-        
+
         borderColor: '#d6bceb',
         backgroundColor: '#FFFFFF',
         shadowColor: 'rgba(201, 168, 76, 0.15)',

@@ -45,10 +45,10 @@ const SubscriptionSlotScreen = ({ navigation, route }) => {
     const modalSlideAnim = useRef(new Animated.Value(height)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+         gold: '#76577F',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -62,6 +62,7 @@ const SubscriptionSlotScreen = ({ navigation, route }) => {
         red: '#E17055',
         orange: '#FDCB6E',
         warning: '#F39C12',
+        txtColor: '#403746',
     };
 
     // Get subscription data from route params
@@ -464,7 +465,7 @@ const SubscriptionSlotScreen = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#C9A84C" />
+            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
 
             {/* Header */}
             <View style={styles.header}>
@@ -479,7 +480,7 @@ const SubscriptionSlotScreen = ({ navigation, route }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: COLORS.txtColor
 
 
                         }}
@@ -687,7 +688,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -697,7 +698,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     headerRight: {
         width: 32,
@@ -729,7 +730,7 @@ const styles = StyleSheet.create({
     planPrice: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#C9A84C',
+        color: '#76577F',
         marginTop: 4,
     },
     planHours: {
@@ -764,7 +765,7 @@ const styles = StyleSheet.create({
     },
     changeText: {
         fontSize: 13,
-        color: '#C9A84C',
+        color: '#76577F',
         fontWeight: '600',
     },
     detailsRow: {
@@ -813,7 +814,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     monthCardSelected: {
-        borderColor: '#C9A84C',
+        borderColor: '#d6bceb',
         backgroundColor: '#F8F6F0',
     },
     monthCardLeft: {
@@ -825,7 +826,7 @@ const styles = StyleSheet.create({
         color: '#1A1A1A',
     },
     monthTextSelected: {
-        color: '#C9A84C',
+        color: '#403746',
     },
     monthYear: {
         fontSize: 13,
@@ -838,7 +839,7 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     currentBadge: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 10,
@@ -924,7 +925,7 @@ const styles = StyleSheet.create({
     summaryTotalValue: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
     },
     // Confirm Button
     confirmButton: {
@@ -932,7 +933,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingVertical: 16,
         borderRadius: 14,
         shadowColor: 'rgba(201, 168, 76, 0.3)',

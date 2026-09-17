@@ -517,7 +517,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                                                             width: 18,
                                                             height: 18,
                                                             resizeMode: 'contain',
-                                                            tintColor: COLORS.success
+                                                            tintColor: COLORS.purple
 
 
                                                         }}
@@ -758,7 +758,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                                     width: 20,
                                     height: 20,
                                     resizeMode: 'contain',
-                                    tintColor: COLORS.success
+                                    tintColor: COLORS.purple
 
 
                                 }}
@@ -1428,7 +1428,7 @@ const styles = StyleSheet.create({
     modalServicePrice: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
         marginTop: 4,
     },
     modalServiceDuration: {

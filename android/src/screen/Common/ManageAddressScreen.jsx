@@ -1234,8 +1234,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
     },
     typeOptionSelected: {
-        borderColor: '#C9A84C',
-        backgroundColor: '#C9A84C',
+        borderColor: '#C4B0D3',
+        backgroundColor: '#76577F',
     },
     typeOptionText: {
         fontSize: 14,
@@ -1257,7 +1257,7 @@ const styles = StyleSheet.create({
         borderColor: '#E8E3D8',
     },
     modalPrimaryButton: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingVertical: 16,
         borderRadius: 14,
         alignItems: 'center',

@@ -1919,21 +1919,21 @@ const CreateAccountScreen = ({ navigation, route }) => {
                     <View style={styles.header}>
                         <View style={styles.headerContent}>
                             <View style={styles.headerLogo}>
-                                {/* <View style={styles.headerIcon}>
+                                <View style={styles.headerIcon}>
 
                                     <Image
                                         source={require('../../asset/genlogo.png')} // Update the path as needed
                                         style={{
-                                            width: 40,
-                                            height: 40,
+                                            width: 55,
+                                            height: 55,
                                             resizeMode: 'contain',
-                                            tintColor: '#FFFFFF'
+                                            tintColor: COLORS.dark
 
 
 
                                         }}
                                     />
-                                </View> */}
+                                </View>
                                 <Text style={styles.headerTitle}>HomeHelp</Text>
                             </View>
                             <View style={styles.headerBadge}>
@@ -1993,8 +1993,8 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     headerIcon: {
-        width: 40,
-        height: 40,
+        width: 80,
+        height: 80,
         borderRadius: 10,
         backgroundColor: 'rgba(255,255,255,0.2)',
         justifyContent: 'center',
