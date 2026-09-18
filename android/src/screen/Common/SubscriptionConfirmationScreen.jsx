@@ -38,10 +38,10 @@ const SubscriptionConfirmationScreen = ({ navigation, route }) => {
     const pulseAnim = useRef(new Animated.Value(1)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+        gold: '#76577F',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -55,6 +55,7 @@ const SubscriptionConfirmationScreen = ({ navigation, route }) => {
         red: '#E17055',
         orange: '#FDCB6E',
         warning: '#F39C12',
+        txtColor: '#403746',
     };
 
     // Get data from route params
@@ -653,7 +654,7 @@ Thank you for choosing CleanHome Pro! 🌟
                                             width: 20,
                                             height: 20,
                                             resizeMode: 'contain',
-                                            tintColor: COLORS.white,
+                                            tintColor: COLORS.txtColor,
 
 
 
@@ -775,7 +776,7 @@ Thank you for choosing CleanHome Pro! 🌟
                                         width: 28,
                                         height: 28,
                                         resizeMode: 'contain',
-                                        tintColor: "#C9A84C",
+                                        tintColor: "#76577F",
 
 
 
@@ -867,7 +868,7 @@ Thank you for choosing CleanHome Pro! 🌟
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#C9A84C" />
+            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
 
             {/* Header */}
             <View style={styles.header}>
@@ -882,7 +883,7 @@ Thank you for choosing CleanHome Pro! 🌟
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: "#ffffff",
+                            tintColor: "#403746",
 
 
 
@@ -898,7 +899,7 @@ Thank you for choosing CleanHome Pro! 🌟
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: "#ffffff",
+                            tintColor: "#403746",
 
 
 
@@ -988,7 +989,7 @@ Thank you for choosing CleanHome Pro! 🌟
                                     width: 28,
                                     height: 28,
                                     resizeMode: 'contain',
-                                    tintColor: "#C9A84C",
+                                    tintColor: "#76577F",
 
 
 
@@ -1405,7 +1406,7 @@ Thank you for choosing CleanHome Pro! 🌟
                                         width: 18,
                                         height: 18,
                                         resizeMode: 'contain',
-                                        tintColor: COLORS.success,
+                                        tintColor: COLORS.purple,
 
 
 
@@ -1644,7 +1645,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -1654,7 +1655,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     content: {
         flex: 1,
@@ -1670,7 +1671,7 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 40,
-        backgroundColor: '#2ECC71',
+        backgroundColor: '#76577F',
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: '#2ECC71',
@@ -1707,7 +1708,7 @@ const styles = StyleSheet.create({
     subscriptionIdValue: {
         fontSize: 12,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
     },
     // Quick Actions Main Row
     quickActionsMainContainer: {
@@ -1909,7 +1910,7 @@ const styles = StyleSheet.create({
     workHardNumber: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
     },
     workHardLabel: {
         fontSize: 12,
@@ -1975,7 +1976,7 @@ const styles = StyleSheet.create({
         lineHeight: 18,
     },
     totalAmount: {
-        color: '#C9A84C',
+        color: '#76577F',
         fontWeight: '700',
         fontSize: 16,
     },
@@ -2029,12 +2030,12 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#C9A84C',
+        borderColor: '#76577F',
     },
     rescheduleButtonText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#C9A84C',
+        color: '#76577F',
     },
     cancelButton: {
         flex: 1,
@@ -2132,7 +2133,7 @@ const styles = StyleSheet.create({
     invoicePreviewAmount: {
         fontSize: 24,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#76577F',
         marginTop: 4,
     },
     invoicePreviewStatus: {
@@ -2206,20 +2207,20 @@ const styles = StyleSheet.create({
     copyButton: {
         backgroundColor: '#FFFFFF',
         borderWidth: 1,
-        borderColor: '#C9A84C',
+        borderColor: '#76577F',
     },
     copyButtonText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#C9A84C',
+        color: '#76577F',
     },
     sendButton: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
     },
     sendButtonText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     shareInvoiceButton: {
         flexDirection: 'row',
@@ -2330,7 +2331,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     policyCloseButton: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         paddingVertical: 14,
         borderRadius: 12,
         alignItems: 'center',
@@ -2339,7 +2340,7 @@ const styles = StyleSheet.create({
     policyCloseButtonText: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
     },
 });
 

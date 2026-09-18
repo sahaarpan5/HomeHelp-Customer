@@ -24,10 +24,10 @@ const WalletScreen = ({ navigation }) => {
     const slideAnim = useRef(new Animated.Value(30)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+         gold: '#76577F',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -41,6 +41,7 @@ const WalletScreen = ({ navigation }) => {
         red: '#E17055',
         orange: '#FDCB6E',
         warning: '#F39C12',
+        txtColor: '#403746',
     };
 
     // Sample wallet data
@@ -58,7 +59,7 @@ const WalletScreen = ({ navigation }) => {
             amount: '+₹200',
             date: '15 Jan 2027, 10:30 AM',
             icon: require('../../asset/gift.png'),
-            color: COLORS.success,
+            color: COLORS.blue,
         },
         {
             id: '2',
@@ -78,7 +79,7 @@ const WalletScreen = ({ navigation }) => {
             amount: '+₹200',
             date: '8 Jan 2027, 11:00 AM',
             icon: require('../../asset/gift.png'),
-            color: COLORS.success,
+            color: COLORS.txtColor,
         },
 
         {
@@ -89,7 +90,7 @@ const WalletScreen = ({ navigation }) => {
             amount: '-₹399',
             date: '3 Jan 2027, 04:20 PM',
             icon: require('../../asset/credit-card.png'),
-            color: COLORS.red,
+            color: COLORS.purple,
         },
         {
             id: '6',
@@ -99,7 +100,7 @@ const WalletScreen = ({ navigation }) => {
             amount: '+₹200',
             date: '1 Jan 2027, 12:00 PM',
             icon: require('../../asset/gift.png'),
-            color: COLORS.success,
+            color: COLORS.green,
         },
     ];
 
@@ -124,7 +125,7 @@ const WalletScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#C9A84C" />
+            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
 
             {/* Header - Left Aligned */}
             <View style={styles.header}>
@@ -139,7 +140,7 @@ const WalletScreen = ({ navigation }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: COLORS.txtColor
 
 
                         }}
@@ -171,7 +172,7 @@ const WalletScreen = ({ navigation }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor: COLORS.white
+                                tintColor: COLORS.txtColor
 
 
                             }}
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -241,7 +242,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
         flex: 1,
     },
     content: {
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
     },
     // Balance Card
     balanceCard: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         borderRadius: 16,
         padding: 24,
         shadowColor: 'rgba(201, 168, 76, 0.3)',
@@ -262,13 +263,13 @@ const styles = StyleSheet.create({
     },
     balanceLabel: {
         fontSize: 14,
-        color: 'rgba(255,255,255,0.8)',
+        color: '#FFF',
         fontWeight: '500',
     },
     balanceAmount: {
         fontSize: 40,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#FFF',
         marginTop: 4,
         marginBottom: 20,
     },
@@ -277,16 +278,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        backgroundColor: 'rgba(255,255,255,0.2)',
+        backgroundColor: '#d6bceb',
         paddingVertical: 12,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.3)',
+        borderColor: '#C4B0D3',
     },
     addMoneyText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: '#403746',
     },
     // Wallet Activity
     activityContainer: {
@@ -337,7 +338,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     creditAmount: {
-        color: '#2ECC71',
+        color: '#76577F',
     },
     debitAmount: {
         color: '#E17055',

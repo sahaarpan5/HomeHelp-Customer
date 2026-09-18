@@ -58,10 +58,10 @@ const ManagePaymentScreen = ({ navigation }) => {
     const modalSlideAnim = useRef(new Animated.Value(height)).current;
 
     const COLORS = {
-        gold: '#C9A84C',
-        goldLight: '#D4AF37',
-        goldDark: '#B8943E',
-        goldFade: 'rgba(201, 168, 76, 0.1)',
+        gold: '#76577F',
+        goldLight: '#76577F',
+        goldDark: '#C4B0D3',
+        goldFade: 'rgba(179, 154, 199, 0.1)',
         white: '#FFFFFF',
         dark: '#1A1A1A',
         textLight: '#666666',
@@ -75,6 +75,7 @@ const ManagePaymentScreen = ({ navigation }) => {
         red: '#E17055',
         orange: '#FDCB6E',
         warning: '#F39C12',
+        txtColor: '#403746',
     };
 
     useEffect(() => {
@@ -381,7 +382,7 @@ const ManagePaymentScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#C9A84C" />
+            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
 
             {/* Header - Left Aligned */}
             <View style={styles.header}>
@@ -396,7 +397,7 @@ const ManagePaymentScreen = ({ navigation }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
+                            tintColor: COLORS.txtColor
 
 
                         }}
@@ -481,7 +482,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#d6bceb',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -492,7 +493,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: '#403746',
         flex: 1,
     },
     content: {
@@ -565,7 +566,7 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     defaultBadge: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 10,
@@ -584,7 +585,7 @@ const styles = StyleSheet.create({
     },
     setDefaultBtnText: {
         fontSize: 12,
-        color: '#C9A84C',
+        color: '#76577F',
         fontWeight: '500',
     },
     // Empty State
@@ -614,7 +615,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingVertical: 14,
         borderRadius: 14,
         shadowColor: 'rgba(201, 168, 76, 0.3)',
@@ -691,7 +692,7 @@ const styles = StyleSheet.create({
         borderColor: '#E8E3D8',
     },
     submitButton: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#76577F',
         paddingVertical: 16,
         borderRadius: 14,
         alignItems: 'center',
