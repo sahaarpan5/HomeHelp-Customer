@@ -25,6 +25,7 @@ import {
 } from '@react-native-google-signin/google-signin';
 
 
+
 const { width, height } = Dimensions.get('window');
 
 const LoginScreen = ({ navigation }) => {
