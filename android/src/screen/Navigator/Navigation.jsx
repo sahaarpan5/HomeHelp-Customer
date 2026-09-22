@@ -30,6 +30,8 @@ import SubscriptionDetailScreen from '../Common/SubscriptionDetailScreen';
 import SubscriptionSlotScreen from '../Common/SubscriptionSlotScreen';
 import SubscriptionConfirmationScreen from '../Common/SubscriptionConfirmationScreen';
 import SubscribedServiceScreen from '../Common/SubscribedServiceScreen';
+import LoginScreenV1 from '../Common/LoginScreenV1';
+import LoginScreenV2 from '../Common/LoginScreenV2';
 
 
 
@@ -70,6 +72,8 @@ const Navigation = () => {
          <Stack.Screen name="SubscriptionSlotScreen" component={SubscriptionSlotScreen} />
          <Stack.Screen name="SubscriptionConfirmationScreen" component={SubscriptionConfirmationScreen} />
          <Stack.Screen name="SubscribedServiceScreen" component={SubscribedServiceScreen} />
+          <Stack.Screen name="LoginScreenV1" component={LoginScreenV1} />
+          <Stack.Screen name="LoginScreenV2" component={LoginScreenV2} />
       </Stack.Navigator>
 
     </SafeAreaProvider>

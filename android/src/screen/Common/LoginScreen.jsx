@@ -1121,7 +1121,7 @@ const LoginScreen = ({ navigation }) => {
                                             width: 55,
                                             height: 55,
                                             resizeMode: 'contain',
-                                            tintColor: COLORS.goldDark
+
 
 
 
@@ -1129,7 +1129,12 @@ const LoginScreen = ({ navigation }) => {
                                     />
                                 </View>
 
-                                <Text style={styles.headerTitle}>HomeHelp</Text>
+                                <Text style={styles.headerTitle}>
+                                    <Text style={styles.headerTitleBold}>H</Text>
+                                    <Text style={styles.headerTitleNormal}>ome</Text>
+                                    <Text style={styles.headerTitleBold}>H</Text>
+                                    <Text style={styles.headerTitleNormal}>elp</Text>
+                                </Text>
                             </View>
                             <View style={styles.headerBadge}>
                                 <Text style={styles.headerBadgeText}>Premium</Text>
@@ -1194,15 +1199,15 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         borderRadius: 10,
-        backgroundColor: 'rgba(255,255,255,0.2)',
+        backgroundColor: '#FFF',
         justifyContent: 'center',
         alignItems: 'center',
     },
     headerTitle: {
-        fontSize: 22,
-        fontWeight: '700',
-        color: '#403746',
+        fontSize: 24,
         letterSpacing: -0.5,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     headerBadge: {
         backgroundColor: 'rgba(255,255,255,0.2)',
@@ -1700,6 +1705,17 @@ const styles = StyleSheet.create({
         fontSize: 13,
         color: '#d6bceb',
         fontWeight: '500',
+    },
+    headerTitleBold: {
+        fontSize: 24,
+        fontWeight: '900',
+        color: '#000000',
+       fontFamily: 'Segoe UI Bold',
+    },
+    headerTitleNormal: {
+        fontSize: 24,
+        color: '#000000',
+        fontFamily: 'Segoe UI',
     },
 });
 
