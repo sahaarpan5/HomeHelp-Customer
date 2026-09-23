@@ -183,81 +183,265 @@ const DashboardScreen = ({ navigation }) => {
             image: require('../../asset/sofaclean-icon.png'),
         },
     ];
-    // All Services - Grid View for Modal
+    // All Services - Grid View for Modal op-1
+    // const allServices = [
+    //     {
+    //         id: '1',
+    //         name: 'Home Cleaning',
+    //         icon: require('../../asset/street-sweeper.png'),
+    //         color: '#8B5CF6',
+    //         bg: '#EDE9FE',
+    //         border: '#8B5CF6',
+    //     },
+    //     {
+    //         id: '2',
+    //         name: 'Bathroom Cleaning',
+    //         icon: require('../../asset/shower.png'),
+    //         color: '#06B6D4',
+    //         bg: '#CFFAFE',
+    //         border: '#06B6D4',
+    //     },
+    //     {
+    //         id: '3',
+    //         name: 'Cooking Support',
+    //         icon: require('../../asset/chef.png'),
+    //         color: '#F59E0B',
+    //         bg: '#FEF3C7',
+    //         border: '#F59E0B',
+    //     },
+    //     {
+    //         id: '4',
+    //         name: 'Kitchen & Utensil cleaning',
+    //         icon: require('../../asset/kitchen.png'),
+    //         color: '#10B981',
+    //         bg: '#D1FAE5',
+    //         border: '#10B981',
+    //     },
+    //     {
+    //         id: '5',
+    //         name: 'Washing & Ironing cloths',
+    //         icon: require('../../asset/iron.png'),
+    //         color: '#0EA5E9',
+    //         bg: '#E0F2FE',
+    //         border: '#0EA5E9',
+    //     },
+    //     {
+    //         id: '6',
+    //         name: 'House Maid',
+    //         icon: require('../../asset/maid.png'),
+    //         color: '#F43F5E',
+    //         bg: '#FFE4E6',
+    //         border: '#F43F5E',
+    //     },
+    //     {
+    //         id: '7',
+    //         name: 'Home Organizing',
+    //         icon: require('../../asset/helping.png'),
+    //         color: '#D946EF',
+    //         bg: '#FAE8FF',
+    //         border: '#D946EF',
+    //     },
+    //     {
+    //         id: '8',
+    //         name: 'Packers Helpers',
+    //         icon: require('../../asset/box.png'),
+    //         color: '#7ecc08',
+    //         bg: '#ECFCCB',
+    //         border: '#7ecc08',
+    //     },
+    //     {
+    //         id: '9',
+    //         name: 'Elder Care & Companion',
+    //         icon: require('../../asset/old-man.png'),
+    //         color: '#c59607',
+    //         bg: '#FEF9C3',
+    //         border: '#c59607',
+    //     },
+    // ];
+
+    //op-2
+    // const allServices = [
+    //     {
+    //         id: '1',
+    //         name: 'Home Cleaning',
+    //         icon: require('../../asset/home.png'),
+    //         color: '#8B5CF6',
+    //         border: '#8B5CF6',
+    //     },
+    //     {
+    //         id: '2',
+    //         name: 'Bathroom Cleaning',
+    //         icon: require('../../asset/shower.png'),
+    //         color: '#06B6D4',
+    //         border: '#06B6D4',
+    //     },
+    //     {
+    //         id: '3',
+    //         name: 'Cooking',
+    //         icon: require('../../asset/chef.png'),
+    //         color: '#F59E0B',
+    //         border: '#F59E0B',
+    //     },
+    //     {
+    //         id: '4',
+    //         name: 'Kitchen & Utensil cleaning',
+    //         icon: require('../../asset/kitchen.png'),
+    //         color: '#10B981',
+    //         border: '#10B981',
+    //     },
+    //     {
+    //         id: '5',
+    //         name: 'Washing & Ironing cloths',
+    //         icon: require('../../asset/iron.png'),
+    //         color: '#0EA5E9',
+    //         border: '#0EA5E9',
+    //     },
+    //     {
+    //         id: '6',
+    //         name: 'House Maid',
+    //         icon: require('../../asset/maid.png'),
+    //         color: '#F43F5E',
+    //         border: '#F43F5E',
+    //     },
+    //     {
+    //         id: '7',
+    //         name: 'Home Organizing',
+    //         icon: require('../../asset/helping.png'),
+    //         color: '#D946EF',
+    //         border: '#D946EF',
+    //     },
+    //     {
+    //         id: '8',
+    //         name: 'Packers Helpers',
+    //         icon: require('../../asset/box.png'),
+    //         color: '#84CC16',
+    //         border: '#84CC16',
+    //     },
+    //     {
+    //         id: '9',
+    //         name: 'Elder Care & Companion',
+    //         icon: require('../../asset/old-man.png'),
+    //         color: '#EAB308',
+    //         border: '#EAB308',
+    //     },
+    // ];
+
+    //op-3
+
     const allServices = [
         {
             id: '1',
             name: 'Home Cleaning',
-            icon: require('../../asset/street-sweeper.png'),
+            icon: require('../../asset/home.png'),
             color: '#8B5CF6',
-            bg: '#EDE9FE',
-            border: '#8B5CF6',
         },
         {
             id: '2',
             name: 'Bathroom Cleaning',
             icon: require('../../asset/shower.png'),
             color: '#06B6D4',
-            bg: '#CFFAFE',
-            border: '#06B6D4',
         },
         {
             id: '3',
-            name: 'Cooking Support',
+            name: 'Cooking',
             icon: require('../../asset/chef.png'),
             color: '#F59E0B',
-            bg: '#FEF3C7',
-            border: '#F59E0B',
         },
         {
             id: '4',
             name: 'Kitchen & Utensil cleaning',
             icon: require('../../asset/kitchen.png'),
             color: '#10B981',
-            bg: '#D1FAE5',
-            border: '#10B981',
         },
         {
             id: '5',
             name: 'Washing & Ironing cloths',
             icon: require('../../asset/iron.png'),
             color: '#0EA5E9',
-            bg: '#E0F2FE',
-            border: '#0EA5E9',
         },
         {
             id: '6',
             name: 'House Maid',
             icon: require('../../asset/maid.png'),
             color: '#F43F5E',
-            bg: '#FFE4E6',
-            border: '#F43F5E',
         },
         {
             id: '7',
             name: 'Home Organizing',
             icon: require('../../asset/helping.png'),
             color: '#D946EF',
-            bg: '#FAE8FF',
-            border: '#D946EF',
         },
         {
             id: '8',
             name: 'Packers Helpers',
             icon: require('../../asset/box.png'),
-            color: '#7ecc08',
-            bg: '#ECFCCB',
-            border: '#7ecc08',
+            color: '#84CC16',
         },
         {
             id: '9',
             name: 'Elder Care & Companion',
             icon: require('../../asset/old-man.png'),
-            color: '#c59607',
-            bg: '#FEF9C3',
-            border: '#c59607',
+            color: '#EAB308',
         },
     ];
+
+    //op-4
+    // const allServices = [
+    //     {
+    //         id: '1',
+    //         name: 'Home Cleaning',
+    //         icon: require('../../asset/home.png'),
+    //         color: '#8B5CF6',
+    //     },
+    //     {
+    //         id: '2',
+    //         name: 'Bathroom Cleaning',
+    //         icon: require('../../asset/shower.png'),
+    //         color: '#06B6D4',
+    //     },
+    //     {
+    //         id: '3',
+    //         name: 'Cooking',
+    //         icon: require('../../asset/chef.png'),
+    //         color: '#F59E0B',
+    //     },
+    //     {
+    //         id: '4',
+    //         name: 'Kitchen & Utensil cleaning',
+    //         icon: require('../../asset/kitchen.png'),
+    //         color: '#10B981',
+    //     },
+    //     {
+    //         id: '5',
+    //         name: 'Washing & Ironing cloths',
+    //         icon: require('../../asset/iron.png'),
+    //         color: '#0EA5E9',
+    //     },
+    //     {
+    //         id: '6',
+    //         name: 'House Maid',
+    //         icon: require('../../asset/maid.png'),
+    //         color: '#F43F5E',
+    //     },
+    //     {
+    //         id: '7',
+    //         name: 'Home Organizing',
+    //         icon: require('../../asset/helping.png'),
+    //         color: '#D946EF',
+    //     },
+    //     {
+    //         id: '8',
+    //         name: 'Packers Helpers',
+    //         icon: require('../../asset/box.png'),
+    //         color: '#84CC16',
+    //     },
+    //     {
+    //         id: '9',
+    //         name: 'Elder Care & Companion',
+    //         icon: require('../../asset/old-man.png'),
+    //         color: '#EAB308',
+    //     },
+    // ];
     // On the Spot Services
     const onTheSpotServices = [
 
@@ -885,15 +1069,69 @@ const DashboardScreen = ({ navigation }) => {
                                 numColumns={3}
                                 showsVerticalScrollIndicator={false}
                                 contentContainerStyle={styles.modalGrid}
+                                //op-1
+                                // renderItem={({ item }) => (
+                                //     <TouchableOpacity
+                                //         style={[
+                                //             styles.modalServiceItem,
+                                //             {
+                                //                 backgroundColor: item.bg,
+                                //                 borderColor: item.border,
+                                //             }
+                                //         ]}
+                                //         onPress={() => navigation.navigate('ServiceBookingScreen')}
+                                //         activeOpacity={0.8}
+                                //     >
+                                //         <View style={[styles.modalServiceIcon, { backgroundColor: item.color }]}>
+                                //             <Image
+                                //                 source={item.icon}
+                                //                 style={{
+                                //                     width: 26,
+                                //                     height: 26,
+                                //                     resizeMode: 'contain',
+                                //                     tintColor: '#FFFFFF',
+                                //                 }}
+                                //             />
+                                //         </View>
+                                //         <Text style={[styles.modalServiceName, { color: item.color }]}>
+                                //             {item.name}
+                                //         </Text>
+                                //     </TouchableOpacity>
+                                // )}
+
+                                //op-2
+                                // renderItem={({ item }) => (
+                                //     <TouchableOpacity
+                                //         style={[
+                                //             styles.modalServiceItem,
+                                //             {
+                                //                 borderColor: item.border,
+                                //             }
+                                //         ]}
+                                //         onPress={() => navigation.navigate('ServiceBookingScreen')}
+                                //         activeOpacity={0.8}
+                                //     >
+                                //         <View style={[styles.modalServiceIcon, { backgroundColor: item.color }]}>
+                                //             <Image
+                                //                 source={item.icon}
+                                //                 style={{
+                                //                     width: 28,
+                                //                     height: 28,
+                                //                     resizeMode: 'contain',
+                                //                     tintColor: '#FFFFFF',
+                                //                 }}
+                                //             />
+                                //         </View>
+                                //         <Text style={[styles.modalServiceName, { color: item.color }]}>
+                                //             {item.name}
+                                //         </Text>
+                                //     </TouchableOpacity>
+                                // )}
+
+                                //op-3
                                 renderItem={({ item }) => (
                                     <TouchableOpacity
-                                        style={[
-                                            styles.modalServiceItem,
-                                            {
-                                                backgroundColor: item.bg,
-                                                borderColor: item.border,
-                                            }
-                                        ]}
+                                        style={styles.modalServiceItem}
                                         onPress={() => navigation.navigate('ServiceBookingScreen')}
                                         activeOpacity={0.8}
                                     >
@@ -901,8 +1139,8 @@ const DashboardScreen = ({ navigation }) => {
                                             <Image
                                                 source={item.icon}
                                                 style={{
-                                                    width: 36,
-                                                    height: 36,
+                                                    width: 28,
+                                                    height: 28,
                                                     resizeMode: 'contain',
                                                     tintColor: '#FFFFFF',
                                                 }}
@@ -913,6 +1151,29 @@ const DashboardScreen = ({ navigation }) => {
                                         </Text>
                                     </TouchableOpacity>
                                 )}
+                                //op-4
+                                // renderItem={({ item }) => (
+                                //     <TouchableOpacity
+                                //         style={styles.modalServiceItem}
+                                //         onPress={() => navigation.navigate('ServiceBookingScreen')}
+                                //         activeOpacity={0.8}
+                                //     >
+                                //         <View style={styles.modalServiceIcon}>
+                                //             <Image
+                                //                 source={item.icon}
+                                //                 style={{
+                                //                     width: 32,
+                                //                     height: 32,
+                                //                     resizeMode: 'contain',
+                                //                     tintColor: item.color,
+                                //                 }}
+                                //             />
+                                //         </View>
+                                //         <Text style={[styles.modalServiceName, { color: item.color }]}>
+                                //             {item.name}
+                                //         </Text>
+                                //     </TouchableOpacity>
+                                // )}
                             />
 
                             <TouchableOpacity style={styles.modalCloseButton} onPress={closeAllServicesModal}>
@@ -2199,7 +2460,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#1A1A1A',
         flex: 1,
-        fontFamily: 'Segoe UI',
+
     },
     referCard: {
         backgroundColor: '#76577F',
@@ -2367,34 +2628,112 @@ const styles = StyleSheet.create({
         paddingBottom: 16,
     },
     modalServiceItem: {
+
+        //op-1
+        // flex: 1,
+        // alignItems: 'center',
+        // paddingVertical: 14,
+        // paddingHorizontal: 6,
+        // margin: 5,
+        // borderRadius: 16,
+        // borderWidth: 2,
+        // shadowColor: 'rgba(0,0,0,0.08)',
+        // shadowOffset: { width: 0, height: 3 },
+        // shadowOpacity: 0.1,
+        // shadowRadius: 6,
+        // elevation: 3,
+        // minHeight: 110,
+
+        //op-2
+        // flex: 1,
+        // alignItems: 'center',
+        // paddingVertical: 14,
+        // paddingHorizontal: 6,
+        // margin: 5,
+        // borderRadius: 16,
+        // borderWidth: 2,
+        // backgroundColor: '#FFFFFF',
+        // shadowColor: 'rgba(0,0,0,0.08)',
+        // shadowOffset: { width: 0, height: 3 },
+        // shadowOpacity: 0.1,
+        // shadowRadius: 6,
+        // elevation: 3,
+        // minHeight: 110,
+
+        //op-3
         flex: 1,
         alignItems: 'center',
         paddingVertical: 14,
         paddingHorizontal: 6,
         margin: 5,
-        borderRadius: 16,
-        borderWidth: 2,
-        shadowColor: 'rgba(0,0,0,0.08)',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 3,
+        backgroundColor: 'transparent',
         minHeight: 110,
+
+        //op-4
+        // flex: 1,
+        // alignItems: 'center',
+        // paddingVertical: 14,
+        // paddingHorizontal: 6,
+        // margin: 5,
+        // backgroundColor: 'transparent',
+        // minHeight: 110,
     },
+
+    // modalServiceIcon: {
+    //     width: 60,
+    //     height: 60,
+    //     borderRadius: 30,
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    //     marginBottom: 8,
+    //     backgroundColor: '#FFFFFF',
+    //     shadowColor: 'rgba(0,0,0,0.12)',
+    //     shadowOffset: { width: 0, height: 3 },
+    //     shadowOpacity: 0.15,
+    //     shadowRadius: 6,
+    //     elevation: 4,
+    // },
+    // modalServiceName: {
+    //     fontSize: 11,
+    //     textAlign: 'center',
+    //     fontWeight: '700',
+    //     lineHeight: 14,
+    // },
+
+
     modalServiceIcon: {
         width: 56,
         height: 56,
-        borderRadius: 14,
+        borderRadius: 28,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 6,
+        marginBottom: 8,
+        shadowColor: 'rgba(0,0,0,0.15)',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        elevation: 4,
     },
     modalServiceName: {
         fontSize: 11,
-        color: '#1A1A1A',
         textAlign: 'center',
-        fontWeight: '500',
+        fontWeight: '700',
+        lineHeight: 14,
     },
+    // modalServiceIcon: {
+    //     width: 56,
+    //     height: 56,
+    //     borderRadius: 14,
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    //     marginBottom: 6,
+    // },
+    // modalServiceName: {
+    //     fontSize: 11,
+    //     color: '#1A1A1A',
+    //     textAlign: 'center',
+    //     fontWeight: '500',
+    // },
     modalCloseButton: {
         backgroundColor: '#F8F6F0',
         paddingVertical: 14,
