@@ -21,6 +21,7 @@ import Loader from '../../util/Loader';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 
 const { width, height } = Dimensions.get('window');
@@ -42,6 +43,9 @@ const DashboardScreen = ({ navigation }) => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [phone, setPhone] = useState('');
+
+    const [allServices, setAllServices] = useState([]);
+    const [offers, setOffers] = useState([]);
 
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -96,56 +100,56 @@ const DashboardScreen = ({ navigation }) => {
     };
 
     // Offers data
-    const offers = [
-        {
-            id: '1',
-            title: 'Home Cleaning Services',
-            description: 'Get your home sparkling clean with our professional deep cleaning service',
-            image: require('../../asset/homeclean.png'),
-            discount: '20%',
-            validTill: '31 Dec 2026',
-        },
-        {
-            id: '2',
-            title: 'Bathroom Cleaning',
-            description: 'Professional bathroom cleaning with stain removal and complete sanitization',
-            image: require('../../asset/bathroomclean.png'),
-            discount: '25%',
-            validTill: '15 Jan 2027',
-        },
-        {
-            id: '3',
-            title: 'Cooking Support',
-            description: 'Expert cooking with fresh ingredients and hygienic preparation',
-            image: require('../../asset/cooking.png'),
-            discount: '15%',
-            validTill: '31 Jan 2027',
-        },
-        {
-            id: '4',
-            title: 'Kitchen & Utensil cleaning',
-            description: 'Expert kitchen and utensil cleaning with hygienic care',
-            image: require('../../asset/kitchenclean.png'),
-            discount: '15%',
-            validTill: '31 Jan 2027',
-        },
-        {
-            id: '5',
-            title: 'Washing & Ironing cloths',
-            description: 'Professional laundry washing and ironing with premium fabric care',
-            image: require('../../asset/heroic.png'),
-            discount: '15%',
-            validTill: '31 Jan 2027',
-        },
-        {
-            id: '6',
-            title: 'House Maid',
-            description: 'Professional house maid services with reliable everyday home care',
-            image: require('../../asset/housemaid.png'),
-            discount: '15%',
-            validTill: '31 Jan 2027',
-        },
-    ];
+    // const offers = [
+    //     {
+    //         id: '1',
+    //         title: 'Home Cleaning Services',
+    //         description: 'Get your home sparkling clean with our professional deep cleaning service',
+    //         image: require('../../asset/homeclean.png'),
+    //         discount: '20%',
+    //         validTill: '31 Dec 2026',
+    //     },
+    //     {
+    //         id: '2',
+    //         title: 'Bathroom Cleaning',
+    //         description: 'Professional bathroom cleaning with stain removal and complete sanitization',
+    //         image: require('../../asset/bathroomclean.png'),
+    //         discount: '25%',
+    //         validTill: '15 Jan 2027',
+    //     },
+    //     {
+    //         id: '3',
+    //         title: 'Cooking Support',
+    //         description: 'Expert cooking with fresh ingredients and hygienic preparation',
+    //         image: require('../../asset/cooking.png'),
+    //         discount: '15%',
+    //         validTill: '31 Jan 2027',
+    //     },
+    //     {
+    //         id: '4',
+    //         title: 'Kitchen & Utensil cleaning',
+    //         description: 'Expert kitchen and utensil cleaning with hygienic care',
+    //         image: require('../../asset/kitchenclean.png'),
+    //         discount: '15%',
+    //         validTill: '31 Jan 2027',
+    //     },
+    //     {
+    //         id: '5',
+    //         title: 'Washing & Ironing cloths',
+    //         description: 'Professional laundry washing and ironing with premium fabric care',
+    //         image: require('../../asset/heroic.png'),
+    //         discount: '15%',
+    //         validTill: '31 Jan 2027',
+    //     },
+    //     {
+    //         id: '6',
+    //         title: 'House Maid',
+    //         description: 'Professional house maid services with reliable everyday home care',
+    //         image: require('../../asset/housemaid.png'),
+    //         discount: '15%',
+    //         validTill: '31 Jan 2027',
+    //     },
+    // ];
 
     // Popular Services (Only 3)
     const popularServices = [
@@ -328,62 +332,62 @@ const DashboardScreen = ({ navigation }) => {
 
     //op-3
 
-    const allServices = [
-        {
-            id: '1',
-            name: 'Home Cleaning',
-            icon: require('../../asset/home.png'),
-            color: '#8B5CF6',
-        },
-        {
-            id: '2',
-            name: 'Bathroom Cleaning',
-            icon: require('../../asset/shower.png'),
-            color: '#06B6D4',
-        },
-        {
-            id: '3',
-            name: 'Cooking',
-            icon: require('../../asset/chef.png'),
-            color: '#F59E0B',
-        },
-        {
-            id: '4',
-            name: 'Kitchen & Utensil cleaning',
-            icon: require('../../asset/kitchen.png'),
-            color: '#10B981',
-        },
-        {
-            id: '5',
-            name: 'Washing & Ironing cloths',
-            icon: require('../../asset/iron.png'),
-            color: '#0EA5E9',
-        },
-        {
-            id: '6',
-            name: 'House Maid',
-            icon: require('../../asset/maid.png'),
-            color: '#F43F5E',
-        },
-        {
-            id: '7',
-            name: 'Home Organizing',
-            icon: require('../../asset/helping.png'),
-            color: '#D946EF',
-        },
-        {
-            id: '8',
-            name: 'Packers Helpers',
-            icon: require('../../asset/box.png'),
-            color: '#84CC16',
-        },
-        {
-            id: '9',
-            name: 'Elder Care & Companion',
-            icon: require('../../asset/old-man.png'),
-            color: '#EAB308',
-        },
-    ];
+    // const allServices = [
+    //     {
+    //         id: '1',
+    //         name: 'Home Cleaning',
+    //         icon: require('../../asset/home.png'),
+    //         color: '#8B5CF6',
+    //     },
+    //     {
+    //         id: '2',
+    //         name: 'Bathroom Cleaning',
+    //         icon: require('../../asset/shower.png'),
+    //         color: '#06B6D4',
+    //     },
+    //     {
+    //         id: '3',
+    //         name: 'Cooking',
+    //         icon: require('../../asset/chef.png'),
+    //         color: '#F59E0B',
+    //     },
+    //     {
+    //         id: '4',
+    //         name: 'Kitchen & Utensil cleaning',
+    //         icon: require('../../asset/kitchen.png'),
+    //         color: '#10B981',
+    //     },
+    //     {
+    //         id: '5',
+    //         name: 'Washing & Ironing cloths',
+    //         icon: require('../../asset/iron.png'),
+    //         color: '#0EA5E9',
+    //     },
+    //     {
+    //         id: '6',
+    //         name: 'House Maid',
+    //         icon: require('../../asset/maid.png'),
+    //         color: '#F43F5E',
+    //     },
+    //     {
+    //         id: '7',
+    //         name: 'Home Organizing',
+    //         icon: require('../../asset/helping.png'),
+    //         color: '#D946EF',
+    //     },
+    //     {
+    //         id: '8',
+    //         name: 'Packers Helpers',
+    //         icon: require('../../asset/box.png'),
+    //         color: '#84CC16',
+    //     },
+    //     {
+    //         id: '9',
+    //         name: 'Elder Care & Companion',
+    //         icon: require('../../asset/old-man.png'),
+    //         color: '#EAB308',
+    //     },
+    // ];
 
     //op-4
     // const allServices = [
@@ -689,6 +693,7 @@ const DashboardScreen = ({ navigation }) => {
     useFocusEffect(
         useCallback(() => {
             fetchProfile();
+            fetchServices();
         }, [])
     );
 
@@ -835,8 +840,146 @@ const DashboardScreen = ({ navigation }) => {
                 error?.message || 'Something went wrong while loading profile.'
             );
         } finally {
+
+        }
+    };
+
+    const getServiceColor = (index, total) => {
+        const hue = Math.round((index * 360) / total);
+
+        return `hsl(${hue}, 70%, 55%)`;
+    };
+
+
+    const fetchServices = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+
+            if (!token) {
+                console.log('Token not found');
+                return;
+            }
+
+            setIsLoading(true);
+
+            const response = await axios.get(
+                API.CUSTOMER_SERVICES,
+                {
+                    headers: {
+                        Accept: 'text/plain',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log('SERVICE API RESPONSE:', response.data);
+
+            if (Array.isArray(response.data)) {
+
+                const serviceColors = [
+                    '#8B5CF6',
+                    '#06B6D4',
+                    '#F59E0B',
+                    '#10B981',
+                    '#0EA5E9',
+                    '#F43F5E',
+                    '#D946EF',
+                    '#84CC16',
+                    '#EAB308',
+                ];
+
+                const formattedServices = response.data.map((item, index) => ({
+                    id: item.serviceId,
+                    name: item.serviceName,
+                    icon: {
+                        uri: item.icon,
+                    },
+                    image: {
+                        uri: item.imageUrl,
+                    },
+                    color:  getServiceColor(index, response.data.length),
+                }));
+
+                console.log('FORMATTED SERVICES:', formattedServices);
+
+                setAllServices(formattedServices);
+
+
+                // Services for "Offers"
+                const formattedOffers = response.data.map((item, index) => ({
+                    id: item.serviceId,
+                    title: item.serviceName,
+                    description: getServiceDescription(item.serviceName),
+                    image: { uri: item.imageUrl },
+                    // discount: getServiceDiscount(index),
+                    //validTill: getServiceValidTill(index),
+                }));
+
+                setOffers(formattedOffers);
+
+            } else {
+                setAllServices([]);
+                setOffers([]);
+            }
+
+        } catch (error) {
+            console.log('FETCH SERVICES ERROR:', error);
+            console.log('SERVICE ERROR RESPONSE:', error?.response?.data);
+
+            Alert.alert(
+                'Error',
+                error?.response?.data?.message ||
+                'Unable to load services.'
+            );
+        } finally {
             setIsLoading(false);
         }
+    };
+
+    const getServiceDescription = (serviceName) => {
+        const descriptions = {
+            'Home Cleaning Services':
+                'Get your home sparkling clean with our professional deep cleaning service',
+
+            'Bathroom Cleaning':
+                'Professional bathroom cleaning with stain removal and complete sanitization',
+
+            'Cooking Support':
+                'Expert cooking with fresh ingredients and hygienic preparation',
+
+            'Kitchen & Utensil Cleaning':
+                'Expert kitchen and utensil cleaning with hygienic care',
+
+            'Washing & Ironing Cloths':
+                'Professional laundry washing and ironing with premium fabric care',
+
+            'House Maid':
+                'Professional house maid services with reliable everyday home care',
+        };
+
+        return (
+            descriptions[serviceName] ||
+            `Professional ${serviceName.toLowerCase()} with quality service and reliable care`
+        );
+    };
+
+    const getServiceDiscount = (index) => {
+        const discounts = ['20%', '25%', '15%', '15%', '15%', '15%'];
+
+        return discounts[index] || '15%';
+    };
+
+    const getServiceValidTill = (index) => {
+        const validTill = [
+            '31 Dec 2026',
+            '15 Jan 2027',
+            '31 Jan 2027',
+            '31 Jan 2027',
+            '31 Jan 2027',
+            '31 Jan 2027',
+        ];
+
+        return validTill[index] || '31 Jan 2027';
     };
 
     const handleQuickAction = (item) => {
@@ -1151,29 +1294,29 @@ const DashboardScreen = ({ navigation }) => {
                                         </Text>
                                     </TouchableOpacity>
                                 )}
-                                //op-4
-                                // renderItem={({ item }) => (
-                                //     <TouchableOpacity
-                                //         style={styles.modalServiceItem}
-                                //         onPress={() => navigation.navigate('ServiceBookingScreen')}
-                                //         activeOpacity={0.8}
-                                //     >
-                                //         <View style={styles.modalServiceIcon}>
-                                //             <Image
-                                //                 source={item.icon}
-                                //                 style={{
-                                //                     width: 32,
-                                //                     height: 32,
-                                //                     resizeMode: 'contain',
-                                //                     tintColor: item.color,
-                                //                 }}
-                                //             />
-                                //         </View>
-                                //         <Text style={[styles.modalServiceName, { color: item.color }]}>
-                                //             {item.name}
-                                //         </Text>
-                                //     </TouchableOpacity>
-                                // )}
+                            //op-4
+                            // renderItem={({ item }) => (
+                            //     <TouchableOpacity
+                            //         style={styles.modalServiceItem}
+                            //         onPress={() => navigation.navigate('ServiceBookingScreen')}
+                            //         activeOpacity={0.8}
+                            //     >
+                            //         <View style={styles.modalServiceIcon}>
+                            //             <Image
+                            //                 source={item.icon}
+                            //                 style={{
+                            //                     width: 32,
+                            //                     height: 32,
+                            //                     resizeMode: 'contain',
+                            //                     tintColor: item.color,
+                            //                 }}
+                            //             />
+                            //         </View>
+                            //         <Text style={[styles.modalServiceName, { color: item.color }]}>
+                            //             {item.name}
+                            //         </Text>
+                            //     </TouchableOpacity>
+                            // )}
                             />
 
                             <TouchableOpacity style={styles.modalCloseButton} onPress={closeAllServicesModal}>
@@ -1194,29 +1337,37 @@ const DashboardScreen = ({ navigation }) => {
                 resizeMode="cover"
             />
             <View style={styles.offerOverlay}>
-                <View style={styles.offerDiscountBadge}>
-                    <Text style={styles.offerDiscountText}>{item.discount}</Text>
-                    <Text style={styles.offerDiscountLabel}>OFF</Text>
+                <View style={styles.offerDiscountContainer}>
+                    {item.discount && item.discount !== '0%' && (
+                        <View style={styles.offerDiscountBadge}>
+                            <Text style={styles.offerDiscountText}>{item.discount}</Text>
+                            <Text style={styles.offerDiscountLabel}>OFF</Text>
+                        </View>
+                    )}
                 </View>
+
                 <View style={styles.offerContent}>
                     <Text style={styles.offerTitle}>{item.title}</Text>
                     <Text style={styles.offerDescription}>{item.description}</Text>
                     <View style={styles.offerFooter}>
-                        <View style={styles.offerValidity}>
+                        <View style={styles.offerValidityContainer}>
+                            {item.validTill?.trim() && (
+                                <View style={styles.offerValidity}>
+                                    <Image
+                                        source={require('../../asset/time-outline.png')}
+                                        style={{
+                                            width: 14,
+                                            height: 14,
+                                            resizeMode: 'contain',
+                                            tintColor: COLORS.white,
+                                        }}
+                                    />
 
-                            <Image
-                                source={require('../../asset/time-outline.png')} // Update the path as needed
-                                style={{
-                                    width: 14,
-                                    height: 14,
-                                    resizeMode: 'contain',
-                                    tintColor: COLORS.white,
-
-
-
-                                }}
-                            />
-                            <Text style={styles.offerValidityText}>Valid till {item.validTill}</Text>
+                                    <Text style={styles.offerValidityText}>
+                                        Valid till {item.validTill}
+                                    </Text>
+                                </View>
+                            )}
                         </View>
                         <View style={styles.bookNowButton} >
                             <Text style={styles.bookNowText}>Book Now</Text>
@@ -1939,7 +2090,7 @@ const styles = StyleSheet.create({
     },
     offerCard: {
         width: width - 40,
-        height: 200,
+        height: 220,
         borderRadius: 16,
         overflow: 'hidden',
         marginRight: 16,
@@ -2009,6 +2160,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
+    },
+
+    offerValidityContainer: {
+        height: 24,
+        justifyContent: 'center',
     },
     offerValidityText: {
         fontSize: 11,
@@ -2861,6 +3017,12 @@ const styles = StyleSheet.create({
 
         backgroundColor: 'rgba(255,255,255,0.7)',
         zIndex: 999,
+    },
+
+    offerDiscountContainer: {
+        height: 28,
+        justifyContent: 'center',
+        alignItems: 'flex-start',
     },
 });
 

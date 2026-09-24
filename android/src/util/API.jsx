@@ -10,6 +10,7 @@ const API = {
 
          // Delete address
     CUSTOMER_DELETE_ADDRESS: `${BASE_URL}/Customer/Address`,
+    CUSTOMER_SERVICES: `${BASE_URL}/Service/list-for-customer`,
 };
 
 // Add more endpoints here as needed
