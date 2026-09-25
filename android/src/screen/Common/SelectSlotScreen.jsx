@@ -20,6 +20,27 @@ const { width, height } = Dimensions.get('window');
 
 const SelectSlotScreen = ({ navigation, route }) => {
     // States
+    const {
+        selectedServices = [],
+        customerDetails = {},
+        addressDetails = null,
+        address = '',
+        slotSelections: previousSlotSelections = {},
+    } = route.params || {};
+
+    const {
+        name: customerName = '',
+        mobile: customerMobile = '',
+    } = customerDetails;
+
+    console.log('Selected Services:', selectedServices);
+    console.log('Customer Name:', customerName);
+    console.log('Customer Mobile:', customerMobile);
+    console.log('Address Details:', addressDetails);
+    console.log('Formatted Address:', address);
+    console.log('Previous Slots:', previousSlotSelections);
+
+
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedDurationType, setSelectedDurationType] = useState(null); // 'hourly', 'halfDay', 'fullDay'

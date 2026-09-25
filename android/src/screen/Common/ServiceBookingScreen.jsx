@@ -13,7 +13,16 @@ import {
     FlatList,
     Modal,
     TouchableWithoutFeedback,
+    Linking,
+    Share
 } from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import API from '../../util/API';
+import Loader from '../../util/Loader';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
+
 
 
 const { width, height } = Dimensions.get('window');
@@ -27,6 +36,17 @@ const ServiceBookingScreen = ({ navigation, route }) => {
     const [expandedFaq, setExpandedFaq] = useState(null);
     const [showAllReviews, setShowAllReviews] = useState(false);
     const [showCart, setShowCart] = useState(false);
+
+
+    const [serviceData, setServiceData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [showRateChart, setShowRateChart] = useState(false);
+
+    const { serviceId, customername, customemob } = route.params || {};
+
+    console.log('Service ID:', serviceId);
+    console.log('Customer Name:', customername);
+    console.log('Customer Mob:', customemob);
 
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -58,93 +78,93 @@ const ServiceBookingScreen = ({ navigation, route }) => {
     };
 
     // Sample Service Data
-    const serviceData = {
-        id: '1',
-        name: 'House Maid',
-        tagline: '✨ A spotless home, just a tap away',
-        coverImage: require('../../asset/housemaid.png'),
-        rating: 4.9,
-        totalReviews: 1240,
-        bookingCount: 15420,
-        price: '₹499',
-        whatIsCovered: ['House Cleaning', 'Dusting of all surfaces', 'Sweeping & Floor Mopping', 'Kitchen Cleaning', 'Bathroom Cleaning', 'Bedroom Cleaning', 'Utensil Washing', 'Laundry & Clothes Folding', 'Cobweb Removal', 'Waste Disposal',],
-        ourProcess: [
-            {
-                step: '1',
-                title: 'Plan the Work',
-                description: 'Our expert team plans the cleaning process based on your requirements',
-                image: require('../../asset/planned.png'),
-            },
-            {
-                step: '2',
-                title: 'Start Cleaning',
-                description: 'Professional cleaning with eco-friendly products and advanced equipment',
-                image: require('../../asset/start.png'),
-            },
-            {
-                step: '3',
-                title: 'Final Checks',
-                description: 'Thorough quality check to ensure 100% satisfaction',
-                image: require('../../asset/final-check.png'),
-            },
-        ],
-        images: [
-            'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
-            'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop',
-            'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop',
-            'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
-        ],
-        childServices: [
-            { id: 'c2', name: 'House Maid', price: '₹399', coverImage: require('../../asset/housemaid.png'), description: 'Reliable house maid service for everyday household chores, cleaning, and maintaining a neat and comfortable home.', whatIsCovered: ['General House Cleaning', 'Dusting & Sweeping', 'Floor Mopping', 'Kitchen Cleaning', 'Bathroom Cleaning', 'Utensil Washing'], duration: '3 hours', },
+    // const serviceData = {
+    //     id: '1',
+    //     name: 'House Maid',
+    //     tagline: '✨ A spotless home, just a tap away',
+    //     coverImage: require('../../asset/housemaid.png'),
+    //     rating: 4.9,
+    //     totalReviews: 1240,
+    //     bookingCount: 15420,
+    //     price: '₹499',
+    //     whatIsCovered: ['House Cleaning', 'Dusting of all surfaces', 'Sweeping & Floor Mopping', 'Kitchen Cleaning', 'Bathroom Cleaning', 'Bedroom Cleaning', 'Utensil Washing', 'Laundry & Clothes Folding', 'Cobweb Removal', 'Waste Disposal',],
+    //     ourProcess: [
+    //         {
+    //             step: '1',
+    //             title: 'Plan the Work',
+    //             description: 'Our expert team plans the cleaning process based on your requirements',
+    //             image: require('../../asset/planned.png'),
+    //         },
+    //         {
+    //             step: '2',
+    //             title: 'Start Cleaning',
+    //             description: 'Professional cleaning with eco-friendly products and advanced equipment',
+    //             image: require('../../asset/start.png'),
+    //         },
+    //         {
+    //             step: '3',
+    //             title: 'Final Checks',
+    //             description: 'Thorough quality check to ensure 100% satisfaction',
+    //             image: require('../../asset/final-check.png'),
+    //         },
+    //     ],
+    //     images: [
+    //         'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
+    //         'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop',
+    //         'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop',
+    //         'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
+    //     ],
+    //     childServices: [
+    //         { id: 'c2', name: 'House Maid', price: '₹399', coverImage: require('../../asset/housemaid.png'), description: 'Reliable house maid service for everyday household chores, cleaning, and maintaining a neat and comfortable home.', whatIsCovered: ['General House Cleaning', 'Dusting & Sweeping', 'Floor Mopping', 'Kitchen Cleaning', 'Bathroom Cleaning', 'Utensil Washing'], duration: '3 hours', },
 
 
-        ],
-        faqs: [
-            {
-                id: '1',
-                question: 'What is included in deep cleaning?',
-                answer: 'Deep cleaning includes thorough cleaning of all surfaces, dusting, mopping, kitchen degreasing, bathroom sanitization, and waste disposal.',
-            },
-            {
-                id: '2',
-                question: 'How long does the service take?',
-                answer: 'The service typically takes 3-4 hours depending on the size of your home and the services selected.',
-            },
-            {
-                id: '3',
-                question: 'Do I need to be present during the service?',
-                answer: 'Yes, we recommend being present to provide access and ensure you are satisfied with the service.',
-            },
-            {
-                id: '4',
-                question: 'What products do you use?',
-                answer: 'We use eco-friendly and safe cleaning products that are effective and gentle on surfaces.',
-            },
-        ],
-        reviews: [
-            {
-                id: '1',
-                customer: 'Priya Sharma',
-                rating: 5,
-                date: '15 Jan 2027',
-                comment: 'Excellent service! My home has never been cleaner. Very professional team.',
-            },
-            {
-                id: '2',
-                customer: 'Amit Patel',
-                rating: 5,
-                date: '10 Jan 2027',
-                comment: 'Great job! They were punctual and thorough. Highly recommend this service.',
-            },
-            {
-                id: '3',
-                customer: 'Sunita Reddy',
-                rating: 4,
-                date: '5 Jan 2027',
-                comment: 'Good service overall. A few minor issues but they fixed it quickly.',
-            },
-        ],
-    };
+    //     ],
+    //     faqs: [
+    //         {
+    //             id: '1',
+    //             question: 'What is included in deep cleaning?',
+    //             answer: 'Deep cleaning includes thorough cleaning of all surfaces, dusting, mopping, kitchen degreasing, bathroom sanitization, and waste disposal.',
+    //         },
+    //         {
+    //             id: '2',
+    //             question: 'How long does the service take?',
+    //             answer: 'The service typically takes 3-4 hours depending on the size of your home and the services selected.',
+    //         },
+    //         {
+    //             id: '3',
+    //             question: 'Do I need to be present during the service?',
+    //             answer: 'Yes, we recommend being present to provide access and ensure you are satisfied with the service.',
+    //         },
+    //         {
+    //             id: '4',
+    //             question: 'What products do you use?',
+    //             answer: 'We use eco-friendly and safe cleaning products that are effective and gentle on surfaces.',
+    //         },
+    //     ],
+    //     reviews: [
+    //         {
+    //             id: '1',
+    //             customer: 'Priya Sharma',
+    //             rating: 5,
+    //             date: '15 Jan 2027',
+    //             comment: 'Excellent service! My home has never been cleaner. Very professional team.',
+    //         },
+    //         {
+    //             id: '2',
+    //             customer: 'Amit Patel',
+    //             rating: 5,
+    //             date: '10 Jan 2027',
+    //             comment: 'Great job! They were punctual and thorough. Highly recommend this service.',
+    //         },
+    //         {
+    //             id: '3',
+    //             customer: 'Sunita Reddy',
+    //             rating: 4,
+    //             date: '5 Jan 2027',
+    //             comment: 'Good service overall. A few minor issues but they fixed it quickly.',
+    //         },
+    //     ],
+    // };
 
     const starImages = {
         full: require('../../asset/star-fill.png'),
@@ -166,6 +186,282 @@ const ServiceBookingScreen = ({ navigation, route }) => {
             }),
         ]).start();
     }, []);
+
+
+    useEffect(() => {
+        fetchServiceDetails();
+    }, [serviceId]);
+
+    useFocusEffect(
+        useCallback(() => {
+            loadCart();
+        }, [])
+    );
+
+
+    const loadCart = async () => {
+        try {
+            const savedCart = await AsyncStorage.getItem('selectedServices');
+
+            if (savedCart) {
+                const cart = JSON.parse(savedCart);
+
+                // Remove duplicate services by service ID
+                const uniqueCart = cart.filter(
+                    (item, index, self) =>
+                        index === self.findIndex(
+                            service => service.id === item.id
+                        )
+                );
+
+                setSelectedServices(uniqueCart);
+
+                // Save cleaned cart back to local storage
+                await AsyncStorage.setItem(
+                    'selectedServices',
+                    JSON.stringify(uniqueCart)
+                );
+            }
+        } catch (error) {
+            console.log('Load Cart Error:', error);
+        }
+    };
+
+
+
+    const fetchServiceDetails = async () => {
+        try {
+            if (!serviceId) {
+                Alert.alert('Error', 'Service ID not found.');
+                return;
+            }
+
+            const token = await AsyncStorage.getItem('token');
+
+            if (!token) {
+                Alert.alert('Error', 'Authentication token not found.');
+                return;
+            }
+
+            setIsLoading(true);
+
+            const response = await axios.get(
+                `${API.CUSTOMER_SERVICE_DETAILS}/${serviceId}`,
+                {
+                    headers: {
+                        Accept: 'text/plain',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log('SERVICE DETAILS:', response.data);
+
+            const data = response.data;
+
+            if (!data) {
+                Alert.alert('Error', 'Service details not found.');
+                return;
+            }
+
+            const activePricing = Array.isArray(data.pricing)
+                ? data.pricing.filter(item => item.isActive)
+                : [];
+
+            const hourlyPricing = activePricing.find(
+                item => item.pricingType === 1
+            );
+
+            const childServices = hourlyPricing
+                ? [
+                    {
+                        id: data.serviceId,
+                        name: data.serviceName,
+                        price: `₹${hourlyPricing.price}`,
+                        coverImage: {
+                            uri: data.imageUrl,
+                        },
+                        description:
+                            hourlyPricing.pricingDescription ||
+                            data.workProfile ||
+                            data.serviceName,
+
+                        whatIsCovered: Array.isArray(data.included)
+                            ? data.included.map(
+                                item => item.includedService
+                            )
+                            : [],
+
+                        duration: '1 hour',
+                    },
+                ]
+                : [
+                    {
+                        id: data.serviceId,
+                        name: data.serviceName,
+                        price: 'Price unavailable',
+                        coverImage: {
+                            uri: data.imageUrl,
+                        },
+                        description: data.workProfile || data.serviceName,
+                        whatIsCovered: Array.isArray(data.included)
+                            ? data.included.map(
+                                item => item.includedService
+                            )
+                            : [],
+                        duration: '',
+                    },
+                ];
+
+            // const formattedService = {
+            //     id: data.serviceId,
+            //     name: data.serviceName,
+            //     categoryName: data.categoryName,
+
+            //     tagline: data.workProfile
+            //         ? `✨ ${data.workProfile}`
+            //         : `✨ ${data.serviceName}`,
+
+            //     coverImage: {
+            //         uri: data.imageUrl,
+            //     },
+
+            //     rating: 0,
+            //     totalReviews: 0,
+            //     bookingCount: 0,
+
+            //     price:
+            //         activePricing.length > 0
+            //             ? `₹${Math.min(
+            //                 ...activePricing.map(
+            //                     item => Number(item.price) || 0
+            //                 )
+            //             )}`
+            //             : 'Price unavailable',
+
+            //     whatIsCovered: Array.isArray(data.included)
+            //         ? data.included.map(
+            //             item => item.includedService
+            //         )
+            //         : [],
+
+            //     ourProcess: Array.isArray(data.processSteps)
+            //         ? [...data.processSteps]
+            //             .sort((a, b) => a.ordinal - b.ordinal)
+            //             .map(item => ({
+            //                 step: String(item.ordinal),
+            //                 title: item.header,
+            //                 description: item.description,
+            //                 image: item.imageUrl,
+            //             }))
+            //         : [],
+
+            //     images: Array.isArray(data.galaries)
+            //         ? data.galaries
+            //             .map(item => item.imageUrl)
+            //             .filter(Boolean)
+            //         : [],
+
+            //     childServices,
+
+            //     faqs: Array.isArray(data.faQs)
+            //         ? [...data.faQs]
+            //             .sort((a, b) => a.ordinal - b.ordinal)
+            //             .map((item, index) => ({
+            //                 id: String(item.ordinal || index + 1),
+            //                 question: item.question,
+            //                 answer: item.answer,
+            //             }))
+            //         : [],
+
+            //     reviews: [],
+            // };
+
+
+            const formattedService = {
+                id: data.serviceId,
+                name: data.serviceName,
+                categoryName: data.categoryName,
+
+                tagline: data.workProfile
+                    ? `✨ ${data.workProfile}`
+                    : `✨ ${data.serviceName}`,
+
+                coverImage: {
+                    uri: data.imageUrl,
+                },
+
+                rating: 0,
+                totalReviews: 0,
+                bookingCount: 0,
+
+                price:
+                    activePricing.length > 0
+                        ? `₹${Math.min(
+                            ...activePricing.map(
+                                item => Number(item.price) || 0
+                            )
+                        )}`
+                        : 'Price unavailable',
+
+                // IMPORTANT
+                pricing: activePricing,
+
+                whatIsCovered: Array.isArray(data.included)
+                    ? data.included.map(
+                        item => item.includedService
+                    )
+                    : [],
+
+                ourProcess: Array.isArray(data.processSteps)
+                    ? [...data.processSteps]
+                        .sort((a, b) => a.ordinal - b.ordinal)
+                        .map(item => ({
+                            step: String(item.ordinal),
+                            title: item.header,
+                            description: item.description,
+                            image: item.imageUrl,
+                        }))
+                    : [],
+
+                images: Array.isArray(data.galaries)
+                    ? data.galaries
+                        .map(item => item.imageUrl)
+                        .filter(Boolean)
+                    : [],
+
+                childServices,
+
+                faqs: Array.isArray(data.faQs)
+                    ? [...data.faQs]
+                        .sort((a, b) => a.ordinal - b.ordinal)
+                        .map((item, index) => ({
+                            id: String(item.ordinal || index + 1),
+                            question: item.question,
+                            answer: item.answer,
+                        }))
+                    : [],
+
+                reviews: [],
+            };
+            setServiceData(formattedService);
+
+        } catch (error) {
+            console.log('SERVICE DETAILS ERROR:', error);
+            console.log(
+                'ERROR RESPONSE:',
+                error?.response?.data
+            );
+
+            Alert.alert(
+                'Error',
+                error?.response?.data?.message ||
+                'Unable to load service details.'
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const animateModalIn = (animRef) => {
         animRef.setValue(height);
@@ -236,35 +532,105 @@ const ServiceBookingScreen = ({ navigation, route }) => {
         });
     };
 
-    const addToCart = (service) => {
-        const exists = selectedServices.find(item => item.id === service.id);
+    const addToCart = async (service) => {
+        const exists = selectedServices.some(
+            item => String(item.id) === String(service.id)
+        );
+
         if (exists) {
-            Alert.alert('Already Added', `${service.name} is already in your cart`);
             return;
         }
-        setSelectedServices([...selectedServices, service]);
-        closeChildModal();
-        Alert.alert('Added!', `${service.name} has been added to your cart`);
-    };
 
-    const removeFromCart = (serviceId) => {
-        const updatedCart = selectedServices.filter(item => item.id !== serviceId);
+        const updatedCart = [
+            ...selectedServices,
+            service,
+        ];
+
         setSelectedServices(updatedCart);
+
+        try {
+            await AsyncStorage.setItem(
+                'selectedServices',
+                JSON.stringify(updatedCart)
+            );
+        } catch (error) {
+            console.log('Save Cart Error:', error);
+        }
+    };
+    const removeFromCart = async (serviceName) => {
+        const updatedCart = selectedServices.filter(
+            item =>
+                item.name?.trim().toLowerCase() !==
+                serviceName?.trim().toLowerCase()
+        );
+
+        setSelectedServices(updatedCart);
+
+        try {
+            await AsyncStorage.setItem(
+                'selectedServices',
+                JSON.stringify(updatedCart)
+            );
+        } catch (error) {
+            console.log('Remove Cart Error:', error);
+        }
+
         if (updatedCart.length === 0) {
             closeCart();
         }
     };
 
-    const isServiceSelected = (serviceId) => {
-        return selectedServices.some(item => item.id === serviceId);
+    const isServiceSelected = (serviceName) => {
+        return selectedServices.some(
+            item =>
+                item.name?.trim().toLowerCase() ===
+                serviceName?.trim().toLowerCase()
+        );
     };
 
     const isServiceSaved = (serviceId) => {
         return savedServices.includes(serviceId);
     };
 
-    const handleShare = () => {
-        Alert.alert('Share', 'Share this service with others');
+    const handleShare = async () => {
+        try {
+            const serviceName = serviceData?.name || 'Home Service';
+
+            // Get hourly pricing
+            const hourlyPricing = serviceData?.pricing?.find(
+                item =>
+                    Number(item.pricingType) === 1 &&
+                    (
+                        item.isActive === true ||
+                        item.isActive === 'true' ||
+                        item.isActive === 1
+                    )
+            );
+
+            const hourlyPrice = hourlyPricing?.price
+                ? `₹${hourlyPricing.price}`
+                : 'Price available in app';
+
+            // Your actual Play Store link
+            const appLink =
+                'https://play.google.com/store/apps/details?id=com.yourapp';
+
+            const message =
+                `🏠 ${serviceName}\n\n` +
+                `✨ Professional home service at your convenience.\n\n` +
+                `💰 Hourly Price: ${hourlyPrice}\n\n` +
+                `📱 Book this service from our app:\n` +
+                `${appLink}\n\n` +
+                `Download the app and book your service today!`;
+
+            await Share.share({
+                message: message,
+                title: `Share ${serviceName}`,
+            });
+
+        } catch (error) {
+            console.log('Share Error:', error);
+        }
     };
 
     const getTotalPrice = () => {
@@ -313,46 +679,126 @@ const ServiceBookingScreen = ({ navigation, route }) => {
         <Image source={{ uri: item }} style={styles.galleryImage} resizeMode="cover" />
     );
 
+
+    //     const isAdded = isServiceSelected(item.id);
+    //     const isSaved = isServiceSaved(item.id);
+    //     return (
+    //         <TouchableOpacity
+    //             style={styles.childServiceCard}
+    //             onPress={() => openChildModal(item)}
+    //             activeOpacity={0.8}
+    //         >
+    //             <Image source={item.coverImage} style={styles.childServiceImage} />
+    //             <View style={styles.childServiceInfo}>
+    //                 <View style={styles.childServiceHeaderRow}>
+    //                     <Text style={styles.childServiceName}>{item.name}</Text>
+    //                     <TouchableOpacity
+    //                         style={styles.heartButtonInline}
+    //                         onPress={() => toggleSaveService(item.id)}
+    //                     >
+    //                         <Animated.View style={{ transform: [{ scale: isSaved ? heartAnim : 1 }] }}>
+    //                             <Image
+    //                                 source={
+    //                                     isSaved
+    //                                         ? require('../../asset/like.png')
+    //                                         : require('../../asset/heart.png')
+    //                                 }
+    //                                 style={{
+    //                                     width: 18,
+    //                                     height: 18,
+    //                                     resizeMode: 'contain',
+    //                                     tintColor: isSaved ? COLORS.heart : COLORS.textLight, // Remove if your PNGs are already colored
+    //                                 }}
+    //                             />
+    //                         </Animated.View>
+    //                     </TouchableOpacity>
+    //                 </View>
+    //                 <Text style={styles.childServicePrice}>{item.price}</Text>
+
+    //             </View>
+    //             <TouchableOpacity
+    //                 style={[styles.actionButton, isAdded && styles.actionButtonAdded]}
+    //                 onPress={() => isAdded ? removeFromCart(item.id) : openChildModal(item)}
+    //             >
+    //                 <Image
+    //                     source={
+    //                         isAdded
+    //                             ? require('../../asset/minus.png')
+    //                             : require('../../asset/plus.png')
+    //                     }
+    //                     style={{
+    //                         width: 20,
+    //                         height: 20,
+    //                         resizeMode: 'contain',
+    //                         tintColor: COLORS.white, // Remove if your PNGs are already white
+    //                     }}
+    //                 />
+    //             </TouchableOpacity>
+    //         </TouchableOpacity>
+    //     );
+    // };
     const renderChildService = ({ item }) => {
-        const isAdded = isServiceSelected(item.id);
+
+        // Check whether this service is already in cart
+        const isAdded = isServiceSelected(item.name);
+
+        // Check whether this service is saved/favourite
         const isSaved = isServiceSaved(item.id);
+
         return (
-            <TouchableOpacity
-                style={styles.childServiceCard}
-                onPress={() => openChildModal(item)}
-                activeOpacity={0.8}
-            >
-                <Image source={item.coverImage} style={styles.childServiceImage} />
+            <View style={styles.childServiceCard}>
+
+                <Image
+                    source={item.coverImage}
+                    style={styles.childServiceImage}
+                />
+
                 <View style={styles.childServiceInfo}>
+
                     <View style={styles.childServiceHeaderRow}>
-                        <Text style={styles.childServiceName}>{item.name}</Text>
+
+                        <Text style={styles.childServiceName}>
+                            {item.name}
+                        </Text>
+
                         <TouchableOpacity
                             style={styles.heartButtonInline}
                             onPress={() => toggleSaveService(item.id)}
                         >
-                            <Animated.View style={{ transform: [{ scale: isSaved ? heartAnim : 1 }] }}>
-                                <Image
-                                    source={
-                                        isSaved
-                                            ? require('../../asset/like.png')
-                                            : require('../../asset/heart.png')
-                                    }
-                                    style={{
-                                        width: 18,
-                                        height: 18,
-                                        resizeMode: 'contain',
-                                        tintColor: isSaved ? COLORS.heart : COLORS.textLight, // Remove if your PNGs are already colored
-                                    }}
-                                />
-                            </Animated.View>
+                            {/* heart code */}
                         </TouchableOpacity>
+
                     </View>
-                    <Text style={styles.childServicePrice}>{item.price}</Text>
+
+                    <Text style={styles.childServicePrice}>
+                        {item.price}
+                        <Text style={styles.childServicePerHour}>
+                            {' / hour'}
+                        </Text>
+                    </Text>
+
+                    <TouchableOpacity
+                        style={styles.rateChartButton}
+                        onPress={() => setShowRateChart(true)}
+                    >
+                        <Text style={styles.rateChartButtonText}>
+                            Rate Chart
+                        </Text>
+                    </TouchableOpacity>
 
                 </View>
+
+                {/* PLUS / MINUS */}
                 <TouchableOpacity
-                    style={[styles.actionButton, isAdded && styles.actionButtonAdded]}
-                    onPress={() => isAdded ? removeFromCart(item.id) : openChildModal(item)}
+                    style={[
+                        styles.actionButton,
+                        isAdded && styles.actionButtonAdded,
+                    ]}
+                    onPress={() =>
+                        isAdded
+                            ? removeFromCart(item.name)
+                            : addToCart(item)
+                    }
                 >
                     <Image
                         source={
@@ -364,14 +810,14 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                             width: 20,
                             height: 20,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white, // Remove if your PNGs are already white
+                            tintColor: COLORS.white,
                         }}
                     />
                 </TouchableOpacity>
-            </TouchableOpacity>
+
+            </View>
         );
     };
-
     const renderFaqItem = (item) => (
         <TouchableOpacity
             key={item.id}
@@ -453,6 +899,117 @@ const ServiceBookingScreen = ({ navigation, route }) => {
         </View>
     );
 
+
+    const getPricingLabel = (item) => {
+        switch (Number(item.pricingType)) {
+            case 1:
+                return 'Hourly';
+
+            case 2:
+                return '4 Hours';
+
+            case 3:
+                return '8 Hours';
+
+            case 4:
+                return 'Monthly';
+
+            case 5:
+                return 'Project Based';
+
+            default:
+                return item.durationHours
+                    ? `${item.durationHours} Hours`
+                    : 'Other';
+        }
+    };
+
+    const renderRateChartModal = () => (
+        <Modal
+            transparent
+            visible={showRateChart}
+            animationType="fade"
+            onRequestClose={() => setShowRateChart(false)}
+        >
+            <TouchableWithoutFeedback
+                onPress={() => setShowRateChart(false)}
+            >
+                <View style={styles.rateChartOverlay}>
+
+                    <TouchableWithoutFeedback>
+                        <View style={styles.rateChartModal}>
+
+                            {/* Header */}
+                            <View style={styles.rateChartHeader}>
+                                <View>
+                                    <Text style={styles.rateChartTitle}>
+                                        Rate Chart
+                                    </Text>
+
+                                    <Text style={styles.rateChartServiceName}>
+                                        {serviceData?.name}
+                                    </Text>
+                                </View>
+
+                                <TouchableOpacity
+                                    onPress={() => setShowRateChart(false)}
+                                    style={styles.rateChartCloseButton}
+                                >
+                                    <Image
+                                        source={require('../../asset/close.png')}
+                                        style={{
+                                            width: 18,
+                                            height: 18,
+                                            resizeMode: 'contain',
+                                            tintColor: '#666666',
+                                        }}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+
+                            {/* Pricing */}
+                            <View style={styles.rateChartList}>
+                                {Array.isArray(serviceData?.pricing) &&
+                                    serviceData.pricing
+                                        .filter(item => item.isActive)
+                                        .map((item, index) => (
+                                            <View
+                                                key={`${item.pricingType}-${index}`}
+                                                style={styles.rateChartRow}
+                                            >
+                                                <View style={styles.rateChartDuration}>
+                                                    <Text style={styles.rateChartDurationText}>
+                                                        {getPricingLabel(item)}
+                                                    </Text>
+                                                </View>
+
+                                                <View style={styles.rateChartPriceContainer}>
+                                                    <Text style={styles.rateChartPrice}>
+                                                        ₹{item.price}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        ))
+                                }
+                            </View>
+
+                            <TouchableOpacity
+                                style={styles.rateChartDoneButton}
+                                onPress={() => setShowRateChart(false)}
+                            >
+                                <Text style={styles.rateChartDoneText}>
+                                    Close
+                                </Text>
+                            </TouchableOpacity>
+
+                        </View>
+                    </TouchableWithoutFeedback>
+
+                </View>
+            </TouchableWithoutFeedback>
+        </Modal>
+    );
+
     // Child Service Modal
     const renderChildModal = () => (
         <Modal
@@ -506,25 +1063,73 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                                         <Text style={styles.modalServicePrice}>{currentChildService.price}</Text>
                                         <Text style={styles.modalServiceDescription}>{currentChildService.description}</Text>
 
-                                        <View style={styles.modalSection}>
-                                            <Text style={styles.modalSectionTitle}>✅ What's Included</Text>
-                                            {currentChildService.whatIsCovered.map((item, index) => (
-                                                <View key={index} style={styles.modalListItem}>
-
-                                                    <Image
-                                                        source={require('../../asset/checked.png')} // Update the path as needed
-                                                        style={{
-                                                            width: 18,
-                                                            height: 18,
-                                                            resizeMode: 'contain',
-                                                            tintColor: COLORS.purple
 
 
-                                                        }}
-                                                    />
-                                                    <Text style={styles.modalListItemText}>{item}</Text>
-                                                </View>
-                                            ))}
+
+                                        {/* What's Included */}
+                                        <View style={styles.sectionContainer}>
+
+                                            <View style={styles.sectionHeader}>
+                                                <Text style={styles.sectionTitle}>
+                                                    ✅ What's Included
+                                                </Text>
+
+                                                <Text style={styles.sectionSubtitle}>
+                                                    Everything we cover in this service
+                                                </Text>
+                                            </View>
+
+                                            <View style={styles.includedList}>
+                                                {serviceData.whatIsCovered.map((item, index) => {
+
+                                                    const parts = item.split('–');
+
+                                                    const title = parts[0]?.trim();
+
+                                                    const description = parts
+                                                        .slice(1)
+                                                        .join('–')
+                                                        .trim();
+
+                                                    return (
+                                                        <View
+                                                            key={index}
+                                                            style={styles.includedCard}
+                                                        >
+
+                                                            {/* Check Icon */}
+                                                            <View style={styles.includedCheck}>
+                                                                <Text style={styles.includedCheckText}>
+                                                                    ✓
+                                                                </Text>
+                                                            </View>
+
+                                                            {/* Content */}
+                                                            <View style={styles.includedContent}>
+
+                                                                <Text style={styles.includedText}>
+
+                                                                    {/* Bold title */}
+                                                                    <Text style={styles.includedBold}>
+                                                                        {title}
+                                                                    </Text>
+
+                                                                    {/* Normal description */}
+                                                                    {description ? (
+                                                                        <Text style={styles.includedNormal}>
+                                                                            {' – '}{description}
+                                                                        </Text>
+                                                                    ) : null}
+
+                                                                </Text>
+
+                                                            </View>
+
+                                                        </View>
+                                                    );
+                                                })}
+                                            </View>
+
                                         </View>
 
 
@@ -600,7 +1205,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                                             <Text style={styles.cartItemName}>{item.name}</Text>
                                             {/* <Text style={styles.cartItemPrice}>{item.price}</Text> */}
                                         </View>
-                                        <TouchableOpacity onPress={() => removeFromCart(item.id)}>
+                                        <TouchableOpacity onPress={() => removeFromCart(item.name)}>
 
                                             <Image
                                                 source={require('../../asset/delete.png')} // Update the path as needed
@@ -626,7 +1231,12 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                                     </View> */}
                                     <TouchableOpacity style={styles.cartCheckoutButton} onPress={() => {
                                         closeCart();
-                                        navigation.replace('ViewCartScreen', { selectedServices });
+
+                                        navigation.navigate('ViewCartScreen', {
+                                            selectedServices: selectedServices,
+                                            customername : customername,
+                                            customemob : customemob
+                                        });
                                     }}>
                                         <Text style={styles.cartCheckoutText}>Proceed to Book</Text>
 
@@ -655,9 +1265,25 @@ const ServiceBookingScreen = ({ navigation, route }) => {
         </Modal>
     );
 
+    if (isLoading || !serviceData) {
+        return (
+            <View style={styles.container}>
+                <StatusBar
+                    barStyle="light-content"
+                    backgroundColor="transparent"
+                    translucent
+                />
+
+                <Loader />
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+
+
 
             <Animated.ScrollView
                 style={[
@@ -673,6 +1299,8 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                 <View style={styles.coverContainer}>
                     <Image source={serviceData.coverImage} style={styles.coverImage} />
                     <View style={styles.coverGradient} />
+
+
 
                     <View style={styles.iconOverlay}>
                         <TouchableOpacity
@@ -711,20 +1339,49 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                         </TouchableOpacity>
                     </View>
 
-                    <View style={styles.coverBadge}>
-                        <Text style={styles.coverBadgeText}>⭐ {serviceData.rating} • {serviceData.bookingCount} bookings</Text>
-                    </View>
+                    {(
+                        Number(serviceData?.rating) > 0 ||
+                        Number(serviceData?.bookingCount) > 0
+                    ) && (
+                            <View style={styles.coverBadge}>
+                                {Number(serviceData?.rating) > 0 && (
+                                    <View style={styles.coverBadgeItem}>
+                                        <Text style={styles.coverBadgeIcon}>⭐</Text>
+
+                                        <Text style={styles.coverBadgeText}>
+                                            {serviceData.rating}
+                                        </Text>
+                                    </View>
+                                )}
+
+                                {Number(serviceData?.rating) > 0 &&
+                                    Number(serviceData?.bookingCount) > 0 && (
+                                        <View style={styles.coverBadgeDivider} />
+                                    )}
+
+                                {Number(serviceData?.bookingCount) > 0 && (
+                                    <View style={styles.coverBadgeItem}>
+                                        <Text style={styles.coverBadgeText}>
+                                            {serviceData.bookingCount} bookings
+                                        </Text>
+                                    </View>
+                                )}
+                            </View>
+                        )}
                 </View>
 
                 {/* Service Header Info */}
                 <View style={styles.infoContainer}>
-                    <Text style={styles.serviceTagline}>{serviceData.tagline}</Text>
+
                     <Text style={styles.serviceName}>{serviceData.name}</Text>
-                    <View style={styles.ratingRow}>
-                        <View style={styles.ratingStars}>{renderStars(serviceData.rating)}</View>
-                        <Text style={styles.ratingText}>{serviceData.rating}</Text>
-                        <Text style={styles.ratingCount}>({serviceData.totalReviews} reviews)</Text>
-                    </View>
+                    <Text style={styles.serviceTagline}>{serviceData.tagline}</Text>
+                    {serviceData?.totalReviews > 0 && (
+                        <View style={styles.ratingRow}>
+                            <View style={styles.ratingStars}>{renderStars(serviceData.rating)}</View>
+                            <Text style={styles.ratingText}>{serviceData.rating}</Text>
+                            <Text style={styles.ratingCount}>({serviceData.totalReviews} reviews)</Text>
+                        </View>
+                    )}
 
                 </View>
 
@@ -745,27 +1402,68 @@ const ServiceBookingScreen = ({ navigation, route }) => {
 
                 {/* What's Covered */}
                 <View style={styles.sectionContainer}>
+
                     <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>✅ What's Included</Text>
-                        <Text style={styles.sectionSubtitle}>Everything we cover in this service</Text>
+                        <Text style={styles.sectionTitle}>
+                            ✅ What's Included
+                        </Text>
+
+                        <Text style={styles.sectionSubtitle}>
+                            Everything we cover in this service
+                        </Text>
                     </View>
-                    {serviceData.whatIsCovered.map((item, index) => (
-                        <View key={index} style={styles.listItem}>
 
-                            <Image
-                                source={require('../../asset/checked.png')} // Update the path as needed
-                                style={{
-                                    width: 20,
-                                    height: 20,
-                                    resizeMode: 'contain',
-                                    tintColor: COLORS.purple
+                    <View style={styles.includedList}>
+                        {serviceData.whatIsCovered.map((item, index) => {
 
+                            const parts = item.split('–');
 
-                                }}
-                            />
-                            <Text style={styles.listItemText}>{item}</Text>
-                        </View>
-                    ))}
+                            const title = parts[0]?.trim();
+
+                            const description = parts
+                                .slice(1)
+                                .join('–')
+                                .trim();
+
+                            return (
+                                <View
+                                    key={index}
+                                    style={styles.includedCard}
+                                >
+
+                                    {/* Check Icon */}
+                                    <View style={styles.includedCheck}>
+                                        <Text style={styles.includedCheckText}>
+                                            ✓
+                                        </Text>
+                                    </View>
+
+                                    {/* Content */}
+                                    <View style={styles.includedContent}>
+
+                                        <Text style={styles.includedText}>
+
+                                            {/* Bold title */}
+                                            <Text style={styles.includedBold}>
+                                                {title}
+                                            </Text>
+
+                                            {/* Normal description */}
+                                            {description ? (
+                                                <Text style={styles.includedNormal}>
+                                                    {' – '}{description}
+                                                </Text>
+                                            ) : null}
+
+                                        </Text>
+
+                                    </View>
+
+                                </View>
+                            );
+                        })}
+                    </View>
+
                 </View>
 
 
@@ -780,7 +1478,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                             <View key={index} style={styles.processStepWrapper}>
                                 <View style={styles.processCard}>
                                     <View style={styles.processImageContainer}>
-                                        <Image source={item.image} style={styles.processImage} />
+                                        <Image source={{ uri: item.image }} style={styles.processImage} />
                                         <View style={styles.processStepBadge}>
                                             <Text style={styles.processStepBadgeText}>{item.step}</Text>
                                         </View>
@@ -813,20 +1511,23 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                 </View>
 
                 {/* Reviews */}
-                <View style={styles.sectionContainer}>
-                    <View style={styles.reviewsHeader}>
-                        <View>
-                            <Text style={styles.sectionTitle}>⭐ Customer Reviews</Text>
-                            <Text style={styles.sectionSubtitle}>What our customers say</Text>
+                {Array.isArray(serviceData?.reviews) &&
+                    serviceData.reviews.length > 0 && (
+                        <View style={styles.sectionContainer}>
+                            <View style={styles.reviewsHeader}>
+                                <View>
+                                    <Text style={styles.sectionTitle}>⭐ Customer Reviews</Text>
+                                    <Text style={styles.sectionSubtitle}>What our customers say</Text>
+                                </View>
+                                <TouchableOpacity onPress={() => setShowAllReviews(!showAllReviews)}>
+                                    <Text style={styles.viewAllText}>
+                                        {showAllReviews ? 'Show Less' : 'View All'}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                            {(showAllReviews ? serviceData.reviews : serviceData.reviews.slice(0, 2)).map(renderReview)}
                         </View>
-                        <TouchableOpacity onPress={() => setShowAllReviews(!showAllReviews)}>
-                            <Text style={styles.viewAllText}>
-                                {showAllReviews ? 'Show Less' : 'View All'}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                    {(showAllReviews ? serviceData.reviews : serviceData.reviews.slice(0, 2)).map(renderReview)}
-                </View>
+                    )}
 
                 {/* FAQs */}
                 <View style={styles.sectionContainer}>
@@ -878,6 +1579,8 @@ const ServiceBookingScreen = ({ navigation, route }) => {
 
             {/* Cart Modal */}
             {renderCartModal()}
+
+            {renderRateChartModal()}
         </View>
     );
 };
@@ -929,15 +1632,40 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 16,
         left: 16,
-        backgroundColor: 'rgba(0,0,0,0.6)',
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.65)',
         paddingHorizontal: 12,
-        paddingVertical: 4,
+        paddingVertical: 7,
         borderRadius: 20,
     },
     coverBadgeText: {
         fontSize: 12,
         color: '#FFFFFF',
         fontWeight: '500',
+    },
+
+    coverBadgeItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
+    coverBadgeIcon: {
+        fontSize: 13,
+        marginRight: 4,
+    },
+
+    coverBadgeText: {
+        fontSize: 12,
+        color: '#FFFFFF',
+        fontWeight: '600',
+    },
+
+    coverBadgeDivider: {
+        width: 1,
+        height: 14,
+        backgroundColor: 'rgba(255,255,255,0.4)',
+        marginHorizontal: 8,
     },
     // Info Container
     infoContainer: {
@@ -1156,8 +1884,8 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
     },
     galleryImage: {
-        width: 150,
-        height: 100,
+        width: 200,
+        height: 200,
         borderRadius: 8,
         marginRight: 10,
     },
@@ -1518,6 +2246,272 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#FFFFFF',
         fontWeight: '600',
+    },
+
+    loaderOverlay: {
+        flex: 1,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+
+        backgroundColor: 'rgba(255,255,255,0.7)',
+        zIndex: 999,
+    },
+
+    rateChartButton: {
+        alignSelf: 'flex-start',
+        marginTop: 6,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#76577F',
+        backgroundColor: '#F8F3FA',
+    },
+
+    rateChartButtonText: {
+        fontSize: 11,
+        fontWeight: '600',
+        color: '#76577F',
+    },
+
+    childServicePerHour: {
+        fontSize: 11,
+        fontWeight: '500',
+        color: '#777777',
+    },
+    rateChartOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.55)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+
+    rateChartModal: {
+        width: '100%',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        padding: 20,
+    },
+
+    rateChartHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+
+    rateChartTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#1A1A1A',
+    },
+
+    rateChartServiceName: {
+        fontSize: 13,
+        color: '#777777',
+        marginTop: 3,
+    },
+
+    rateChartCloseButton: {
+        width: 34,
+        height: 34,
+        borderRadius: 17,
+        backgroundColor: '#F5F5F5',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    rateChartList: {
+        marginTop: 4,
+    },
+
+    rateChartRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 14,
+        paddingHorizontal: 14,
+        marginBottom: 8,
+        borderRadius: 10,
+        backgroundColor: '#F8F6F0',
+        borderWidth: 1,
+        borderColor: '#EFE9E0',
+    },
+
+    rateChartDuration: {
+        flex: 1,
+    },
+
+    rateChartDurationText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#403746',
+    },
+
+    rateChartPriceContainer: {
+        alignItems: 'flex-end',
+    },
+
+    rateChartPrice: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#76577F',
+    },
+
+    rateChartDoneButton: {
+        backgroundColor: '#76577F',
+        borderRadius: 12,
+        paddingVertical: 13,
+        alignItems: 'center',
+        marginTop: 12,
+    },
+
+    rateChartDoneText: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#FFFFFF',
+    },
+
+    includedSection: {
+        marginTop: 20,
+    },
+
+    sectionHeaderRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 14,
+    },
+
+    sectionIconContainer: {
+        width: 34,
+        height: 34,
+        borderRadius: 17,
+        backgroundColor: '#F1EAF4',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10,
+    },
+
+    sectionIcon: {
+        width: 18,
+        height: 18,
+        resizeMode: 'contain',
+    },
+
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#2D2530',
+    },
+
+    includedList: {
+        gap: 10,
+    },
+
+    includedCard: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        backgroundColor: '#FAF8FB',
+        borderRadius: 14,
+        paddingVertical: 13,
+        paddingHorizontal: 12,
+        borderWidth: 1,
+        borderColor: '#EEE6F1',
+    },
+
+    includedCheck: {
+        width: 26,
+        height: 26,
+        borderRadius: 13,
+        backgroundColor: '#76577F',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10,
+        marginTop: 1,
+    },
+
+    includedCheckText: {
+        color: '#FFFFFF',
+        fontSize: 15,
+        fontWeight: '700',
+    },
+
+    includedContent: {
+        flex: 1,
+    },
+
+    includedText: {
+        fontSize: 14,
+        lineHeight: 21,
+        color: '#55505A',
+    },
+
+    includedBold: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#302936',
+    },
+
+    includedNormal: {
+        fontSize: 14,
+        fontWeight: '400',
+        color: '#66616A',
+    },
+
+    includedList: {
+        marginTop: 4,
+    },
+
+    includedCard: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        paddingVertical: 8,
+        paddingHorizontal: 0,
+        backgroundColor: '#FFFFFF',
+    },
+
+    includedCheck: {
+        width: 34,
+        height: 34,
+        borderRadius: 17,
+        backgroundColor: '#6C5CE7',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+        marginTop: 1,
+    },
+
+    includedCheckText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: '700',
+    },
+
+    includedContent: {
+        flex: 1,
+        paddingTop: 2,
+    },
+
+    includedText: {
+        fontSize: 15,
+        lineHeight: 21,
+        color: '#222222',
+    },
+
+    includedBold: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#222222',
+    },
+
+    includedNormal: {
+        fontSize: 15,
+        fontWeight: '400',
+        color: '#333333',
     },
 });
 

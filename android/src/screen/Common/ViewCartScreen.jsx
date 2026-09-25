@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
 import {
     View,
@@ -14,33 +16,70 @@ import {
     TextInput,
     Modal,
     TouchableWithoutFeedback,
+    ActivityIndicator,
 } from 'react-native';
+import API from '../../util/API';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 
 const { width, height } = Dimensions.get('window');
 
 const ViewCartScreen = ({ navigation, route }) => {
     // States
-    const [selectedServices, setSelectedServices] = useState([
-        {
-            id: 'c1',
-            name: 'House maid service',
-            price: '₹299/hr',
-            coverImage: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
-            duration: '2 hours',
-        },
-
-    ]);
+    const {
+        selectedServices: servicesFromRoute = [],
+        customername = '',
+        customemob = '',
+    } = route.params || {};
+    const [selectedServices, setSelectedServices] = useState([]);
     const [couponCode, setCouponCode] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState(null);
     const [selectedTip, setSelectedTip] = useState(null);
     const [customTip, setCustomTip] = useState('');
+    const [selectedCustomerName, setSelectedCustomerName] = useState('');
+    const [selectedCustomerMob, setSelectedCustomerMob] = useState('');
     const [showCustomTip, setShowCustomTip] = useState(false);
     const [showAllCoupons, setShowAllCoupons] = useState(false);
     const [showSlotModal, setShowSlotModal] = useState(false);
-    const [customerName, setCustomerName] = useState('Rahul Sharma');
-    const [customerMobile, setCustomerMobile] = useState('+91 98765 43210');
-    const [address, setAddress] = useState('123, Main Street, Mumbai, Maharashtra - 400001');
+
+    const [savedAddresses, setSavedAddresses] = useState([]);
+    const [selectedAddress, setSelectedAddress] = useState(null);
+    const [showAddressModal, setShowAddressModal] = useState(false);
+    const [addressLoading, setAddressLoading] = useState(true);
+    const [peopleAlsoLike, setPeopleAlsoLike] = useState([]);
+    const [peopleAlsoLikeLoading, setPeopleAlsoLikeLoading] = useState(true);
+    const [address, setAddress] = useState('');
+
+    //address edit
+    const [showEditAddressModal, setShowEditAddressModal] = useState(false);
+    const [editingAddress, setEditingAddress] = useState(null);
+
+    const [editAddressTitle, setEditAddressTitle] = useState('');
+    const [editAddressLine1, setEditAddressLine1] = useState('');
+    const [editAddressLine2, setEditAddressLine2] = useState('');
+    const [editAddressLandmark, setEditAddressLandmark] = useState('');
+    const [editAddressCity, setEditAddressCity] = useState('');
+    const [editAddressState, setEditAddressState] = useState('');
+    const [editAddressPinCode, setEditAddressPinCode] = useState('');
+
+
+    const [editAddressId, setEditAddressId] = useState('');
+    const [editAddressType, setEditAddressType] = useState('');
+
+    const [editAddress, setEditAddress] = useState('');
+    const [editFlatNo, setEditFlatNo] = useState('');
+    const [editLandmark, setEditLandmark] = useState('');
+
+    const [editPincode, setEditPincode] = useState('');
+    const [editCity, setEditCity] = useState('');
+    const [editState, setEditState] = useState('');
+
+    const [editLatt, setEditLatt] = useState(0);
+    const [editLong, setEditLong] = useState(0);
+    const [editIsDefault, setEditIsDefault] = useState(false);
+
+    const [isAddressUpdating, setIsAddressUpdating] = useState(false);
 
     // Slot Selection States - Day wise
     const [selectedDate, setSelectedDate] = useState(null);
@@ -50,6 +89,10 @@ const ViewCartScreen = ({ navigation, route }) => {
     // Store slot selections per day
     const [slotSelections, setSlotSelections] = useState({});
 
+    const [showCustomerModal, setShowCustomerModal] = useState(false);
+    const [customerNameInput, setCustomerNameInput] = useState('');
+    const [customerMobileInput, setCustomerMobileInput] = useState('');
+
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(30)).current;
@@ -57,7 +100,7 @@ const ViewCartScreen = ({ navigation, route }) => {
     const couponModalSlideAnim = useRef(new Animated.Value(height)).current;
 
     const COLORS = {
-        gold: '#d6bceb',
+        gold: '#76577F',
         goldLight: '#76577F',
         goldDark: '#C4B0D3',
         goldFade: 'rgba(179, 154, 199, 0.1)',
@@ -74,7 +117,7 @@ const ViewCartScreen = ({ navigation, route }) => {
         red: '#E17055',
         orange: '#FDCB6E',
         warning: '#F39C12',
-         txtColor: '#403746',
+        txtColor: '#403746',
     };
 
     // Generate next 7 days
@@ -117,31 +160,7 @@ const ViewCartScreen = ({ navigation, route }) => {
     ];
 
     // People also like services
-    const peopleAlsoLike = [
 
-        {
-            id: 'p2',
-            name: 'House Maid',
-            price: '₹599',
-            image: require('../../asset/sofa-clean.png'),
-            rating: 4.7,
-        },
-        {
-            id: 'p3',
-            name: 'Bathroom Cleaning',
-            price: '₹349',
-            image: require('../../asset/bathroom-clean.png'),
-            rating: 4.6,
-        },
-        {
-            id: 'p4',
-            name: 'Kitchen & Utensil cleaning',
-            price: '₹449',
-            image: require('../../asset/kitchen-clean.png'),
-            rating: 4.5,
-        },
-
-    ];
 
     useEffect(() => {
         Animated.parallel([
@@ -157,6 +176,152 @@ const ViewCartScreen = ({ navigation, route }) => {
             }),
         ]).start();
     }, []);
+
+    useEffect(() => {
+        if (servicesFromRoute.length > 0) {
+            setSelectedServices(servicesFromRoute);
+        }
+        setSelectedCustomerMob(customemob);
+        setSelectedCustomerName(customername);
+
+    }, []);
+
+    useEffect(() => {
+        fetchPeopleAlsoLike();
+    }, [selectedServices]);
+
+
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchAddresses();
+        }, [])
+    );
+
+
+
+
+
+    const fetchAddresses = async () => {
+        try {
+            setAddressLoading(true);
+
+            const token = await AsyncStorage.getItem('token');
+
+            const response = await axios.get(
+                API.CUSTOMER_ADDRESSES,
+                {
+                    headers: {
+                        Accept: '*/*',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const addresses = Array.isArray(response.data?.addresses)
+                ? response.data.addresses
+                : [];
+
+            setSavedAddresses(addresses);
+
+            // Select default address initially
+            const defaultAddress = addresses.find(
+                item => item.isDefault === true
+            );
+
+            if (defaultAddress) {
+                setSelectedAddress(defaultAddress);
+                setAddress(formatAddress(defaultAddress));
+            }
+
+        } catch (error) {
+            console.log(
+                'Address API Error:',
+                error?.response?.data || error.message
+            );
+        } finally {
+            setAddressLoading(false);
+        }
+    };
+
+    const formatAddress = (item) => {
+        if (!item) return '';
+
+        return [
+            item.addressLine1,
+            item.addressLine2,
+            item.city,
+            item.state,
+            item.pinCode,
+        ]
+            .filter(Boolean)
+            .join(', ');
+    };
+
+    const openAddressModal = () => {
+        setShowAddressModal(true);
+    };
+
+    const handleAddressSelect = (item) => {
+        setSelectedAddress(item);
+        setAddress(formatAddress(item));
+        setShowAddressModal(false);
+    };
+
+
+
+
+    const fetchPeopleAlsoLike = async () => {
+        try {
+            setPeopleAlsoLikeLoading(true);
+
+            const token = await AsyncStorage.getItem('token');
+
+            const response = await axios.get(
+                API.CUSTOMER_SERVICES,
+                {
+                    headers: {
+                        Accept: 'text/plain',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const services = Array.isArray(response.data)
+                ? response.data
+                : [];
+
+            const selectedServiceNames = selectedServices.map(
+                item => item.name?.trim().toLowerCase()
+            );
+
+            const filteredServices = services.filter(
+                item =>
+                    !selectedServiceNames.includes(
+                        item.serviceName?.trim().toLowerCase()
+                    )
+            );
+
+            const formattedServices = filteredServices.map(item => ({
+                id: item.serviceId,
+                name: item.serviceName,
+                image: { uri: item.imageUrl },
+                icon: { uri: item.icon },
+            }));
+
+            setPeopleAlsoLike(formattedServices);
+
+        } catch (error) {
+            console.log(
+                'People Also Like API Error:',
+                error?.response?.data || error.message
+            );
+
+            setPeopleAlsoLike([]);
+        } finally {
+            setPeopleAlsoLikeLoading(false);
+        }
+    };
 
     const animateModalIn = (animRef) => {
         animRef.setValue(height);
@@ -254,27 +419,49 @@ const ViewCartScreen = ({ navigation, route }) => {
         setSlotSelections(newSelections);
     };
 
-    const removeService = (serviceId) => {
+    const removeService = (serviceName) => {
         Alert.alert(
             'Remove Service',
             'Are you sure you want to remove this service?',
             [
-                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
                 {
                     text: 'Remove',
                     style: 'destructive',
-                    onPress: () => {
-                        const updated = selectedServices.filter(item => item.id !== serviceId);
-                        setSelectedServices(updated);
+                    onPress: async () => {
+                        try {
+                            // Remove from current cart state
+                            const updatedCart = selectedServices.filter(
+                                item =>
+                                    item.name?.trim().toLowerCase() !==
+                                    serviceName?.trim().toLowerCase()
+                            );
+
+                            setSelectedServices(updatedCart);
+
+                            // Remove from AsyncStorage cart
+                            await AsyncStorage.setItem(
+                                'selectedServices',
+                                JSON.stringify(updatedCart)
+                            );
+                            if (updatedCart.length === 0) {
+                                navigation.goBack();
+                            }
+
+                            console.log('Service removed from cart:', serviceName);
+                        } catch (error) {
+                            console.log('Remove Service Error:', error);
+                        }
                     },
                 },
             ]
         );
     };
 
-    const addMoreService = (service) => {
-        Alert.alert('Add Service', `${service.name} added to cart`);
-    };
+
 
     const applyCoupon = () => {
         if (!couponCode.trim()) {
@@ -343,43 +530,874 @@ const ViewCartScreen = ({ navigation, route }) => {
 
     const { subtotal, discount, tip, total } = getTotal();
 
+
+    const addMoreService = async (service) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+
+            // Get complete service details
+            const response = await axios.get(
+                `${API.CUSTOMER_SERVICE_DETAILS}/${service.id}`,
+                {
+                    headers: {
+                        Accept: 'text/plain',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = response.data;
+
+            // Get active pricing
+            const activePricing = Array.isArray(data.pricing)
+                ? data.pricing.filter(
+                    item =>
+                        item.isActive === true ||
+                        item.isActive === 'true' ||
+                        item.isActive === 1
+                )
+                : [];
+
+            // Get hourly price
+            const hourlyPricing = activePricing.find(
+                item => item.pricingType === 1
+            );
+
+            // Create complete cart service
+            const serviceToAdd = {
+                id: data.serviceId,
+                name: data.serviceName,
+                price: hourlyPricing
+                    ? `₹${hourlyPricing.price}`
+                    : 'Price unavailable',
+                coverImage: {
+                    uri: data.imageUrl,
+                },
+                image: {
+                    uri: data.imageUrl,
+                },
+                duration: '1 hour',
+                description:
+                    hourlyPricing?.pricingDescription ||
+                    data.workProfile ||
+                    data.serviceName,
+                whatIsCovered: Array.isArray(data.included)
+                    ? data.included.map(item => item.includedService)
+                    : [],
+            };
+
+            // Check duplicate by service name
+            const alreadyExists = selectedServices.some(
+                item =>
+                    item.name?.trim().toLowerCase() ===
+                    serviceToAdd.name?.trim().toLowerCase()
+            );
+
+            if (alreadyExists) {
+                return;
+            }
+
+            // Add to selected services
+            const updatedServices = [
+                ...selectedServices,
+                serviceToAdd,
+            ];
+
+            setSelectedServices(updatedServices);
+
+            // Save cart
+            await AsyncStorage.setItem(
+                'selectedServices',
+                JSON.stringify(updatedServices)
+            );
+
+            // Remove from People Also Like
+            setPeopleAlsoLike(prev =>
+                prev.filter(
+                    item =>
+                        item.name?.trim().toLowerCase() !==
+                        serviceToAdd.name?.trim().toLowerCase()
+                )
+            );
+
+        } catch (error) {
+            console.log(
+                'Add People Also Like Error:',
+                error?.response?.data || error.message
+            );
+        }
+    };
+
     const renderPeopleAlsoLike = ({ item }) => (
-        <TouchableOpacity style={styles.peopleLikeCard} onPress={() => addMoreService(item)}>
-            <Image source={item.image} style={styles.peopleLikeImage} />
-            <View style={styles.peopleLikeInfo}>
-                <Text style={styles.peopleLikeName} numberOfLines={1}>{item.name}</Text>
-                <View style={styles.peopleLikeRating}>
-                    <Image
-                        source={require('../../asset/star-fill.png')} // Update the path as needed
-                        style={{
-                            width: 12,
-                            height: 12,
-                            resizeMode: 'contain',
-                            tintColor: COLORS.orange
+        <View style={styles.peopleLikeCard}>
 
-
-                        }}
-                    />
-
-                    <Text style={styles.peopleLikeRatingText}>{item.rating}</Text>
-                </View>
-                <Text style={styles.peopleLikePrice}>{item.price}</Text>
-            </View>
-            <TouchableOpacity style={styles.peopleLikeAddButton}>
-
+            <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() =>
+                    navigation.navigate('ServiceBookingScreen', {
+                        serviceId: item.id,
+                    })
+                }
+            >
                 <Image
-                    source={require('../../asset/plus.png')} // Update the path as needed
+                    source={item.image}
+                    style={styles.peopleLikeImage}
+                />
+            </TouchableOpacity>
+
+            <View style={styles.peopleLikeInfo}>
+                <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() =>
+                        navigation.navigate('ServiceBookingScreen', {
+                            serviceId: item.id,
+                        })
+                    }
+                >
+                    <Text
+                        style={styles.peopleLikeName}
+                        numberOfLines={1}
+                    >
+                        {item.name}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+                style={styles.peopleLikeAddButton}
+                activeOpacity={0.7}
+                onPress={() => addMoreService(item)}
+            >
+                <Image
+                    source={require('../../asset/plus.png')}
                     style={{
                         width: 16,
                         height: 16,
                         resizeMode: 'contain',
-                        tintColor: COLORS.white
-
-
+                        tintColor: COLORS.white,
                     }}
                 />
             </TouchableOpacity>
-        </TouchableOpacity>
+
+        </View>
+    );
+
+
+    const openCustomerModal = () => {
+        setCustomerNameInput(selectedCustomerName);
+        setCustomerMobileInput(selectedCustomerMob);
+        setShowCustomerModal(true);
+    };
+
+    const closeCustomerModal = () => {
+        setShowCustomerModal(false);
+    };
+
+    const saveCustomerDetails = () => {
+        const name = customerNameInput.trim();
+        const mobile = customerMobileInput.trim();
+
+        if (!name) {
+            Alert.alert('Required', 'Please enter customer name');
+            return;
+        }
+
+        if (!mobile) {
+            Alert.alert('Required', 'Please enter mobile number');
+            return;
+        }
+
+        if (!/^[0-9]{10}$/.test(mobile)) {
+            Alert.alert('Invalid Mobile', 'Please enter a valid 10-digit mobile number');
+            return;
+        }
+
+        setSelectedCustomerName(name);
+        setSelectedCustomerMob(mobile);
+
+        setShowCustomerModal(false);
+    };
+
+
+    const handleEditAddress = async () => {
+
+        // --------------------------------
+        // VALIDATION
+        // --------------------------------
+
+        if (!editAddress.trim()) {
+            Alert.alert('Error', 'Please enter Address Line 1');
+            return;
+        }
+
+        if (!editLandmark.trim()) {
+            Alert.alert('Error', 'Please enter a landmark');
+            return;
+        }
+
+        if (!editPincode.trim()) {
+            Alert.alert('Error', 'Please enter a pincode');
+            return;
+        }
+
+        if (!/^[0-9]{6}$/.test(editPincode.trim())) {
+            Alert.alert('Error', 'Please enter a valid 6-digit pincode');
+            return;
+        }
+
+        try {
+            setIsAddressUpdating(true);
+
+            // --------------------------------
+            // GET TOKEN
+            // --------------------------------
+
+            const token = await AsyncStorage.getItem('token');
+
+            if (!token) {
+                Alert.alert(
+                    'Error',
+                    'Authentication token not found. Please login again.'
+                );
+                return;
+            }
+
+            // --------------------------------
+            // REQUEST BODY
+            // --------------------------------
+
+            const requestBody = {
+                addressTitle: editAddressType || '',
+
+                addressLine1: editAddress.trim(),
+
+                addressLine2: editFlatNo.trim(),
+
+                pinCode: editPincode.trim(),
+
+                city: editCity || '',
+
+                state: editState || '',
+
+                latitude: editLatt || 0,
+
+                longitude: editLong || 0,
+
+                isDefault: editIsDefault || false,
+
+                landMark: editLandmark.trim(),
+            };
+
+            console.log('Address ID:', editAddressId);
+            console.log('Update Address Request:', requestBody);
+
+            // --------------------------------
+            // PUT API
+            // --------------------------------
+
+            const response = await axios.put(
+                `${API.CUSTOMER_ADDRESS}/${editAddressId}`,
+                requestBody,
+                {
+                    headers: {
+                        Accept: '*/*',
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log(
+                'Update Address Response:',
+                response.data
+            );
+
+            // --------------------------------
+            // SUCCESS
+            // --------------------------------
+
+            if (response.data?.success === true) {
+
+                Alert.alert(
+                    'Success',
+                    'Address updated successfully.'
+                );
+
+                setShowEditAddressModal(false);
+
+                // Refresh addresses from backend
+                await fetchAddresses();
+
+            } else {
+
+                Alert.alert(
+                    'Error',
+                    response.data?.message ||
+                    'Unable to update address.'
+                );
+            }
+
+        } catch (error) {
+
+            console.log(
+                'Update address error:',
+                error
+            );
+
+            console.log(
+                'Update address response:',
+                error.response?.data
+            );
+
+            Alert.alert(
+                'Error',
+                error.response?.data?.message ||
+                'Unable to update address.'
+            );
+
+        } finally {
+            setIsAddressUpdating(false);
+        }
+    };
+
+
+    const handleOpenEditAddress = (item) => {
+        setEditingAddress(item);
+
+        setEditAddressId(item.addressId || '');
+        setEditAddressType(item.addressTitle || '');
+
+        setEditAddress(item.addressLine1 || '');
+        setEditFlatNo(item.addressLine2 || '');
+        setEditLandmark(item.landMark || '');
+
+        setEditPincode(item.pinCode || '');
+        setEditCity(item.city || '');
+        setEditState(item.state || '');
+
+        setEditLatt(item.latitude || 0);
+        setEditLong(item.longitude || 0);
+        setEditIsDefault(item.isDefault || false);
+
+        setShowAddressModal(false);
+
+        setTimeout(() => {
+            setShowEditAddressModal(true);
+        }, 300);
+    };
+
+    const saveEditedAddress = () => {
+        if (!editAddressLine1.trim()) {
+            Alert.alert('Required', 'Please enter address');
+            return;
+        }
+
+        if (!editAddressCity.trim()) {
+            Alert.alert('Required', 'Please enter city');
+            return;
+        }
+
+        if (!editAddressState.trim()) {
+            Alert.alert('Required', 'Please enter state');
+            return;
+        }
+
+        if (!/^[0-9]{6}$/.test(editAddressPinCode.trim())) {
+            Alert.alert('Invalid PIN', 'Please enter a valid 6-digit PIN code');
+            return;
+        }
+
+        const updatedAddress = {
+            ...editingAddress,
+            addressTitle: editAddressTitle.trim(),
+            addressLine1: editAddressLine1.trim(),
+            addressLine2: editAddressLine2.trim(),
+            landMark: editAddressLandmark.trim(),
+            city: editAddressCity.trim(),
+            state: editAddressState.trim(),
+            pinCode: editAddressPinCode.trim(),
+        };
+
+        // Update selected address
+        setSelectedAddress(updatedAddress);
+
+        // Update displayed address
+        setAddress(formatAddress(updatedAddress));
+
+        // Update address in saved address list
+        setSavedAddresses(prev =>
+            prev.map(item =>
+                item.addressId === updatedAddress.addressId
+                    ? updatedAddress
+                    : item
+            )
+        );
+
+        setShowEditAddressModal(false);
+    };
+
+    const rendereditAddressModal = () => (
+        <Modal
+            transparent
+            visible={showEditAddressModal}
+            animationType="slide"
+            onRequestClose={() => setShowEditAddressModal(false)}
+        >
+            <View style={styles.addressModalOverlay}>
+
+                <TouchableWithoutFeedback
+                    onPress={() => setShowEditAddressModal(false)}
+                >
+                    <View style={styles.addressModalBackground} />
+                </TouchableWithoutFeedback>
+
+                <View style={styles.editAddressBottomSheet}>
+
+                    {/* Handle */}
+
+                    <View style={styles.addressModalHandle} />
+
+                    {/* Header */}
+
+                    <View style={styles.addressModalHeader}>
+
+                        <View>
+                            <Text style={styles.addressModalTitle}>
+                                Edit Address
+                            </Text>
+
+                            <Text style={styles.addressModalSubtitle}>
+                                Update your address details
+                            </Text>
+                        </View>
+
+                        <TouchableOpacity
+                            onPress={() =>
+                                setShowEditAddressModal(false)
+                            }
+                        >
+                            <Image
+                                source={require('../../asset/close.png')}
+                                style={{
+                                    width: 20,
+                                    height: 20,
+                                    resizeMode: 'contain',
+                                    tintColor: '#666',
+                                }}
+                            />
+                        </TouchableOpacity>
+
+                    </View>
+
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        keyboardShouldPersistTaps="handled"
+                    >
+
+                        {/* Address Title */}
+
+
+                        {/* Address Line 1 */}
+
+                        <Text style={styles.editInputLabel}>
+                            Selected Address
+                        </Text>
+
+                        <TextInput
+                            style={[styles.editAddressInput, { height: 100 }]}
+                            value={editAddress}
+                            onChangeText={setEditAddress}
+                            placeholder="Enter address"
+                            placeholderTextColor="#999"
+                            multiline
+                        />
+
+                        {/* Address Line 2 */}
+
+                        <Text style={styles.editInputLabel}>
+                            House / Flat Number
+                        </Text>
+
+                        <TextInput
+                            style={styles.editAddressInput}
+                            value={editFlatNo}
+                            onChangeText={setEditFlatNo}
+                            placeholder="Enter flat / floor / building"
+                            placeholderTextColor="#999"
+                            multiline
+                        />
+
+                        {/* Landmark */}
+
+                        <Text style={styles.editInputLabel}>
+                            Landmark
+                        </Text>
+
+                        <TextInput
+                            style={styles.editAddressInput}
+                            value={editLandmark}
+                            onChangeText={setEditLandmark}
+                            placeholder="Enter landmark"
+                            placeholderTextColor="#999"
+                        />
+
+                        {/* City */}
+
+
+
+                        {/* State */}
+
+
+
+                        {/* PIN */}
+
+                        <Text style={styles.editInputLabel}>
+                            PIN Code
+                        </Text>
+
+                        <TextInput
+                            style={[
+                                styles.editAddressInput,
+
+                            ]}
+                            value={editPincode}
+
+                            onChangeText={setEditPincode}
+                            placeholder="Enter Pincode"
+                            placeholderTextColor="#999"
+                        />
+
+                        {/* SAVE */}
+
+                        <TouchableOpacity
+                            style={styles.saveEditedAddressButton}
+                            onPress={handleEditAddress}
+                            disabled={isAddressUpdating}
+                        >
+
+                            {isAddressUpdating ? (
+                                <ActivityIndicator
+                                    size="small"
+                                    color="#FFFFFF"
+                                />
+                            ) : (
+                                <Text style={styles.saveEditedAddressText}>
+                                    Edit Address
+                                </Text>
+                            )}
+
+                        </TouchableOpacity>
+
+                    </ScrollView>
+
+                </View>
+
+            </View>
+        </Modal>
+    );
+    const renderAddressModal = () => (
+        <Modal
+            transparent
+            visible={showAddressModal}
+            animationType="slide"
+            onRequestClose={() => setShowAddressModal(false)}
+        >
+            <View style={styles.addressModalOverlay}>
+
+                <TouchableWithoutFeedback
+                    onPress={() => setShowAddressModal(false)}
+                >
+                    <View style={styles.addressModalBackground} />
+                </TouchableWithoutFeedback>
+
+                <View style={styles.addressBottomSheet}>
+
+                    {/* Handle */}
+                    <View style={styles.addressModalHandle} />
+
+                    {/* Header */}
+                    <View style={styles.addressModalHeader}>
+                        <View>
+                            <Text style={styles.addressModalTitle}>
+                                Select Address
+                            </Text>
+
+                            <Text style={styles.addressModalSubtitle}>
+                                Choose where you want the service
+                            </Text>
+                        </View>
+
+                        <TouchableOpacity
+                            onPress={() => setShowAddressModal(false)}
+                        >
+                            <Image
+                                source={require('../../asset/close.png')}
+                                style={{
+                                    width: 20,
+                                    height: 20,
+                                    resizeMode: 'contain',
+                                    tintColor: '#666',
+                                }}
+                            />
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Address List */}
+                    {addressLoading ? (
+                        <View style={styles.addressLoader}>
+                            <ActivityIndicator
+                                size="small"
+                                color="#76577F"
+                            />
+
+                            <Text style={styles.addressLoadingText}>
+                                Loading addresses...
+                            </Text>
+                        </View>
+                    ) : (
+                        <FlatList
+                            data={savedAddresses}
+                            keyExtractor={item => item.addressId}
+                            showsVerticalScrollIndicator={false}
+                            contentContainerStyle={{
+                                paddingBottom: 10,
+                            }}
+                            renderItem={({ item }) => {
+
+                                const isSelected =
+                                    selectedAddress?.addressId === item.addressId;
+
+                                return (
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.savedAddressCard,
+                                            isSelected &&
+                                            styles.savedAddressCardSelected,
+                                        ]}
+                                        activeOpacity={0.8}
+                                        onPress={() =>
+                                            handleAddressSelect(item)
+                                        }
+                                    >
+
+                                        {/* Location Icon */}
+                                        <View
+                                            style={[
+                                                styles.addressIconContainer,
+                                                isSelected &&
+                                                styles.addressIconContainerSelected,
+                                            ]}
+                                        >
+                                            <Image
+                                                source={require('../../asset/location-outline.png')}
+                                                style={{
+                                                    width: 20,
+                                                    height: 20,
+                                                    resizeMode: 'contain',
+                                                    tintColor: isSelected
+                                                        ? '#FFFFFF'
+                                                        : '#76577F',
+                                                }}
+                                            />
+                                        </View>
+
+                                        {/* Address Details */}
+                                        <View style={styles.savedAddressInfo}>
+
+                                            <View style={styles.addressTitleRow}>
+                                                <Text style={styles.savedAddressTitle}>
+                                                    {item.addressTitle}
+                                                </Text>
+
+                                                {item.isDefault && (
+                                                    <View style={styles.defaultBadge}>
+                                                        <Text style={styles.defaultBadgeText}>
+                                                            Default
+                                                        </Text>
+                                                    </View>
+                                                )}
+                                            </View>
+
+                                            <Text
+                                                style={styles.savedAddressText}
+                                                numberOfLines={3}
+                                            >
+                                                {formatAddress(item)}
+                                            </Text>
+
+                                            {item.landMark ? (
+                                                <Text
+                                                    style={styles.savedAddressLandmark}
+                                                    numberOfLines={1}
+                                                >
+                                                    Landmark: {item.landMark}
+                                                </Text>
+                                            ) : null}
+
+                                            {/* Edit Address */}
+                                            <TouchableOpacity
+                                                style={styles.editAddressButton}
+                                                onPress={() => handleOpenEditAddress(item)}
+                                            >
+                                                <Image
+                                                    source={require('../../asset/pencil.png')}
+                                                    style={{
+                                                        width: 14,
+                                                        height: 14,
+                                                        resizeMode: 'contain',
+                                                        tintColor: '#76577F',
+                                                    }}
+                                                />
+
+                                                <Text style={styles.editAddressText}>
+                                                    Edit
+                                                </Text>
+                                            </TouchableOpacity>
+
+                                        </View>
+
+                                        {/* Radio */}
+                                        <View
+                                            style={[
+                                                styles.addressRadio,
+                                                isSelected &&
+                                                styles.addressRadioSelected,
+                                            ]}
+                                        >
+                                            {isSelected && (
+                                                <View
+                                                    style={
+                                                        styles.addressRadioInner
+                                                    }
+                                                />
+                                            )}
+                                        </View>
+
+                                    </TouchableOpacity>
+                                );
+                            }}
+                        />
+                    )}
+
+                    {/* Add New Address */}
+                    <TouchableOpacity
+                        style={styles.addNewAddressButton}
+                        onPress={() => {
+                            setShowAddressModal(false);
+
+                            navigation.navigate('AddAddressScreen');
+                        }}
+                    >
+                        <View style={styles.addNewAddressIcon}>
+                            <Image
+                                source={require('../../asset/add.png')}
+                                style={{
+                                    width: 20,
+                                    height: 20,
+                                    resizeMode: 'contain',
+                                    tintColor: '#76577F',
+                                }}
+                            />
+                        </View>
+
+                        <Text style={styles.addNewAddressText}>
+                            Add New Address
+                        </Text>
+
+                        <Image
+                            source={require('../../asset/arrow-forward.png')}
+                            style={{
+                                width: 18,
+                                height: 18,
+                                resizeMode: 'contain',
+                                tintColor: '#76577F',
+                            }}
+                        />
+                    </TouchableOpacity>
+
+                </View>
+            </View>
+        </Modal>
+    );
+    const renderCusModal = () => (
+        <Modal
+            transparent
+            visible={showCustomerModal}
+            animationType="fade"
+            onRequestClose={closeCustomerModal}
+        >
+            <TouchableWithoutFeedback onPress={closeCustomerModal}>
+                <View style={styles.customerModalOverlay}>
+
+                    <TouchableWithoutFeedback>
+                        <View style={styles.customerModalContent}>
+
+                            <Text style={styles.customerModalTitle}>
+                                Customer Details
+                            </Text>
+
+                            <Text style={styles.customerModalSubtitle}>
+                                Enter customer name and mobile number
+                            </Text>
+
+                            {/* Customer Name */}
+                            <Text style={styles.customerInputLabel}>
+                                Customer Name
+                            </Text>
+
+                            <TextInput
+                                style={styles.customerInput}
+                                placeholder="Enter customer name"
+                                placeholderTextColor="#999"
+                                value={customerNameInput}
+                                onChangeText={setCustomerNameInput}
+                                autoCapitalize="words"
+                            />
+
+                            {/* Mobile Number */}
+                            <Text style={styles.customerInputLabel}>
+                                Mobile Number
+                            </Text>
+
+                            <TextInput
+                                style={styles.customerInput}
+                                placeholder="Enter mobile number"
+                                placeholderTextColor="#999"
+                                value={customerMobileInput}
+                                onChangeText={setCustomerMobileInput}
+                                keyboardType="number-pad"
+                                maxLength={10}
+                            />
+
+                            {/* Buttons */}
+                            <View style={styles.customerModalButtons}>
+
+                                <TouchableOpacity
+                                    style={styles.customerCancelButton}
+                                    onPress={closeCustomerModal}
+                                >
+                                    <Text style={styles.customerCancelText}>
+                                        Cancel
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={styles.customerSaveButton}
+                                    onPress={saveCustomerDetails}
+                                >
+                                    <Text style={styles.customerSaveText}>
+                                        Save
+                                    </Text>
+                                </TouchableOpacity>
+
+                            </View>
+
+                        </View>
+                    </TouchableWithoutFeedback>
+
+                </View>
+            </TouchableWithoutFeedback>
+        </Modal>
     );
 
     // Coupon Modal
@@ -721,28 +1739,39 @@ const ViewCartScreen = ({ navigation, route }) => {
                 {/* Selected Services */}
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Selected Services</Text>
-                    {selectedServices.map((service) => (
-                        <View key={service.id} style={styles.selectedServiceCard}>
-                            <Image source={{ uri: service.coverImage }} style={styles.selectedServiceImage} />
+                    {selectedServices.map((service, index) => (
+                        <View
+                            key={`${service.name}-${index}`}
+                            style={styles.selectedServiceCard}
+                        >
+                            <Image
+                                source={service.coverImage}
+                                style={styles.selectedServiceImage}
+                            />
+
                             <View style={styles.selectedServiceInfo}>
-                                <Text style={styles.selectedServiceName}>{service.name}</Text>
-                                <Text style={styles.selectedServicePrice}>{service.price}</Text>
+                                <Text style={styles.selectedServiceName}>
+                                    {service.name}
+                                </Text>
+
+                                <Text style={styles.selectedServicePrice}>
+                                    {service.price} / hour
+                                </Text>
+
 
                             </View>
+
                             <TouchableOpacity
                                 style={styles.removeButton}
-                                onPress={() => removeService(service.id)}
+                                onPress={() => removeService(service.name)}
                             >
-
                                 <Image
-                                    source={require('../../asset/close.png')} // Update the path as needed
+                                    source={require('../../asset/close.png')}
                                     style={{
                                         width: 18,
                                         height: 18,
                                         resizeMode: 'contain',
-                                        tintColor: COLORS.red
-
-
+                                        tintColor: COLORS.red,
                                     }}
                                 />
                             </TouchableOpacity>
@@ -842,14 +1871,25 @@ const ViewCartScreen = ({ navigation, route }) => {
                 {/* People Also Like */}
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>People Also Like</Text>
-                    <FlatList
-                        data={peopleAlsoLike}
-                        renderItem={renderPeopleAlsoLike}
-                        keyExtractor={(item) => item.id}
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.peopleLikeList}
-                    />
+                    {peopleAlsoLikeLoading ? (
+                        <View style={styles.peopleAlsoLikeLoader}>
+                            <ActivityIndicator
+                                size="small"
+                                color="#76577F"
+                            />
+                            <Text style={styles.loadingText}>
+                                Loading services...
+                            </Text>
+                        </View>
+                    ) : peopleAlsoLike.length > 0 ? (
+                        <FlatList
+                            data={peopleAlsoLike}
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            keyExtractor={item => item.id}
+                            renderItem={renderPeopleAlsoLike}
+                        />
+                    ) : null}
                 </View>
 
                 {/* Customer Details - Single Line */}
@@ -869,7 +1909,7 @@ const ViewCartScreen = ({ navigation, route }) => {
 
                                 }}
                             />
-                            <Text style={styles.customerValue}>{customerName}</Text>
+                            <Text style={styles.customerValue}>{selectedCustomerName}</Text>
                             <View style={styles.customerDivider} />
 
                             <Image
@@ -883,8 +1923,8 @@ const ViewCartScreen = ({ navigation, route }) => {
 
                                 }}
                             />
-                            <Text style={styles.customerValue}>{customerMobile}</Text>
-                            <TouchableOpacity>
+                            <Text style={styles.customerValue}>{selectedCustomerMob}</Text>
+                            <TouchableOpacity onPress={openCustomerModal}>
                                 <Text style={styles.changeText}>Change</Text>
                             </TouchableOpacity>
                         </View>
@@ -892,87 +1932,89 @@ const ViewCartScreen = ({ navigation, route }) => {
                 </View>
 
                 {/* Address */}
-                <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>Service Address</Text>
-                    <TouchableOpacity style={styles.addressCard}>
-                        <View style={styles.addressRow}>
+                {addressLoading ? (
+                    <ActivityIndicator
+                        size="small"
+                        color="#76577F"
+                    />
+                ) : (
+                    <View style={styles.sectionContainer}>
+                        <Text style={styles.sectionTitle}>Service Address</Text>
+                        <TouchableOpacity style={styles.addressCard} onPress={openAddressModal}>
+                            <View style={styles.addressRow}>
 
-                            <Image
-                                source={require('../../asset/location-outline.png')} // Update the path as needed
-                                style={{
-                                    width: 20,
-                                    height: 20,
-                                    resizeMode: 'contain',
-                                    tintColor: COLORS.gold
-
-
-                                }}
-                            />
-                            <Text style={styles.addressText} numberOfLines={2}>{address}</Text>
-                        </View>
-                        <Text style={styles.changeAddressText}>Change</Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Tip Section */}
+                                <Image
+                                    source={require('../../asset/location-outline.png')} // Update the path as needed
+                                    style={{
+                                        width: 20,
+                                        height: 20,
+                                        resizeMode: 'contain',
+                                        tintColor: COLORS.gold
 
 
-                {/* Bill Summary */}
-                {/* <View style={styles.totalContainer}>
-                    <Text style={styles.totalTitle}>Bill Summary</Text>
-                    <View style={styles.totalRow}>
-                        <Text style={styles.totalLabel}>Subtotal</Text>
-                        <Text style={styles.totalValue}>₹{subtotal}</Text>
+                                    }}
+                                />
+                                <Text style={styles.addressText} numberOfLines={2}>{address}</Text>
+                            </View>
+                            <Text style={styles.changeAddressText}>Change</Text>
+                        </TouchableOpacity>
                     </View>
-                    {discount > 0 && (
-                        <View style={styles.totalRow}>
-                            <Text style={styles.totalLabel}>Discount</Text>
-                            <Text style={[styles.totalValue, styles.discountValue]}>-₹{discount}</Text>
-                        </View>
-                    )}
-                    {tip > 0 && (
-                        <View style={styles.totalRow}>
-                            <Text style={styles.totalLabel}>Tip</Text>
-                            <Text style={styles.totalValue}>₹{tip}</Text>
-                        </View>
-                    )}
-                    <View style={styles.totalDivider} />
-                    <View style={styles.totalRow}>
-                        <Text style={styles.totalGrandLabel}>Total</Text>
-                        <Text style={styles.totalGrandValue}>₹{total}</Text>
-                    </View>
-                </View> */}
+                )}
+
+
+
+
+
 
                 {/* Select Date & Time Button - After Bill Summary */}
-                <TouchableOpacity style={styles.selectSlotButton} onPress={() => navigation.replace("SelectSlotScreen")}>
+                <TouchableOpacity
+                    style={styles.selectSlotButton}
+                    onPress={() => {
+                        navigation.navigate('SelectSlotScreen', {
+                            selectedServices: selectedServices,
 
+                            customerDetails: {
+                                name: selectedCustomerName,
+                                mobile: selectedCustomerMob,
+                            },
+
+                            addressDetails: selectedAddress,
+
+                            address: address,
+
+                            slotSelections: slotSelections,
+                        });
+                    }}
+                >
                     <Image
-                        source={require('../../asset/calendar.png')} // Update the path as needed
+                        source={require('../../asset/calendar.png')}
                         style={{
                             width: 20,
                             height: 20,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
-
-
+                            tintColor: COLORS.white,
                         }}
                     />
-                    <Text style={styles.selectSlotText}>Select Date & Time</Text>
+
+                    <Text style={styles.selectSlotText}>
+                        Select Date & Time
+                    </Text>
+
                     {Object.keys(slotSelections).length > 0 && (
                         <View style={styles.slotCountBadge}>
-                            <Text style={styles.slotCountText}>{Object.keys(slotSelections).length}</Text>
+                            <Text style={styles.slotCountText}>
+                                {Object.keys(slotSelections).length}
+                            </Text>
                         </View>
                     )}
 
                     <Image
-                        source={require('../../asset/arrow-forward.png')} // Update the path as needed
+                        source={require('../../asset/arrow-forward.png')}
                         style={{
                             width: 18,
                             height: 18,
                             resizeMode: 'contain',
-                            tintColor: COLORS.white
-
-
+                            tintColor: COLORS.white,
                         }}
                     />
                 </TouchableOpacity>
@@ -985,6 +2027,11 @@ const ViewCartScreen = ({ navigation, route }) => {
 
             {/* Slot Modal */}
             {renderSlotModal()}
+            {renderCusModal()}
+            {renderAddressModal()}
+            {rendereditAddressModal()}
+
+
         </View>
     );
 };
@@ -1668,6 +2715,364 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#999',
         fontWeight: '500',
+    },
+    peopleAlsoLikeLoader: {
+        height: 120,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    loadingText: {
+        marginTop: 8,
+        fontSize: 13,
+        color: '#76577F',
+    },
+
+    customerModalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        paddingHorizontal: 20,
+    },
+
+    customerModalContent: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        padding: 22,
+    },
+
+    customerModalTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#1A1A1A',
+        textAlign: 'center',
+    },
+
+    customerModalSubtitle: {
+        fontSize: 13,
+        color: '#777777',
+        textAlign: 'center',
+        marginTop: 5,
+        marginBottom: 22,
+    },
+
+    customerInputLabel: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#403746',
+        marginBottom: 7,
+        marginTop: 10,
+    },
+
+    customerInput: {
+        height: 48,
+        borderWidth: 1,
+        borderColor: '#E0DCE3',
+        borderRadius: 10,
+        paddingHorizontal: 14,
+        fontSize: 14,
+        color: '#1A1A1A',
+        backgroundColor: '#FAFAFA',
+    },
+
+    customerModalButtons: {
+        flexDirection: 'row',
+        gap: 10,
+        marginTop: 24,
+    },
+
+    customerCancelButton: {
+        flex: 1,
+        height: 46,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#76577F',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    customerCancelText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#76577F',
+    },
+
+    customerSaveButton: {
+        flex: 1,
+        height: 46,
+        borderRadius: 10,
+        backgroundColor: '#76577F',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    customerSaveText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#FFFFFF',
+    },
+
+    addressModalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.45)',
+        justifyContent: 'flex-end',
+    },
+
+    addressModalBackground: {
+        flex: 1,
+    },
+
+    addressBottomSheet: {
+        backgroundColor: '#FFFFFF',
+        borderTopLeftRadius: 26,
+        borderTopRightRadius: 26,
+        paddingHorizontal: 18,
+        paddingTop: 10,
+        paddingBottom: 25,
+        maxHeight: height * 0.78,
+    },
+
+    addressModalHandle: {
+        width: 42,
+        height: 4,
+        borderRadius: 2,
+        backgroundColor: '#D8D8D8',
+        alignSelf: 'center',
+        marginBottom: 16,
+    },
+
+    addressModalHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 18,
+    },
+
+    addressModalTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#1A1A1A',
+    },
+
+    addressModalSubtitle: {
+        fontSize: 12,
+        color: '#777777',
+        marginTop: 3,
+    },
+
+    addressLoader: {
+        height: 180,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    addressLoadingText: {
+        marginTop: 8,
+        fontSize: 13,
+        color: '#76577F',
+    },
+
+    savedAddressCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FAFAFA',
+        borderRadius: 14,
+        padding: 12,
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: '#E8E3D8',
+    },
+
+    savedAddressCardSelected: {
+        backgroundColor: '#F7F1FA',
+        borderColor: '#76577F',
+    },
+
+    addressIconContainer: {
+        width: 42,
+        height: 42,
+        borderRadius: 21,
+        backgroundColor: '#EFE8F2',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    addressIconContainerSelected: {
+        backgroundColor: '#76577F',
+    },
+
+    savedAddressInfo: {
+        flex: 1,
+        marginLeft: 12,
+        marginRight: 8,
+    },
+
+    addressTitleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 4,
+    },
+
+    savedAddressTitle: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#1A1A1A',
+    },
+
+    defaultBadge: {
+        marginLeft: 8,
+        paddingHorizontal: 7,
+        paddingVertical: 3,
+        borderRadius: 6,
+        backgroundColor: '#E8F7EE',
+    },
+
+    defaultBadgeText: {
+        fontSize: 9,
+        fontWeight: '600',
+        color: '#2E9B57',
+    },
+
+    savedAddressText: {
+        fontSize: 12,
+        lineHeight: 17,
+        color: '#555555',
+    },
+
+    savedAddressLandmark: {
+        fontSize: 11,
+        color: '#888888',
+        marginTop: 4,
+    },
+
+    addressRadio: {
+        width: 21,
+        height: 21,
+        borderRadius: 11,
+        borderWidth: 2,
+        borderColor: '#BDBDBD',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    addressRadioSelected: {
+        borderColor: '#76577F',
+    },
+
+    addressRadioInner: {
+        width: 11,
+        height: 11,
+        borderRadius: 6,
+        backgroundColor: '#76577F',
+    },
+
+    addNewAddressButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 52,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#76577F',
+        paddingHorizontal: 12,
+        marginTop: 8,
+    },
+
+    addNewAddressIcon: {
+        width: 34,
+        height: 34,
+        borderRadius: 17,
+        backgroundColor: '#F0E8F4',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    addNewAddressText: {
+        flex: 1,
+        marginLeft: 10,
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#76577F',
+    },
+
+    editAddressButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        marginTop: 7,
+        paddingVertical: 3,
+    },
+
+    editAddressText: {
+        marginLeft: 4,
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#76577F',
+    },
+
+
+    editAddressBottomSheet: {
+        backgroundColor: '#FFFFFF',
+        borderTopLeftRadius: 26,
+        borderTopRightRadius: 26,
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        paddingBottom: 25,
+        maxHeight: height * 0.88,
+    },
+
+    editInputLabel: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#403746',
+        marginBottom: 6,
+        marginTop: 10,
+    },
+
+    editAddressInput: {
+        height: 46,
+        borderWidth: 1,
+        borderColor: '#E2DDE5',
+        borderRadius: 10,
+        paddingHorizontal: 13,
+        fontSize: 14,
+        color: '#1A1A1A',
+        backgroundColor: '#FAFAFA',
+    },
+
+    saveEditedAddressButton: {
+        height: 48,
+        borderRadius: 11,
+        backgroundColor: '#76577F',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        marginBottom: 10,
+    },
+
+    saveEditedAddressText: {
+        color: '#FFFFFF',
+        fontSize: 15,
+        fontWeight: '700',
+    },
+
+    editAddressButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        marginTop: 7,
+        paddingVertical: 3,
+    },
+
+    editAddressText: {
+        marginLeft: 4,
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#76577F',
+    },
+
+    disabledInput: {
+        backgroundColor: '#76577F',
+        color: '#FFF',
     },
 });
 

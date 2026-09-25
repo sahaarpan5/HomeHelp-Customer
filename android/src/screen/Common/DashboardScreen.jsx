@@ -46,6 +46,8 @@ const DashboardScreen = ({ navigation }) => {
 
     const [allServices, setAllServices] = useState([]);
     const [offers, setOffers] = useState([]);
+    const [selectedServices, setSelectedServices] = useState([]);
+    const [showCart, setShowCart] = useState(false);
 
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -92,64 +94,12 @@ const DashboardScreen = ({ navigation }) => {
         peach: '#FD79A8',
     };
 
-    // Sample user data
-    const userData = {
-        name: 'Rahul Sharma',
-        email: '9804043285',
-        avatar: require('../../asset/demo-user.png'),
-    };
+    const offerListRef = useRef(null);
 
-    // Offers data
-    // const offers = [
-    //     {
-    //         id: '1',
-    //         title: 'Home Cleaning Services',
-    //         description: 'Get your home sparkling clean with our professional deep cleaning service',
-    //         image: require('../../asset/homeclean.png'),
-    //         discount: '20%',
-    //         validTill: '31 Dec 2026',
-    //     },
-    //     {
-    //         id: '2',
-    //         title: 'Bathroom Cleaning',
-    //         description: 'Professional bathroom cleaning with stain removal and complete sanitization',
-    //         image: require('../../asset/bathroomclean.png'),
-    //         discount: '25%',
-    //         validTill: '15 Jan 2027',
-    //     },
-    //     {
-    //         id: '3',
-    //         title: 'Cooking Support',
-    //         description: 'Expert cooking with fresh ingredients and hygienic preparation',
-    //         image: require('../../asset/cooking.png'),
-    //         discount: '15%',
-    //         validTill: '31 Jan 2027',
-    //     },
-    //     {
-    //         id: '4',
-    //         title: 'Kitchen & Utensil cleaning',
-    //         description: 'Expert kitchen and utensil cleaning with hygienic care',
-    //         image: require('../../asset/kitchenclean.png'),
-    //         discount: '15%',
-    //         validTill: '31 Jan 2027',
-    //     },
-    //     {
-    //         id: '5',
-    //         title: 'Washing & Ironing cloths',
-    //         description: 'Professional laundry washing and ironing with premium fabric care',
-    //         image: require('../../asset/heroic.png'),
-    //         discount: '15%',
-    //         validTill: '31 Jan 2027',
-    //     },
-    //     {
-    //         id: '6',
-    //         title: 'House Maid',
-    //         description: 'Professional house maid services with reliable everyday home care',
-    //         image: require('../../asset/housemaid.png'),
-    //         discount: '15%',
-    //         validTill: '31 Jan 2027',
-    //     },
-    // ];
+    // Sample user data
+
+
+
 
     // Popular Services (Only 3)
     const popularServices = [
@@ -490,33 +440,7 @@ const DashboardScreen = ({ navigation }) => {
         },
     ];
 
-    // Thoughtful Creation
-    // const thoughtfulCreations = [
-    //     {
-    //         id: '1',
-    //         title: 'Professional Cleaning at Your Doorstep',
-    //         description: 'Experience the best home cleaning services with our experts',
-    //         image: 'https://media.giphy.com/media/3o7abKhOpu0N9H3zUc/giphy.gif',
-    //         type: 'gif',
-    //         cta: 'Book Now',
-    //     },
-    //     {
-    //         id: '2',
-    //         title: 'Expert AC Service Made Easy',
-    //         description: 'Keep your AC running smoothly all year round',
-    //         image: 'https://media.giphy.com/media/3o6ZtaO9BZHcOjmErm/giphy.gif',
-    //         type: 'gif',
-    //         cta: 'Learn More',
-    //     },
-    //     {
-    //         id: '3',
-    //         title: 'Premium Sofa Care Services',
-    //         description: 'Extend the life of your furniture with professional care',
-    //         image: 'https://media.giphy.com/media/3o7abKhOpu0N9H3zUc/giphy.gif',
-    //         type: 'gif',
-    //         cta: 'Explore',
-    //     },
-    // ];
+
 
     const thoughtfulCreations = [
         {
@@ -617,11 +541,7 @@ const DashboardScreen = ({ navigation }) => {
 
 
 
-        const interval = setInterval(() => {
-            if (offers.length > 0) {
-                setCurrentOfferIndex((prev) => (prev + 1) % offers.length);
-            }
-        }, 4000);
+
 
         const thoughtfulInterval = setInterval(() => {
             if (thoughtfulCreations.length > 0) {
@@ -647,7 +567,7 @@ const DashboardScreen = ({ navigation }) => {
         ).start();
 
         return () => {
-            clearInterval(interval);
+            // clearInterval(interval);
             clearInterval(thoughtfulInterval);
         };
     }, []);
@@ -696,6 +616,98 @@ const DashboardScreen = ({ navigation }) => {
             fetchServices();
         }, [])
     );
+
+
+    useEffect(() => {
+        if (offers.length <= 1) {
+            return;
+        }
+
+        const interval = setInterval(() => {
+            setCurrentOfferIndex((prevIndex) => {
+                const nextIndex =
+                    prevIndex + 1 >= offers.length
+                        ? 0
+                        : prevIndex + 1;
+
+                offerListRef.current?.scrollToIndex({
+                    index: nextIndex,
+                    animated: true,
+                });
+
+                return nextIndex;
+            });
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [offers]);
+
+
+    useFocusEffect(
+        useCallback(() => {
+            loadCart();
+        }, [])
+    );
+
+
+    const loadCart = async () => {
+        try {
+            const savedCart = await AsyncStorage.getItem('selectedServices');
+
+            if (savedCart) {
+                const cart = JSON.parse(savedCart);
+
+                // Remove duplicate services by service ID
+                const uniqueCart = cart.filter(
+                    (item, index, self) =>
+                        index === self.findIndex(
+                            service => service.id === item.id
+                        )
+                );
+
+                setSelectedServices(uniqueCart);
+
+                // Save cleaned cart back to local storage
+                await AsyncStorage.setItem(
+                    'selectedServices',
+                    JSON.stringify(uniqueCart)
+                );
+            }
+        } catch (error) {
+            console.log('Load Cart Error:', error);
+        }
+    };
+
+    const openCart = () => {
+        setShowCart(true);
+
+    };
+    const closeCart = () => {
+        setShowCart(false);
+    };
+
+    const removeFromCart = async (serviceName) => {
+        const updatedCart = selectedServices.filter(
+            item =>
+                item.name?.trim().toLowerCase() !==
+                serviceName?.trim().toLowerCase()
+        );
+
+        setSelectedServices(updatedCart);
+
+        try {
+            await AsyncStorage.setItem(
+                'selectedServices',
+                JSON.stringify(updatedCart)
+            );
+        } catch (error) {
+            console.log('Remove Cart Error:', error);
+        }
+
+        if (updatedCart.length === 0) {
+            closeCart();
+        }
+    };
 
 
 
@@ -847,7 +859,7 @@ const DashboardScreen = ({ navigation }) => {
     const getServiceColor = (index, total) => {
         const hue = Math.round((index * 360) / total);
 
-        return `hsl(${hue}, 70%, 55%)`;
+        return `hsl(${hue}, 50%, 40%)`;
     };
 
 
@@ -897,7 +909,7 @@ const DashboardScreen = ({ navigation }) => {
                     image: {
                         uri: item.imageUrl,
                     },
-                    color:  getServiceColor(index, response.data.length),
+                    color: getServiceColor(index, response.data.length),
                 }));
 
                 console.log('FORMATTED SERVICES:', formattedServices);
@@ -1182,6 +1194,96 @@ const DashboardScreen = ({ navigation }) => {
         </Modal>
     );
 
+
+    // Cart Modal
+    const renderCartModal = () => (
+        <Modal
+            transparent={true}
+            visible={showCart}
+            animationType="none"
+            onRequestClose={closeCart}
+        >
+            <TouchableWithoutFeedback onPress={closeCart}>
+                <View style={styles.modalOverlay}>
+                    <TouchableWithoutFeedback>
+                        <Animated.View
+                            style={[
+                                styles.cartModalContent,
+
+                            ]}
+                        >
+                            <View style={styles.modalHandle} />
+
+                            <Text style={styles.cartTitle}>Your Cart</Text>
+                            <Text style={styles.cartSubtitle}>{selectedServices.length} service(s) selected</Text>
+
+                            <ScrollView showsVerticalScrollIndicator={false}>
+                                {selectedServices.map((item) => (
+                                    <View key={item.id} style={styles.cartItem}>
+                                        <Image source={item.coverImage} style={styles.cartItemImage} />
+                                        <View style={styles.cartItemInfo}>
+                                            <Text style={styles.cartItemName}>{item.name}</Text>
+                                            {/* <Text style={styles.cartItemPrice}>{item.price}</Text> */}
+                                        </View>
+                                        <TouchableOpacity onPress={() => removeFromCart(item.name)}>
+
+                                            <Image
+                                                source={require('../../asset/delete.png')} // Update the path as needed
+                                                style={{
+                                                    width: 20,
+                                                    height: 20,
+                                                    resizeMode: 'contain',
+                                                    tintColor: COLORS.red
+
+
+                                                }}
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                            </ScrollView>
+
+                            {selectedServices.length > 0 && (
+                                <View style={styles.cartFooter}>
+                                    {/* <View style={styles.cartTotal}>
+                                            <Text style={styles.cartTotalLabel}>Total</Text>
+                                            <Text style={styles.cartTotalPrice}>{getTotalPrice()}</Text>
+                                        </View> */}
+                                    <TouchableOpacity style={styles.cartCheckoutButton} onPress={() => {
+                                        closeCart();
+                                        navigation.navigate('ViewCartScreen', {
+                                            selectedServices,
+                                            customername: `${firstName} ${lastName}`,
+                                            customemob: phone,
+                                        });
+                                    }}>
+                                        <Text style={styles.cartCheckoutText}>Proceed to Book</Text>
+
+                                        <Image
+                                            source={require('../../asset/arrow-forward.png')} // Update the path as needed
+                                            style={{
+                                                width: 12,
+                                                height: 12,
+                                                resizeMode: 'contain',
+                                                tintColor: COLORS.white
+
+
+                                            }}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+
+                            <TouchableOpacity style={styles.modalCloseButton} onPress={closeCart}>
+                                <Text style={styles.modalCloseText}>Close</Text>
+                            </TouchableOpacity>
+                        </Animated.View>
+                    </TouchableWithoutFeedback>
+                </View>
+            </TouchableWithoutFeedback>
+        </Modal>
+    );
+
     // All Services Modal - Bottom Sheet with Grid View
     const renderAllServicesModal = () => (
         <Modal
@@ -1275,7 +1377,16 @@ const DashboardScreen = ({ navigation }) => {
                                 renderItem={({ item }) => (
                                     <TouchableOpacity
                                         style={styles.modalServiceItem}
-                                        onPress={() => navigation.navigate('ServiceBookingScreen')}
+                                        onPress={() => {
+                                            setIsAllServicesModalVisible(false);
+
+                                            navigation.navigate('ServiceBookingScreen', {
+                                                serviceId: item.id,
+                                                customername: `${firstName} ${lastName}`,
+                                                customemob: phone
+
+                                            });
+                                        }}
                                         activeOpacity={0.8}
                                     >
                                         <View style={[styles.modalServiceIcon, { backgroundColor: item.color }]}>
@@ -1330,7 +1441,16 @@ const DashboardScreen = ({ navigation }) => {
     );
 
     const renderOfferItem = ({ item }) => (
-        <TouchableOpacity style={styles.offerCard} onPress={() => navigation.navigate('ServiceBookingScreen', { serviceId: item.id })}>
+        <TouchableOpacity style={styles.offerCard} onPress={() => {
+
+
+            navigation.navigate('ServiceBookingScreen', {
+                serviceId: item.id,
+                customername: `${firstName} ${lastName}`,
+                customemob: phone
+
+            });
+        }}>
             <Image
                 source={item.image}
                 style={styles.offerImage}
@@ -1747,7 +1867,7 @@ const DashboardScreen = ({ navigation }) => {
                         {/* Offers Auto Scroller */}
                         <View style={styles.offersContainer}>
                             <FlatList
-                                ref={offersFlatListRef}
+                                ref={offerListRef}
                                 data={offers}
                                 renderItem={renderOfferItem}
                                 keyExtractor={(item) => item.id}
@@ -1989,7 +2109,43 @@ const DashboardScreen = ({ navigation }) => {
             />
 
             {/* All Services Bottom Sheet Modal */}
+
+            {selectedServices.length > 0 && (
+                <TouchableOpacity style={styles.cartButton} onPress={openCart}>
+                    <View style={styles.cartBadge}>
+                        <Text style={styles.cartBadgeText}>{selectedServices.length}</Text>
+                    </View>
+
+                    <Image
+                        source={require('../../asset/shopping-cart.png')} // Update the path as needed
+                        style={{
+                            width: 24,
+                            height: 24,
+                            resizeMode: 'contain',
+                            tintColor: COLORS.textLight
+
+
+                        }}
+                    />
+                    <Text style={styles.cartButtonText}>View Cart</Text>
+
+
+                    <Image
+                        source={require('../../asset/arrow-forward.png')} // Update the path as needed
+                        style={{
+                            width: 20,
+                            height: 20,
+                            resizeMode: 'contain',
+                            tintColor: COLORS.txtColor
+
+
+                        }}
+                    />
+                </TouchableOpacity>
+            )}
             {renderAllServicesModal()}
+
+            {renderCartModal()}
 
             {/* Sidebar */}
             {renderSidebar()}
@@ -3023,6 +3179,141 @@ const styles = StyleSheet.create({
         height: 28,
         justifyContent: 'center',
         alignItems: 'flex-start',
+    },
+    // Cart
+    cartButton: {
+        position: 'absolute',
+        bottom: 20,
+        left: 20,
+        right: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#d6bceb',
+        paddingVertical: 14,
+        paddingHorizontal: 20,
+        borderRadius: 14,
+        shadowColor: 'rgba(0,0,0,0.2)',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 6,
+    },
+    cartBadge: {
+        position: 'absolute',
+        top: -8,
+        right: -8,
+        backgroundColor: '#E17055',
+        borderRadius: 12,
+        width: 24,
+        height: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: '#FFFFFF',
+    },
+    cartBadgeText: {
+        fontSize: 11,
+        fontWeight: '700',
+        color: '#FFFFFF',
+    },
+    cartButtonText: {
+        flex: 1,
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#403746',
+        marginLeft: 12,
+    },
+    cartTotalText: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#403746',
+        marginRight: 8,
+    },
+    // Cart Modal
+    cartModalContent: {
+        backgroundColor: '#FFFFFF',
+        borderTopLeftRadius: 28,
+        borderTopRightRadius: 28,
+        paddingHorizontal: 24,
+        paddingTop: 12,
+        paddingBottom: 34,
+        maxHeight: height * 0.8,
+    },
+    cartTitle: {
+        fontSize: 22,
+        fontWeight: '700',
+        color: '#1A1A1A',
+        textAlign: 'center',
+    },
+    cartSubtitle: {
+        fontSize: 14,
+        color: '#666666',
+        textAlign: 'center',
+        marginTop: 4,
+        marginBottom: 16,
+    },
+    cartItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F5F5F5',
+    },
+    cartItemImage: {
+        width: 50,
+        height: 50,
+        borderRadius: 8,
+    },
+    cartItemInfo: {
+        flex: 1,
+        marginLeft: 12,
+    },
+    cartItemName: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#1A1A1A',
+    },
+    cartItemPrice: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#403746',
+        marginTop: 2,
+    },
+    cartFooter: {
+        marginTop: 16,
+        paddingTop: 16,
+        borderTopWidth: 1,
+        borderTopColor: '#F0EDE8',
+    },
+    cartTotal: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    cartTotalLabel: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1A1A1A',
+    },
+    cartTotalPrice: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#403746',
+    },
+    cartCheckoutButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        backgroundColor: '#403746',
+        paddingVertical: 14,
+        borderRadius: 12,
+    },
+    cartCheckoutText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#FFFFFF',
     },
 });
 
