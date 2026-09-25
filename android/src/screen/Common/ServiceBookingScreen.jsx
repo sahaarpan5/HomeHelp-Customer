@@ -265,53 +265,71 @@ const ServiceBookingScreen = ({ navigation, route }) => {
             }
 
             const activePricing = Array.isArray(data.pricing)
-                ? data.pricing.filter(item => item.isActive)
+                ? data.pricing.filter(
+                    item =>
+                        item.isActive === true ||
+                        item.isActive === 'true' ||
+                        item.isActive === 1
+                )
                 : [];
 
+            // ⭐ Only hourly pricing is used for displaying price
             const hourlyPricing = activePricing.find(
-                item => item.pricingType === 1
+                item => Number(item.pricingType) === 1
             );
 
-            const childServices = hourlyPricing
-                ? [
-                    {
-                        id: data.serviceId,
-                        name: data.serviceName,
-                        price: `₹${hourlyPricing.price}`,
-                        coverImage: {
-                            uri: data.imageUrl,
-                        },
-                        description:
-                            hourlyPricing.pricingDescription ||
-                            data.workProfile ||
-                            data.serviceName,
+            // ⭐ Complete process array
+            const processArray = Array.isArray(data.processSteps)
+                ? [...data.processSteps]
+                    .sort((a, b) => a.ordinal - b.ordinal)
+                    .map(item => ({
+                        step: String(item.ordinal),
+                        title: item.header,
+                        description: item.description,
+                        image: item.imageUrl,
+                    }))
+                : [];
 
-                        whatIsCovered: Array.isArray(data.included)
-                            ? data.included.map(
-                                item => item.includedService
-                            )
-                            : [],
+            // ⭐ Service object
+            const childServices = [
+                {
+                    id: data.serviceId,
 
-                        duration: '1 hour',
+                    name: data.serviceName,
+
+                    // ⭐ ONLY HOURLY PRICE FOR DISPLAY
+                    price: hourlyPricing
+                        ? `₹${hourlyPricing.price}`
+                        : 'Price unavailable',
+
+                    coverImage: {
+                        uri: data.imageUrl,
                     },
-                ]
-                : [
-                    {
-                        id: data.serviceId,
-                        name: data.serviceName,
-                        price: 'Price unavailable',
-                        coverImage: {
-                            uri: data.imageUrl,
-                        },
-                        description: data.workProfile || data.serviceName,
-                        whatIsCovered: Array.isArray(data.included)
-                            ? data.included.map(
-                                item => item.includedService
-                            )
-                            : [],
-                        duration: '',
-                    },
-                ];
+
+                    description:
+                        hourlyPricing?.pricingDescription ||
+                        data.workProfile ||
+                        data.serviceName,
+
+                    // ⭐ Included services
+                    whatIsCovered: Array.isArray(data.included)
+                        ? data.included.map(
+                            item => item.includedService
+                        )
+                        : [],
+
+                    // ⭐ COMPLETE PRICING ARRAY
+                    pricing: activePricing,
+
+                    // ⭐ COMPLETE PROCESS ARRAY
+                    ourProcess: processArray,
+
+                    // ⭐ Display duration
+                    duration: hourlyPricing
+                        ? `${hourlyPricing.durationHours || 1} hour`
+                        : '',
+                },
+            ];
 
             // const formattedService = {
             //     id: data.serviceId,
@@ -1234,8 +1252,8 @@ const ServiceBookingScreen = ({ navigation, route }) => {
 
                                         navigation.navigate('ViewCartScreen', {
                                             selectedServices: selectedServices,
-                                            customername : customername,
-                                            customemob : customemob
+                                            customername: customername,
+                                            customemob: customemob
                                         });
                                     }}>
                                         <Text style={styles.cartCheckoutText}>Proceed to Book</Text>

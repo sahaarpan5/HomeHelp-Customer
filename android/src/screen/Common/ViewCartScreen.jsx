@@ -548,7 +548,9 @@ const ViewCartScreen = ({ navigation, route }) => {
 
             const data = response.data;
 
-            // Get active pricing
+            // ==========================================
+            // 1. GET ALL ACTIVE PRICING
+            // ==========================================
             const activePricing = Array.isArray(data.pricing)
                 ? data.pricing.filter(
                     item =>
@@ -558,35 +560,81 @@ const ViewCartScreen = ({ navigation, route }) => {
                 )
                 : [];
 
-            // Get hourly price
+            // ==========================================
+            // 2. GET HOURLY PRICING
+            //    Only this price will be displayed
+            // ==========================================
             const hourlyPricing = activePricing.find(
-                item => item.pricingType === 1
+                item => Number(item.pricingType) === 1
             );
 
-            // Create complete cart service
+            // ==========================================
+            // 3. GET COMPLETE PROCESS ARRAY
+            // ==========================================
+            const processArray = Array.isArray(data.processSteps)
+                ? [...data.processSteps]
+                    .sort((a, b) => a.ordinal - b.ordinal)
+                    .map(item => ({
+                        step: String(item.ordinal),
+                        title: item.header,
+                        description: item.description,
+                        image: item.imageUrl,
+                    }))
+                : [];
+
+            // ==========================================
+            // 4. CREATE COMPLETE CART SERVICE
+            // ==========================================
             const serviceToAdd = {
                 id: data.serviceId,
+
                 name: data.serviceName,
+
+                // ⭐ ONLY HOURLY PRICE FOR DISPLAY
                 price: hourlyPricing
                     ? `₹${hourlyPricing.price}`
                     : 'Price unavailable',
+
                 coverImage: {
                     uri: data.imageUrl,
                 },
+
                 image: {
                     uri: data.imageUrl,
                 },
-                duration: '1 hour',
+
+                duration: hourlyPricing
+                    ? `${hourlyPricing.durationHours || 1} hour`
+                    : '',
+
                 description:
                     hourlyPricing?.pricingDescription ||
                     data.workProfile ||
                     data.serviceName,
+
+                // ==========================================
+                // ⭐ WHAT'S INCLUDED
+                // ==========================================
                 whatIsCovered: Array.isArray(data.included)
-                    ? data.included.map(item => item.includedService)
+                    ? data.included.map(
+                        item => item.includedService
+                    )
                     : [],
+
+                // ==========================================
+                // ⭐ COMPLETE PRICING ARRAY
+                // ==========================================
+                pricing: activePricing,
+
+                // ==========================================
+                // ⭐ COMPLETE PROCESS ARRAY
+                // ==========================================
+                ourProcess: processArray,
             };
 
-            // Check duplicate by service name
+            // ==========================================
+            // 5. CHECK DUPLICATE BY SERVICE NAME
+            // ==========================================
             const alreadyExists = selectedServices.some(
                 item =>
                     item.name?.trim().toLowerCase() ===
@@ -597,7 +645,9 @@ const ViewCartScreen = ({ navigation, route }) => {
                 return;
             }
 
-            // Add to selected services
+            // ==========================================
+            // 6. ADD TO SELECTED SERVICES
+            // ==========================================
             const updatedServices = [
                 ...selectedServices,
                 serviceToAdd,
@@ -605,13 +655,17 @@ const ViewCartScreen = ({ navigation, route }) => {
 
             setSelectedServices(updatedServices);
 
-            // Save cart
+            // ==========================================
+            // 7. SAVE COMPLETE SERVICE TO CART
+            // ==========================================
             await AsyncStorage.setItem(
                 'selectedServices',
                 JSON.stringify(updatedServices)
             );
 
-            // Remove from People Also Like
+            // ==========================================
+            // 8. REMOVE FROM PEOPLE ALSO LIKE
+            // ==========================================
             setPeopleAlsoLike(prev =>
                 prev.filter(
                     item =>
@@ -1982,7 +2036,10 @@ const ViewCartScreen = ({ navigation, route }) => {
 
                             address: address,
 
-                            slotSelections: slotSelections,
+                            slotSelections: {
+                                date: null,
+                                time: null,
+                            },
                         });
                     }}
                 >
