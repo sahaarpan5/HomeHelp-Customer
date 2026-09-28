@@ -2024,7 +2024,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                 <TouchableOpacity
                     style={styles.selectSlotButton}
                     onPress={() => {
-                        navigation.navigate('SelectSlotScreen', {
+                        navigation.navigate('SelectSlotScreenV1', {
                             selectedServices: selectedServices,
 
                             customerDetails: {

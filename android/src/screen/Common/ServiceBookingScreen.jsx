@@ -195,8 +195,27 @@ const ServiceBookingScreen = ({ navigation, route }) => {
     useFocusEffect(
         useCallback(() => {
             loadCart();
+            loadSavedServices();
         }, [])
     );
+
+
+    const loadSavedServices = async () => {
+        try {
+            const saved = await AsyncStorage.getItem('savedServices');
+
+            if (saved) {
+                const savedNames = JSON.parse(saved);
+
+                setSavedServices(savedNames);
+            } else {
+                setSavedServices([]);
+            }
+        } catch (error) {
+            console.log('Load Saved Services Error:', error);
+            setSavedServices([]);
+        }
+    };
 
 
     const loadCart = async () => {
@@ -516,13 +535,54 @@ const ServiceBookingScreen = ({ navigation, route }) => {
         ]).start();
     };
 
-    const toggleSaveService = (serviceId) => {
-        if (savedServices.includes(serviceId)) {
-            setSavedServices(savedServices.filter(id => id !== serviceId));
-        } else {
-            setSavedServices([...savedServices, serviceId]);
-            animateHeart();
-            Alert.alert('Saved!', 'Service added to your saved list ❤️');
+    const isServiceSaved = (serviceName) => {
+        return savedServices.some(
+            name =>
+                name?.trim().toLowerCase() ===
+                serviceName?.trim().toLowerCase()
+        );
+    };
+
+    const toggleSaveService = async (service) => {
+        try {
+            const serviceName = service.name?.trim();
+
+            if (!serviceName) {
+                return;
+            }
+
+            const alreadySaved = savedServices.some(
+                name => name.trim().toLowerCase() === serviceName.toLowerCase()
+            );
+
+            let updatedSavedServices;
+
+            if (alreadySaved) {
+                // Remove service name
+                updatedSavedServices = savedServices.filter(
+                    name => name.trim().toLowerCase() !== serviceName.toLowerCase()
+                );
+            } else {
+                // Add service name
+                updatedSavedServices = [
+                    ...savedServices,
+                    serviceName
+                ];
+
+                animateHeart();
+            }
+
+            setSavedServices(updatedSavedServices);
+
+            await AsyncStorage.setItem(
+                'savedServices',
+                JSON.stringify(updatedSavedServices)
+            );
+
+            console.log('Saved Services:', updatedSavedServices);
+
+        } catch (error) {
+            console.log('Save Service Error:', error);
         }
     };
 
@@ -606,9 +666,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
         );
     };
 
-    const isServiceSaved = (serviceId) => {
-        return savedServices.includes(serviceId);
-    };
+
 
     const handleShare = async () => {
         try {
@@ -761,7 +819,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
         const isAdded = isServiceSelected(item.name);
 
         // Check whether this service is saved/favourite
-        const isSaved = isServiceSaved(item.id);
+        const isSaved = isServiceSaved(item.name);
 
         return (
             <View style={styles.childServiceCard}>
@@ -781,9 +839,33 @@ const ServiceBookingScreen = ({ navigation, route }) => {
 
                         <TouchableOpacity
                             style={styles.heartButtonInline}
-                            onPress={() => toggleSaveService(item.id)}
+                            onPress={() => toggleSaveService(item)}
                         >
-                            {/* heart code */}
+                            <Animated.View
+                                style={{
+                                    transform: [
+                                        {
+                                            scale: isSaved ? heartAnim : 1
+                                        }
+                                    ]
+                                }}
+                            >
+                                <Image
+                                    source={
+                                        isSaved
+                                            ? require('../../asset/like.png')
+                                            : require('../../asset/heart.png')
+                                    }
+                                    style={{
+                                        width: 22,
+                                        height: 22,
+                                        resizeMode: 'contain',
+                                        tintColor: isSaved
+                                            ? COLORS.heart
+                                            : COLORS.textLight,
+                                    }}
+                                />
+                            </Animated.View>
                         </TouchableOpacity>
 
                     </View>

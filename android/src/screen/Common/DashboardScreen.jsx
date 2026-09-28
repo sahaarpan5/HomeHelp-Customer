@@ -1001,7 +1001,10 @@ const DashboardScreen = ({ navigation }) => {
                 break;
 
             case 'My Favorites Services':
-                navigation.navigate('SavedServicesScreen');
+                navigation.navigate('SavedServicesScreen', {
+                    customername: `${firstName} ${lastName}`,
+                    customemob: phone,
+                });
                 break;
 
             case 'My Account':

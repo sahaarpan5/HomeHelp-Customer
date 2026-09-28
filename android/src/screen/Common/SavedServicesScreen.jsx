@@ -13,60 +13,27 @@ import {
     FlatList,
 } from 'react-native';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
+import axios from 'axios';
+import API from '../../util/API';
+import Loader from '../../util/Loader';
+
 
 const { width, height } = Dimensions.get('window');
 
-const SavedServicesScreen = ({ navigation }) => {
+const SavedServicesScreen = ({ navigation, route }) => {
     // States
-    const [savedServices, setSavedServices] = useState([
-        {
-            id: '1',
-            name: 'Home Cleaning',
-            image: require('../../asset/homeclean.png'),
-            rating: 4.9,
-            reviews: 1240,
-            price: '₹499',
-            category: 'Cleaning',
-            savedDate: '15 Jan 2027',
-        },
 
-        {
-            id: '3',
-            name: 'House Maid',
-            image: require('../../asset/housemaid.png'),
-            rating: 4.7,
-            reviews: 650,
-            price: '₹599',
-            category: 'Cleaning',
-            savedDate: '10 Jan 2027',
-        },
-        {
-            id: '4',
-            name: 'Bathroom Cleaning',
-            image: require('../../asset/bathroomclean.png'),
-            rating: 4.6,
-            reviews: 520,
-            price: '₹349',
-            category: 'Cleaning',
-            savedDate: '8 Jan 2027',
-        },
-        {
-            id: '5',
-            name: 'Kitchen Cleaning',
-            image: require('../../asset/kitchenclean.png'),
-            rating: 4.5,
-            reviews: 480,
-            price: '₹449',
-            category: 'Cleaning',
-            savedDate: '5 Jan 2027',
-            rating: 4.5,
-            reviews: 480,
-            price: '₹449',
-            category: 'Cleaning',
-            savedDate: '5 Jan 2027',
-        },
+    const { customername, customemob } = route.params || {};
 
-    ]);
+    console.log('Customer Name:', customername);
+    console.log('Customer Mobile:', customemob);
+
+    const [allServices, setAllServices] = useState([]);
+    const [savedServices, setSavedServices] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const starImages = {
         full: require('../../asset/star-fill.png'),
@@ -115,17 +82,166 @@ const SavedServicesScreen = ({ navigation }) => {
         ]).start();
     }, []);
 
-    const removeSavedService = (id) => {
+
+    useFocusEffect(
+        useCallback(() => {
+            loadServicesAndSavedServices();
+        }, [])
+    );
+
+
+
+    const loadServicesAndSavedServices = async () => {
+        try {
+            setIsLoading(true);
+
+            const token = await AsyncStorage.getItem('token');
+
+            if (!token) {
+                console.log('Token not found');
+                setAllServices([]);
+                setSavedServices([]);
+                return;
+            }
+
+            const response = await axios.get(
+                API.CUSTOMER_SERVICES,
+                {
+                    headers: {
+                        Accept: 'text/plain',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log('SERVICE API RESPONSE:', response.data);
+
+            if (!Array.isArray(response.data)) {
+                setAllServices([]);
+                setSavedServices([]);
+                return;
+            }
+
+            const formattedServices = response.data.map((item, index) => ({
+                id: item.serviceId,
+                name: item.serviceName,
+                icon: {
+                    uri: item.icon,
+                },
+                image: {
+                    uri: item.imageUrl,
+                },
+                // color: getServiceColor(index, response.data.length),
+            }));
+
+            setAllServices(formattedServices);
+
+            // -----------------------------
+            // Load saved service names
+            // -----------------------------
+
+            const saved = await AsyncStorage.getItem('savedServices');
+
+            console.log('SAVED SERVICES:', saved);
+
+            if (!saved) {
+                setSavedServices([]);
+                return;
+            }
+
+            const savedNames = JSON.parse(saved);
+
+            if (!Array.isArray(savedNames)) {
+                setSavedServices([]);
+                return;
+            }
+
+            // -----------------------------
+            // Match saved names with API
+            // -----------------------------
+
+            const matchedServices = formattedServices.filter(service =>
+                savedNames.some(
+                    savedName =>
+                        savedName?.trim().toLowerCase() ===
+                        service.name?.trim().toLowerCase()
+                )
+            );
+
+            console.log('MATCHED SAVED SERVICES:', matchedServices);
+
+            setSavedServices(matchedServices);
+
+        } catch (error) {
+            console.log('LOAD SERVICES ERROR:', error);
+            console.log('ERROR RESPONSE:', error?.response?.data);
+
+            setAllServices([]);
+            setSavedServices([]);
+
+            Alert.alert(
+                'Error',
+                error?.response?.data?.message ||
+                'Unable to load services.'
+            );
+
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+
+
+
+
+
+    const removeSavedService = (serviceName) => {
         Alert.alert(
             'Remove Service',
             'Are you sure you want to remove this from saved services?',
             [
-                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
                 {
                     text: 'Remove',
                     style: 'destructive',
-                    onPress: () => {
-                        setSavedServices(savedServices.filter(item => item.id !== id));
+                    onPress: async () => {
+                        try {
+                            const saved =
+                                await AsyncStorage.getItem('savedServices');
+
+                            const savedNames = saved
+                                ? JSON.parse(saved)
+                                : [];
+
+                            const updatedNames = savedNames.filter(
+                                name =>
+                                    name?.trim().toLowerCase() !==
+                                    serviceName?.trim().toLowerCase()
+                            );
+
+                            await AsyncStorage.setItem(
+                                'savedServices',
+                                JSON.stringify(updatedNames)
+                            );
+
+                            // Immediately remove from screen
+                            setSavedServices(prev =>
+                                prev.filter(
+                                    item =>
+                                        item.name?.trim().toLowerCase() !==
+                                        serviceName?.trim().toLowerCase()
+                                )
+                            );
+
+                        } catch (error) {
+                            console.log(
+                                'REMOVE SAVED SERVICE ERROR:',
+                                error
+                            );
+                        }
                     },
                 },
             ]
@@ -171,7 +287,7 @@ const SavedServicesScreen = ({ navigation }) => {
             <Image source={item.image} style={styles.serviceImage} />
             <TouchableOpacity
                 style={styles.heartButton}
-                onPress={() => removeSavedService(item.id)}
+                onPress={() => removeSavedService(item.name)}
             >
 
                 <Image
@@ -193,7 +309,13 @@ const SavedServicesScreen = ({ navigation }) => {
                     <Text style={styles.serviceRatingText}>{item.rating}</Text>
                 </View>
                 <Text style={styles.servicePrice}>{item.price}</Text>
-                <TouchableOpacity style={styles.bookButton} onPress={() => navigation.replace('ServiceBookingScreen', { serviceId: item.id })}>
+                <TouchableOpacity style={styles.bookButton} onPress={() =>
+                    navigation.replace('ServiceBookingScreen', {
+                        serviceId: item.id,
+                        customername,
+                        customemob,
+                    })
+                }>
                     <Text style={styles.bookButtonText}>Book Now</Text>
                 </TouchableOpacity>
             </View>
@@ -226,6 +348,13 @@ const SavedServicesScreen = ({ navigation }) => {
                 <Text style={styles.headerTitle}>Saved Services</Text>
                 <View style={styles.headerRight} />
             </View>
+
+
+            {isLoading && (
+                <View style={styles.loaderOverlay}>
+                    <Loader />
+                </View>
+            )}
 
             <Animated.View
                 style={[
@@ -437,6 +566,17 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         color: '#FFFFFF',
+    },
+    loaderOverlay: {
+        flex: 1,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+
+        backgroundColor: 'rgba(255,255,255,0.7)',
+        zIndex: 999,
     },
 });
 

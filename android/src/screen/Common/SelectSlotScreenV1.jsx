@@ -1,0 +1,4776 @@
+import React, { useState, useRef, useEffect } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    TouchableOpacity,
+    StatusBar,
+    Image,
+    Dimensions,
+    Animated,
+    Alert,
+    FlatList,
+    Modal,
+    TouchableWithoutFeedback,
+    SafeAreaView,
+    Platform,
+} from 'react-native';
+
+const { width, height } = Dimensions.get('window');
+
+const COLORS = {
+    gold: '#d6bceb',
+    goldLight: '#76577F',
+    goldDark: '#C4B0D3',
+    goldFade: 'rgba(179, 154, 199, 0.1)',
+    white: '#FFFFFF',
+    dark: '#1A1A1A',
+    textLight: '#666666',
+    lightBg: '#F8F6F0',
+    border: '#E8E3D8',
+    success: '#2ECC71',
+    purple: '#6C5CE7',
+    pink: '#FD79A8',
+    blue: '#0984E3',
+    green: '#00B894',
+    red: '#E17055',
+    orange: '#FDCB6E',
+    warning: '#F39C12',
+    txtColor: '#403746',
+};
+
+const HALF_DAY_HOURS = 4;
+const FULL_DAY_HOURS = 8;
+
+const SelectSlotScreenV1 = ({ navigation, route }) => {
+
+    /*
+    |--------------------------------------------------------------------------
+    | ROUTE DATA
+    |--------------------------------------------------------------------------
+    */
+
+    const {
+        selectedServices = [],
+        customerDetails = {},
+        addressDetails = null,
+        address = '',
+        slotSelections: previousSlotSelections = {},
+    } = route.params || {};
+
+    const {
+        name: customerName = '',
+        mobile: customerMobile = '',
+    } = customerDetails;
+
+    console.log('Selected Services:', selectedServices);
+    console.log('Customer Name:', customerName);
+    console.log('Customer Mobile:', customerMobile);
+    console.log('Address Details:', addressDetails);
+    console.log('Address:', address);
+
+    /*
+    |--------------------------------------------------------------------------
+    | STATES
+    |--------------------------------------------------------------------------
+    */
+
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedTime, setSelectedTime] = useState(null);
+
+    // Hourly / Half Day / Full Day
+    const [selectedDurationType, setSelectedDurationType] =
+        useState('hourly');
+
+    // DEFAULT = 1 HOUR
+    const [selectedHours, setSelectedHours] =
+        useState('1 Hour');
+
+    const [selectedProfessional, setSelectedProfessional] =
+        useState(null);
+
+    const [addedSlots, setAddedSlots] =
+        useState([]);
+
+    const [showProfessionalModal, setShowProfessionalModal] =
+        useState(false);
+
+    const [selectedProfessionalDetails, setSelectedProfessionalDetails] =
+        useState(null);
+
+    const [showBillSummary, setShowBillSummary] =
+        useState(false);
+
+    const [scheduleType, setScheduleType] =
+        useState('same');
+
+    /*
+    |--------------------------------------------------------------------------
+    | SAME SCHEDULE
+    |--------------------------------------------------------------------------
+    */
+
+    const [commonDates, setCommonDates] =
+        useState([]);
+
+    const [commonDateServices, setCommonDateServices] =
+        useState({});
+
+    /*
+    |--------------------------------------------------------------------------
+    | DIFFERENT SCHEDULE
+    |--------------------------------------------------------------------------
+    */
+
+    const [serviceSchedules, setServiceSchedules] =
+        useState({});
+
+    /*
+    |--------------------------------------------------------------------------
+    | ANIMATION
+    |--------------------------------------------------------------------------
+    */
+
+    const fadeAnim =
+        useRef(new Animated.Value(0)).current;
+
+    const slideAnim =
+        useRef(new Animated.Value(30)).current;
+
+    const modalSlideAnim =
+        useRef(new Animated.Value(height)).current;
+
+    const billModalSlideAnim =
+        useRef(new Animated.Value(height)).current;
+
+    /*
+    |--------------------------------------------------------------------------
+    | STAR IMAGES
+    |--------------------------------------------------------------------------
+    */
+
+    const starImages = {
+        full: require('../../asset/star-fill.png'),
+        half: require('../../asset/star-half.png'),
+        empty: require('../../asset/star-outline.png'),
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | DATES
+    |--------------------------------------------------------------------------
+    */
+
+    const generateDates = () => {
+        const dates = [];
+        const today = new Date();
+
+        for (let i = 0; i <= 14; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            dates.push(date);
+        }
+
+        return dates;
+    };
+
+    const availableDates = generateDates();
+
+    /*
+    |--------------------------------------------------------------------------
+    | TIME SLOTS
+    |--------------------------------------------------------------------------
+    */
+
+    const timeSlots = [
+        '09:00 AM',
+        '10:00 AM',
+        '11:00 AM',
+        '12:00 PM',
+        '01:00 PM',
+        '02:00 PM',
+        '03:00 PM',
+        '04:00 PM',
+        '05:00 PM',
+        '06:00 PM',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | DURATION TYPES
+    |--------------------------------------------------------------------------
+    */
+
+    const durationTypes = [
+        {
+            id: 'hourly',
+            label: 'Hourly',
+            icon: require('../../asset/time-outline.png'),
+            description: 'Pay per hour',
+        },
+        {
+            id: 'halfDay',
+            label: 'Half Day',
+            icon: require('../../asset/sun.png'),
+            description: '4 hours',
+        },
+        {
+            id: 'fullDay',
+            label: 'Full Day',
+            icon: require('../../asset/sun.png'),
+            description: '8 hours',
+        },
+    ];
+
+    const hoursOptions = [
+        '1 Hour',
+        '2 Hours',
+        '3 Hours',
+        '4 Hours',
+        '5 Hours',
+        '6 Hours',
+        '7 Hours',
+        '8 Hours',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFESSIONALS
+    |--------------------------------------------------------------------------
+    */
+
+    const professionals = [
+        {
+            id: 'p1',
+            name: 'Rajesh Kumar',
+            image:
+                'https://ui-avatars.com/api/?name=Rajesh+Kumar&background=6C5CE7&color=fff&size=100',
+            rating: 4.9,
+            jobsCompleted: 1240,
+            isActive: true,
+            experience: '8 years',
+            availableSlots: [
+                '09:00 AM',
+                '11:00 AM',
+                '02:00 PM',
+            ],
+            lastBookingDate: '10 Jan 2027',
+        },
+
+        {
+            id: 'p2',
+            name: 'Priya Sharma',
+            image:
+                'https://ui-avatars.com/api/?name=Priya+Sharma&background=FD79A8&color=fff&size=100',
+            rating: 4.8,
+            jobsCompleted: 890,
+            isActive: true,
+            experience: '6 years',
+            availableSlots: [
+                '10:00 AM',
+                '01:00 PM',
+                '03:00 PM',
+            ],
+            lastBookingDate: '05 Jan 2027',
+        },
+
+        {
+            id: 'p3',
+            name: 'Amit Patel',
+            image:
+                'https://ui-avatars.com/api/?name=Amit+Patel&background=0984E3&color=fff&size=100',
+            rating: 4.7,
+            jobsCompleted: 650,
+            isActive: true,
+            experience: '5 years',
+            availableSlots: [
+                '09:00 AM',
+                '12:00 PM',
+                '04:00 PM',
+            ],
+            lastBookingDate: '15 Dec 2026',
+        },
+
+        {
+            id: 'p4',
+            name: 'Sunita Reddy',
+            image:
+                'https://ui-avatars.com/api/?name=Sunita+Reddy&background=00B894&color=fff&size=100',
+            rating: 4.9,
+            jobsCompleted: 1560,
+            isActive: true,
+            experience: '10 years',
+            availableSlots: [
+                '09:00 AM',
+                '12:00 PM',
+                '04:00 PM',
+            ],
+            lastBookingDate: '20 Dec 2026',
+        },
+
+        {
+            id: 'p5',
+            name: 'Vikram Singh',
+            image:
+                'https://ui-avatars.com/api/?name=Vikram+Singh&background=E17055&color=fff&size=100',
+            rating: 4.6,
+            jobsCompleted: 450,
+            isActive: true,
+            experience: '4 years',
+            availableSlots: [
+                '10:00 AM',
+                '01:00 PM',
+                '05:00 PM',
+            ],
+            lastBookingDate: '28 Dec 2026',
+        },
+    ];
+
+    const ANY_PROFESSIONAL = {
+        id: 'ANY',
+        name: 'Select Any Professional',
+        image:
+            'https://ui-avatars.com/api/?name=Any+Professional&background=76577F&color=fff&size=100',
+        rating: 0,
+        jobsCompleted: 0,
+        experience: 'All professionals',
+        availableSlots: timeSlots,
+        lastBookingDate: 'Any',
+        isAny: true,
+        isActive: true,
+    };
+
+    const activeProfessionals = [
+        ANY_PROFESSIONAL,
+        ...professionals.filter(
+            item => item.isActive
+        ),
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | ANIMATION
+    |--------------------------------------------------------------------------
+    */
+
+    useEffect(() => {
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 600,
+                useNativeDriver: true,
+            }),
+
+            Animated.timing(slideAnim, {
+                toValue: 0,
+                duration: 600,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    }, []);
+
+    /*
+    |--------------------------------------------------------------------------
+    | MODAL ANIMATION
+    |--------------------------------------------------------------------------
+    */
+
+    const animateModalIn = animRef => {
+        animRef.setValue(height);
+
+        Animated.spring(animRef, {
+            toValue: 0,
+            friction: 8,
+            tension: 40,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const animateModalOut = (
+        animRef,
+        callback
+    ) => {
+        Animated.timing(animRef, {
+            toValue: height,
+            duration: 300,
+            useNativeDriver: true,
+        }).start(() => {
+            if (callback) {
+                callback();
+            }
+        });
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | PRICING
+    |--------------------------------------------------------------------------
+    */
+
+    const getPricingItem = (
+        service,
+        pricingType
+    ) => {
+        if (!Array.isArray(service?.pricing)) {
+            return null;
+        }
+
+        return service.pricing.find(
+            item =>
+                Number(item.pricingType) ===
+                pricingType &&
+                (
+                    item.isActive === true ||
+                    item.isActive === 'true' ||
+                    item.isActive === 1
+                )
+        );
+    };
+
+    const calculateServicePrice = (
+        service,
+        hours
+    ) => {
+
+        const selectedHour =
+            Number(hours) || 0;
+
+        if (selectedHour <= 0) {
+            return 0;
+        }
+
+        /*
+        | 1 = Hourly
+        */
+
+        const hourlyPricing =
+            getPricingItem(
+                service,
+                1
+            );
+
+        const hourlyPrice =
+            Number(
+                hourlyPricing?.price
+            ) || 0;
+
+        /*
+        | 4 Hours
+        */
+
+        if (selectedHour === 4) {
+
+            const fourHourPricing =
+                getPricingItem(
+                    service,
+                    2
+                );
+
+            if (fourHourPricing) {
+                return Number(
+                    fourHourPricing.price
+                ) || 0;
+            }
+
+            return hourlyPrice * 4;
+        }
+
+        /*
+        | 8 Hours
+        */
+
+        if (selectedHour === 8) {
+
+            const eightHourPricing =
+                getPricingItem(
+                    service,
+                    3
+                );
+
+            if (eightHourPricing) {
+                return Number(
+                    eightHourPricing.price
+                ) || 0;
+            }
+
+            return hourlyPrice * 8;
+        }
+
+        /*
+        | 1,2,3,5,6,7 Hours
+        */
+
+        return hourlyPrice * selectedHour;
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | HOURS COMPONENT
+    |--------------------------------------------------------------------------
+    */
+
+    const renderHours = (
+        service,
+        selected,
+        onSelect
+    ) => {
+
+        return (
+            <View
+                style={
+                    styles.hoursContainer
+                }
+            >
+
+                {[
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                ].map(hour => {
+
+                    const amount =
+                        calculateServicePrice(
+                            service,
+                            hour
+                        );
+
+                    const isSelected =
+                        Number(selected) ===
+                        hour;
+
+                    return (
+                        <TouchableOpacity
+                            key={hour}
+                            style={[
+                                styles.hoursCard,
+                                isSelected &&
+                                styles.hoursCardSelected,
+                            ]}
+                            onPress={() =>
+                                onSelect(hour)
+                            }
+                            activeOpacity={0.8}
+                        >
+
+                            <Text
+                                style={[
+                                    styles.hoursText,
+                                    isSelected &&
+                                    styles.hoursTextSelected,
+                                ]}
+                            >
+                                {hour}{' '}
+                                {hour === 1
+                                    ? 'Hour'
+                                    : 'Hours'}
+                            </Text>
+
+                            <Text
+                                style={[
+                                    styles.hoursAmount,
+                                    isSelected &&
+                                    styles.hoursAmountSelected,
+                                ]}
+                            >
+                                ₹{amount}
+                            </Text>
+
+                        </TouchableOpacity>
+                    );
+                })}
+
+            </View>
+        );
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | STAR RENDER
+    |--------------------------------------------------------------------------
+    */
+
+    const renderStars = (
+        rating,
+        size = 16
+    ) => {
+
+        const stars = [];
+
+        const fullStars =
+            Math.floor(rating);
+
+        const hasHalfStar =
+            rating % 1 >= 0.5;
+
+        for (
+            let i = 0;
+            i < 5;
+            i++
+        ) {
+
+            let image =
+                starImages.empty;
+
+            let tintColor =
+                '#DDD';
+
+            if (
+                i < fullStars
+            ) {
+                image =
+                    starImages.full;
+
+                tintColor =
+                    '#FFD700';
+            }
+            else if (
+                i === fullStars &&
+                hasHalfStar
+            ) {
+                image =
+                    starImages.half;
+
+                tintColor =
+                    '#FFD700';
+            }
+
+            stars.push(
+                <Image
+                    key={i}
+                    source={image}
+                    style={{
+                        width: size,
+                        height: size,
+                        tintColor,
+                        resizeMode:
+                            'contain',
+                        marginHorizontal:
+                            1,
+                    }}
+                />
+            );
+        }
+
+        return stars;
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | DATE / TIME AVAILABILITY
+    |--------------------------------------------------------------------------
+    */
+
+    const isTodayDate = date => {
+        if (!date) return false;
+        const d = new Date(date);
+        const today = new Date();
+        return d.toDateString() === today.toDateString();
+    };
+
+    const getTodayMinimumDateTime = () => {
+        return new Date(Date.now() + 30 * 60 * 1000);
+    };
+
+    const parseTimeForDate = (date, time) => {
+        if (!date || !time) return null;
+
+        const match = String(time).match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+        if (!match) return null;
+
+        let hour = Number(match[1]);
+        const minute = Number(match[2]);
+        const period = match[3].toUpperCase();
+
+        if (period === 'PM' && hour !== 12) hour += 12;
+        if (period === 'AM' && hour === 12) hour = 0;
+
+        const result = new Date(date);
+        result.setHours(hour, minute, 0, 0);
+        return result;
+    };
+
+    const formatTime = date => {
+        if (!date) return '';
+        return date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
+
+    const isProfessionalAvailable = (professional, date, time) => {
+        if (!professional?.isActive || !date || !time) return false;
+
+        const dateStr = typeof date === 'string' ? date : new Date(date).toDateString();
+
+        if (isTodayDate(dateStr)) {
+            const slotDateTime = parseTimeForDate(dateStr, time);
+            if (!slotDateTime || slotDateTime < getTodayMinimumDateTime()) {
+                return false;
+            }
+        }
+
+        if (professional.isAny) {
+            return professionals.some(item =>
+                isProfessionalAvailable(item, dateStr, time)
+            );
+        }
+
+        return Array.isArray(professional.availableSlots) &&
+            professional.availableSlots.includes(time);
+    };
+
+    const getAvailableProfessionals = (date, time) => {
+        if (!date || !time) return [];
+
+        const available = professionals.filter(professional =>
+            isProfessionalAvailable(professional, date, time)
+        );
+
+        return available.length > 0
+            ? [ANY_PROFESSIONAL, ...available]
+            : [];
+    };
+
+    const getAvailableTimes = date => {
+        if (!date) return [];
+
+        return timeSlots.filter(time =>
+            professionals.some(professional =>
+                isProfessionalAvailable(professional, date, time)
+            )
+        );
+    };
+
+    const getCurrentDateAvailabilityText = professional => {
+        if (!isTodayDate(new Date())) return null;
+
+        if (professional.isAny) {
+            const times = timeSlots.filter(time =>
+                professionals.some(item =>
+                    isProfessionalAvailable(item, new Date(), time)
+                )
+            );
+            const firstTime = times[0];
+            return firstTime
+                ? `Available after 30 min • from ${firstTime}`
+                : 'Not available today';
+        }
+
+        const times = timeSlots.filter(time =>
+            isProfessionalAvailable(professional, new Date(), time)
+        );
+        const firstTime = times[0];
+
+        return firstTime
+            ? `Available after 30 min • from ${firstTime}`
+            : 'Not available today';
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | DURATION
+    |--------------------------------------------------------------------------
+    */
+
+    const selectDurationType = type => {
+
+        setSelectedDurationType(
+            type
+        );
+
+        if (
+            type === 'hourly'
+        ) {
+
+            // DEFAULT 1 HOUR
+            setSelectedHours(
+                '1 Hour'
+            );
+        }
+        else if (
+            type === 'halfDay'
+        ) {
+
+            setSelectedHours(
+                '4 Hours'
+            );
+        }
+        else if (
+            type === 'fullDay'
+        ) {
+
+            setSelectedHours(
+                '8 Hours'
+            );
+        }
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | DATE
+    |--------------------------------------------------------------------------
+    */
+
+    const toggleDateSelection =
+        date => {
+
+            const dateStr =
+                date.toDateString();
+
+            if (
+                selectedDate ===
+                dateStr
+            ) {
+                setSelectedDate(
+                    null
+                );
+            }
+            else {
+                setSelectedDate(
+                    dateStr
+                );
+            }
+        };
+
+    /*
+    |--------------------------------------------------------------------------
+    | SAME SCHEDULE DATE
+    |--------------------------------------------------------------------------
+    */
+
+    const addCommonDate = date => {
+
+        const dateStr =
+            date.toDateString();
+
+        setCommonDates(
+            prev => {
+
+                if (
+                    prev.includes(
+                        dateStr
+                    )
+                ) {
+
+                    return prev.filter(
+                        item =>
+                            item !==
+                            dateStr
+                    );
+                }
+
+                return [
+                    ...prev,
+                    dateStr,
+                ];
+            }
+        );
+
+        setCommonDateServices(
+            prev => {
+
+                if (
+                    prev[dateStr]
+                ) {
+                    return prev;
+                }
+
+                const serviceData =
+                    {};
+
+                selectedServices.forEach(
+                    service => {
+
+                        serviceData[
+                            String(
+                                service.id
+                            )
+                        ] = {
+                            // DEFAULT 1 HOUR
+                            hours: 1,
+                            time: null,
+                            professional:
+                                null,
+                            amount:
+                                calculateServicePrice(
+                                    service,
+                                    1
+                                ),
+                        };
+                    }
+                );
+
+                return {
+                    ...prev,
+                    [dateStr]:
+                        serviceData,
+                };
+            }
+        );
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | COMMON HOURS
+    |--------------------------------------------------------------------------
+    */
+
+    const updateCommonDateHours = (
+        date,
+        serviceId,
+        hours
+    ) => {
+
+        const service =
+            selectedServices.find(
+                item =>
+                    String(
+                        item.id
+                    ) ===
+                    String(
+                        serviceId
+                    )
+            );
+
+        setCommonDateServices(
+            prev => {
+
+                const dateData =
+                    prev[date] || {};
+
+                return {
+                    ...prev,
+
+                    [date]: {
+                        ...dateData,
+
+                        [serviceId]: {
+                            ...dateData[
+                            serviceId
+                            ],
+
+                            hours,
+
+                            amount:
+                                calculateServicePrice(
+                                    service,
+                                    hours
+                                ),
+                        },
+                    },
+                };
+            }
+        );
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | COMMON TIME
+    |--------------------------------------------------------------------------
+    */
+
+    const updateCommonDateTime = (
+        date,
+        serviceId,
+        time
+    ) => {
+
+        setCommonDateServices(
+            prev => {
+
+                const dateData =
+                    prev[date] || {};
+
+                return {
+                    ...prev,
+
+                    [date]: {
+                        ...dateData,
+
+                        [serviceId]: {
+                            ...dateData[
+                            serviceId
+                            ],
+
+                            time,
+                        },
+                    },
+                };
+            }
+        );
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | COMMON PROFESSIONAL
+    |--------------------------------------------------------------------------
+    */
+
+    const updateCommonDateProfessional =
+        (
+            date,
+            serviceId,
+            professional
+        ) => {
+
+            setCommonDateServices(
+                prev => {
+
+                    const dateData =
+                        prev[date] || {};
+
+                    return {
+                        ...prev,
+
+                        [date]: {
+                            ...dateData,
+
+                            [serviceId]: {
+                                ...dateData[
+                                serviceId
+                                ],
+
+                                professional,
+                            },
+                        },
+                    };
+                }
+            );
+        };
+
+    /*
+    |--------------------------------------------------------------------------
+    | DIFFERENT SCHEDULE DATE
+    |--------------------------------------------------------------------------
+    */
+
+    const addServiceDate = (
+        serviceId,
+        date
+    ) => {
+
+        const dateStr =
+            date.toDateString();
+
+        setServiceSchedules(
+            prev => {
+
+                const current =
+                    prev[
+                    serviceId
+                    ] || [];
+
+                const exists =
+                    current.some(
+                        item =>
+                            item.date ===
+                            dateStr
+                    );
+
+                if (exists) {
+
+                    return {
+                        ...prev,
+
+                        [serviceId]:
+                            current.filter(
+                                item =>
+                                    item.date !==
+                                    dateStr
+                            ),
+                    };
+                }
+
+                return {
+                    ...prev,
+
+                    [serviceId]: [
+                        ...current,
+
+                        {
+                            id:
+                                Date.now().toString(),
+
+                            date:
+                                dateStr,
+
+                            // DEFAULT 1 HOUR
+                            hours: 1,
+
+                            time: null,
+
+                            professional:
+                                null,
+
+                            amount: 0,
+                        },
+                    ],
+                };
+            }
+        );
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | DIFFERENT HOURS
+    |--------------------------------------------------------------------------
+    */
+
+    const updateServiceDateHours = (
+        serviceId,
+        date,
+        hours
+    ) => {
+
+        const service =
+            selectedServices.find(
+                item =>
+                    String(
+                        item.id
+                    ) ===
+                    String(
+                        serviceId
+                    )
+            );
+
+        setServiceSchedules(
+            prev => {
+
+                const current =
+                    prev[
+                    serviceId
+                    ] || [];
+
+                return {
+                    ...prev,
+
+                    [serviceId]:
+                        current.map(
+                            item =>
+                                item.date ===
+                                    date
+                                    ? {
+                                        ...item,
+
+                                        hours,
+
+                                        amount:
+                                            calculateServicePrice(
+                                                service,
+                                                hours
+                                            ),
+                                    }
+                                    : item
+                        ),
+                };
+            }
+        );
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | DIFFERENT TIME
+    |--------------------------------------------------------------------------
+    */
+
+    const updateServiceDateTime = (
+        serviceId,
+        date,
+        time
+    ) => {
+
+        setServiceSchedules(
+            prev => {
+
+                const current =
+                    prev[
+                    serviceId
+                    ] || [];
+
+                return {
+                    ...prev,
+
+                    [serviceId]:
+                        current.map(
+                            item =>
+                                item.date ===
+                                    date
+                                    ? {
+                                        ...item,
+                                        time,
+                                    }
+                                    : item
+                        ),
+                };
+            }
+        );
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | DIFFERENT PROFESSIONAL
+    |--------------------------------------------------------------------------
+    */
+
+    const updateServiceDateProfessional =
+        (
+            serviceId,
+            date,
+            professional
+        ) => {
+
+            setServiceSchedules(
+                prev => {
+
+                    const current =
+                        prev[
+                        serviceId
+                        ] || [];
+
+                    return {
+                        ...prev,
+
+                        [serviceId]:
+                            current.map(
+                                item =>
+                                    item.date ===
+                                        date
+                                        ? {
+                                            ...item,
+                                            professional,
+                                        }
+                                        : item
+                            ),
+                    };
+                }
+            );
+        };
+
+    /*
+    |--------------------------------------------------------------------------
+    | COMMON DATE TOTAL HOURS
+    |--------------------------------------------------------------------------
+    */
+
+    const getCommonDateTotalHours =
+        date => {
+
+            const data =
+                commonDateServices[
+                date
+                ] || {};
+
+            return Object.values(
+                data
+            ).reduce(
+                (
+                    total,
+                    item
+                ) =>
+                    total +
+                    Number(
+                        item.hours || 0
+                    ),
+                0
+            );
+        };
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADD SAME SCHEDULE
+    |--------------------------------------------------------------------------
+    */
+
+    const addSameSchedule = () => {
+
+        if (
+            commonDates.length === 0
+        ) {
+            Alert.alert(
+                'Select Date',
+                'Please select at least one date.'
+            );
+            return;
+        }
+
+        for (
+            const date of commonDates
+        ) {
+
+            const data =
+                commonDateServices[
+                date
+                ] || {};
+
+            const totalHours =
+                getCommonDateTotalHours(
+                    date
+                );
+
+            if (
+                totalHours > 8
+            ) {
+
+                Alert.alert(
+                    'Maximum 8 Hours',
+                    `${date} has ${totalHours} hours selected. Maximum combined hours per date is 8 hours.`
+                );
+
+                return;
+            }
+
+            for (
+                const service
+                of selectedServices
+            ) {
+
+                const item =
+                    data[
+                    String(
+                        service.id
+                    )
+                    ];
+
+                if (
+                    !item?.time
+                ) {
+
+                    Alert.alert(
+                        'Select Time',
+                        `Please select time for ${service.name} on ${date}.`
+                    );
+
+                    return;
+                }
+
+                if (
+                    !item?.professional
+                ) {
+
+                    Alert.alert(
+                        'Select Professional',
+                        `Please select professional for ${service.name} on ${date}.`
+                    );
+
+                    return;
+                }
+            }
+        }
+
+        const rows = [];
+
+        commonDates.forEach(
+            date => {
+
+                const data =
+                    commonDateServices[
+                    date
+                    ] || {};
+
+                selectedServices.forEach(
+                    service => {
+
+                        const item =
+                            data[
+                            String(
+                                service.id
+                            )
+                            ];
+
+                        if (!item) {
+                            return;
+                        }
+
+                        rows.push({
+                            id:
+                                `${service.id}-${date}`,
+
+                            serviceId:
+                                service.id,
+
+                            serviceName:
+                                service.name,
+
+                            date,
+
+                            time:
+                                item.time,
+
+                            hours:
+                                Number(
+                                    item.hours
+                                ) || 1,
+
+                            amount:
+                                Number(
+                                    item.amount
+                                ) || 0,
+
+                            professional:
+                                item.professional,
+
+                            professionalName:
+                                item.professional?.name ||
+                                'Select Any Professional',
+
+                            pricing:
+                                service.pricing ||
+                                [],
+
+                            ourProcess:
+                                service.ourProcess ||
+                                [],
+
+                            service,
+                        });
+                    }
+                );
+            }
+        );
+
+        setAddedSlots(rows);
+
+        Alert.alert(
+            'Schedule Added',
+            'Your schedule has been added successfully.'
+        );
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADD DIFFERENT SCHEDULE
+    |--------------------------------------------------------------------------
+    */
+
+    const addDifferentSchedule =
+        () => {
+
+            if (
+                selectedServices.length ===
+                0
+            ) {
+
+                Alert.alert(
+                    'No Services',
+                    'No service selected.'
+                );
+
+                return;
+            }
+
+            const rows = [];
+
+            for (
+                const service
+                of selectedServices
+            ) {
+
+                const schedules =
+                    serviceSchedules[
+                    service.id
+                    ] || [];
+
+                if (
+                    schedules.length ===
+                    0
+                ) {
+
+                    Alert.alert(
+                        'Select Date',
+                        `Please select at least one date for ${service.name}.`
+                    );
+
+                    return;
+                }
+
+                for (
+                    const item
+                    of schedules
+                ) {
+
+                    if (!item.time) {
+
+                        Alert.alert(
+                            'Select Time',
+                            `Please select time for ${service.name} on ${item.date}.`
+                        );
+
+                        return;
+                    }
+
+                    if (
+                        !item.professional
+                    ) {
+
+                        Alert.alert(
+                            'Select Professional',
+                            `Please select professional for ${service.name} on ${item.date}.`
+                        );
+
+                        return;
+                    }
+
+                    rows.push({
+                        id:
+                            `${service.id}-${item.date}`,
+
+                        serviceId:
+                            service.id,
+
+                        serviceName:
+                            service.name,
+
+                        date:
+                            item.date,
+
+                        time:
+                            item.time,
+
+                        hours:
+                            Number(
+                                item.hours
+                            ) || 1,
+
+                        amount:
+                            Number(
+                                item.amount
+                            ) || 0,
+
+                        professional:
+                            item.professional,
+
+                        professionalName:
+                            item.professional?.name ||
+                            'Select Any Professional',
+
+                        pricing:
+                            service.pricing ||
+                            [],
+
+                        ourProcess:
+                            service.ourProcess ||
+                            [],
+
+                        service,
+                    });
+                }
+            }
+
+            setAddedSlots(rows);
+
+            Alert.alert(
+                'Schedule Added',
+                'Your schedule has been added successfully.'
+            );
+        };
+
+    /*
+    |--------------------------------------------------------------------------
+    | TOTAL
+    |--------------------------------------------------------------------------
+    */
+
+    const getTotalAmount = () => {
+
+        return addedSlots.reduce(
+            (
+                total,
+                slot
+            ) =>
+                total +
+                Number(
+                    slot.amount || 0
+                ),
+            0
+        );
+    };
+
+    const getTotalHours = () => {
+
+        return addedSlots.reduce(
+            (
+                total,
+                slot
+            ) =>
+                total +
+                Number(
+                    slot.hours || 0
+                ),
+            0
+        );
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFESSIONAL MODAL
+    |--------------------------------------------------------------------------
+    */
+
+    const openProfessionalModal =
+        professional => {
+
+            setSelectedProfessionalDetails(
+                professional
+            );
+
+            setShowProfessionalModal(
+                true
+            );
+
+            setTimeout(() => {
+                animateModalIn(
+                    modalSlideAnim
+                );
+            }, 100);
+        };
+
+    const closeProfessionalModal =
+        () => {
+
+            animateModalOut(
+                modalSlideAnim,
+                () => {
+
+                    setShowProfessionalModal(
+                        false
+                    );
+
+                    setSelectedProfessionalDetails(
+                        null
+                    );
+                }
+            );
+        };
+
+    /*
+    |--------------------------------------------------------------------------
+    | BILL
+    |--------------------------------------------------------------------------
+    */
+
+    const openBillSummary = () => {
+
+        if (
+            addedSlots.length === 0
+        ) {
+
+            Alert.alert(
+                'No Schedule',
+                'Please add at least one schedule.'
+            );
+
+            return;
+        }
+
+        setShowBillSummary(
+            true
+        );
+
+        setTimeout(() => {
+            animateModalIn(
+                billModalSlideAnim
+            );
+        }, 100);
+    };
+
+    const closeBillSummary = () => {
+
+        animateModalOut(
+            billModalSlideAnim,
+            () => {
+                setShowBillSummary(
+                    false
+                );
+            }
+        );
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIRM
+    |--------------------------------------------------------------------------
+    */
+
+    const handleConfirmBooking =
+        () => {
+
+            if (
+                addedSlots.length === 0
+            ) {
+
+                Alert.alert(
+                    'No Schedule',
+                    'Please add your schedule first.'
+                );
+
+                return;
+            }
+
+            closeBillSummary();
+
+            navigation.replace(
+                'BookingConfirmationScreen',
+                {
+                    slots:
+                        addedSlots,
+
+                    bookingRows:
+                        addedSlots,
+
+                    totalAmount:
+                        getTotalAmount(),
+
+                    totalHours:
+                        getTotalHours(),
+
+                    selectedServices,
+
+                    customerDetails: {
+                        name:
+                            customerName,
+                        mobile:
+                            customerMobile,
+                    },
+
+                    addressDetails,
+
+                    address,
+
+                    scheduleType,
+                }
+            );
+        };
+
+    /*
+    |--------------------------------------------------------------------------
+    | TIME SELECTOR
+    |--------------------------------------------------------------------------
+    */
+
+    const renderTimeSelector = (
+        value,
+        onSelect,
+        date
+    ) => {
+        const availableTimes = getAvailableTimes(date);
+
+        return (
+            <View style={styles.smallTimeContainer}>
+                {availableTimes.length === 0 ? (
+                    <Text style={styles.noAvailabilityText}>
+                        No professional is available for the selected date.
+                    </Text>
+                ) : (
+                    availableTimes.map(time => (
+                        <TouchableOpacity
+                            key={time}
+                            style={[
+                                styles.smallTimeCard,
+                                value === time && styles.smallTimeCardSelected,
+                            ]}
+                            onPress={() => onSelect(time)}
+                        >
+                            <Text
+                                style={[
+                                    styles.smallTimeText,
+                                    value === time && styles.smallTimeTextSelected,
+                                ]}
+                            >
+                                {time}
+                            </Text>
+                        </TouchableOpacity>
+                    ))
+                )}
+            </View>
+        );
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFESSIONAL SELECTOR
+    |--------------------------------------------------------------------------
+    */
+
+    const renderProfessionalSelector = (
+        value,
+        onSelect,
+        date,
+        time
+    ) => {
+        const availableProfessionals = getAvailableProfessionals(date, time);
+
+        return (
+            <View>
+                <Text style={styles.subSectionTitle}>
+                    Select Professional
+                </Text>
+
+                {!date || !time ? (
+                    <Text style={styles.professionalHintText}>
+                        Select a date and time to see available professionals.
+                    </Text>
+                ) : availableProfessionals.length === 0 ? (
+                    <Text style={styles.noAvailabilityText}>
+                        No professional is available at the selected date and time.
+                    </Text>
+                ) : (
+                    <FlatList
+                        data={availableProfessionals}
+                        numColumns={2}
+                        scrollEnabled={false}
+                        columnWrapperStyle={styles.professionalColumn}
+                        keyExtractor={item => item.id}
+                        renderItem={({ item }) => {
+                            const isSelected = value?.id === item.id;
+                            const availabilityText = getCurrentDateAvailabilityText(item);
+
+                            return (
+                                <View style={styles.professionalMiniWrapper}>
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.professionalMiniCard,
+                                            isSelected && styles.professionalMiniCardSelected,
+                                        ]}
+                                        onPress={() => onSelect(item)}
+                                    >
+                                        <Image
+                                            source={{ uri: item.image }}
+                                            style={styles.professionalMiniImage}
+                                        />
+
+                                        <Text
+                                            style={styles.professionalMiniName}
+                                            numberOfLines={1}
+                                        >
+                                            {item.name}
+                                        </Text>
+
+                                        {!item.isAny && (
+                                            <View style={styles.miniRating}>
+                                                {renderStars(item.rating, 10)}
+                                                <Text style={styles.miniRatingText}>
+                                                    {item.rating}
+                                                </Text>
+                                            </View>
+                                        )}
+
+                                        <Text style={styles.miniLastBooking}>
+                                            Last Booking: {item.lastBookingDate}
+                                        </Text>
+
+                                        {availabilityText && (
+                                            <Text
+                                                style={[
+                                                    styles.miniAvailabilityText,
+                                                    availabilityText === 'Not available today' &&
+                                                    styles.miniUnavailableText,
+                                                ]}
+                                            >
+                                                {availabilityText}
+                                            </Text>
+                                        )}
+
+                                        <TouchableOpacity
+                                            onPress={() => openProfessionalModal(item)}
+                                        >
+                                            <Text style={styles.miniViewText}>
+                                                View Details
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </TouchableOpacity>
+                                </View>
+                            );
+                        }}
+                    />
+                )}
+            </View>
+        );
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | COMMON SERVICE
+    |--------------------------------------------------------------------------
+    */
+
+    const renderCommonService =
+        service => {
+
+            const serviceId =
+                String(
+                    service.id
+                );
+
+            return (
+                <View
+                    key={serviceId}
+                    style={
+                        styles.serviceScheduleCard
+                    }
+                >
+
+                    <View
+                        style={
+                            styles.serviceScheduleHeader
+                        }
+                    >
+
+                        <Image
+                            source={
+                                service.coverImage ||
+                                service.image
+                            }
+                            style={
+                                styles.serviceScheduleImage
+                            }
+                        />
+
+                        <View
+                            style={
+                                styles.serviceScheduleInfo
+                            }
+                        >
+
+                            <Text
+                                style={
+                                    styles.serviceScheduleName
+                                }
+                            >
+                                {
+                                    service.name
+                                }
+                            </Text>
+
+                        </View>
+
+                    </View>
+
+                    {commonDates.map(
+                        date => {
+
+                            const data =
+                                commonDateServices[
+                                date
+                                ] || {};
+
+                            const item =
+                                data[
+                                serviceId
+                                ] || {};
+
+                            // DEFAULT 1 HOUR
+                            const hours =
+                                Number(
+                                    item.hours ||
+                                    1
+                                );
+
+                            return (
+                                <View
+                                    key={
+                                        date
+                                    }
+                                    style={
+                                        styles.dateServiceBlock
+                                    }
+                                >
+
+                                    <Text
+                                        style={
+                                            styles.dateBlockTitle
+                                        }
+                                    >
+                                        {new Date(
+                                            date
+                                        ).toLocaleDateString(
+                                            'en-US',
+                                            {
+                                                weekday:
+                                                    'short',
+                                                month:
+                                                    'short',
+                                                day:
+                                                    'numeric',
+                                            }
+                                        )}
+                                    </Text>
+
+                                    <Text
+                                        style={
+                                            styles.smallLabel
+                                        }
+                                    >
+                                        Select Hours
+                                    </Text>
+
+                                    {renderHours(
+                                        service,
+                                        hours,
+                                        value =>
+                                            updateCommonDateHours(
+                                                date,
+                                                serviceId,
+                                                value
+                                            ),
+                                        date
+                                    )}
+
+                                    <Text
+                                        style={
+                                            styles.selectedAmountText
+                                        }
+                                    >
+                                        Selected Amount: ₹
+                                        {
+                                            calculateServicePrice(
+                                                service,
+                                                hours
+                                            )
+                                        }
+                                    </Text>
+
+                                    <Text
+                                        style={
+                                            styles.smallLabel
+                                        }
+                                    >
+                                        Select Time
+                                    </Text>
+
+                                    {renderTimeSelector(
+                                        item.time,
+                                        value =>
+                                            updateCommonDateTime(
+                                                date,
+                                                serviceId,
+                                                value
+                                            ),
+                                        date,
+                                        item.time
+                                    )}
+
+                                    {renderProfessionalSelector(
+                                        item.professional,
+                                        value =>
+                                            updateCommonDateProfessional(
+                                                date,
+                                                serviceId,
+                                                value
+                                            ),
+                                        date,
+                                        item.time
+                                    )}
+
+                                </View>
+                            );
+                        }
+                    )}
+
+                </View>
+            );
+        };
+
+    /*
+    |--------------------------------------------------------------------------
+    | DIFFERENT SERVICE
+    |--------------------------------------------------------------------------
+    */
+
+    const renderDifferentService =
+        service => {
+
+            const serviceId =
+                String(
+                    service.id
+                );
+
+            const schedules =
+                serviceSchedules[
+                serviceId
+                ] || [];
+
+            return (
+                <View
+                    key={serviceId}
+                    style={
+                        styles.serviceScheduleCard
+                    }
+                >
+
+                    <View
+                        style={
+                            styles.serviceScheduleHeader
+                        }
+                    >
+
+                        <Image
+                            source={
+                                service.coverImage ||
+                                service.image
+                            }
+                            style={
+                                styles.serviceScheduleImage
+                            }
+                        />
+
+                        <View
+                            style={
+                                styles.serviceScheduleInfo
+                            }
+                        >
+
+                            <Text
+                                style={
+                                    styles.serviceScheduleName
+                                }
+                            >
+                                {
+                                    service.name
+                                }
+                            </Text>
+
+                        </View>
+
+                    </View>
+
+                    <Text
+                        style={
+                            styles.smallLabel
+                        }
+                    >
+                        Select Dates
+                    </Text>
+
+                    <View
+                        style={
+                            styles.differentDatesContainer
+                        }
+                    >
+
+                        {availableDates.map(
+                            date => {
+
+                                const dateStr =
+                                    date.toDateString();
+
+                                const isSelected =
+                                    schedules.some(
+                                        item =>
+                                            item.date ===
+                                            dateStr
+                                    );
+
+                                return (
+                                    <TouchableOpacity
+                                        key={
+                                            dateStr
+                                        }
+                                        style={[
+                                            styles.differentDateCard,
+                                            isSelected &&
+                                            styles.differentDateCardSelected,
+                                        ]}
+                                        onPress={() =>
+                                            addServiceDate(
+                                                serviceId,
+                                                date
+                                            )
+                                        }
+                                    >
+
+                                        <Text
+                                            style={[
+                                                styles.differentDateDay,
+                                                isSelected &&
+                                                styles.differentDateTextSelected,
+                                            ]}
+                                        >
+                                            {
+                                                [
+                                                    'Sun',
+                                                    'Mon',
+                                                    'Tue',
+                                                    'Wed',
+                                                    'Thu',
+                                                    'Fri',
+                                                    'Sat',
+                                                ][
+                                                date.getDay()
+                                                ]
+                                            }
+                                        </Text>
+
+                                        <Text
+                                            style={[
+                                                styles.differentDateNumber,
+                                                isSelected &&
+                                                styles.differentDateTextSelected,
+                                            ]}
+                                        >
+                                            {
+                                                date.getDate()
+                                            }
+                                        </Text>
+
+                                        {isTodayDate(date) && (
+                                            <Text style={styles.differentTodayBadge}>
+                                                TODAY
+                                            </Text>
+                                        )}
+
+                                        <Text
+                                            style={[
+                                                styles.differentDateMonth,
+                                                isSelected &&
+                                                styles.differentDateTextSelected,
+                                            ]}
+                                        >
+                                            {date.toLocaleString(
+                                                'default',
+                                                {
+                                                    month: 'short',
+                                                }
+                                            )}
+                                        </Text>
+
+                                    </TouchableOpacity>
+                                );
+                            }
+                        )}
+
+                    </View>
+
+                    {schedules.map(
+                        slot => {
+
+                            // DEFAULT 1 HOUR
+                            const hours =
+                                Number(
+                                    slot.hours ||
+                                    1
+                                );
+
+                            return (
+                                <View
+                                    key={
+                                        slot.date
+                                    }
+                                    style={
+                                        styles.dateServiceBlock
+                                    }
+                                >
+
+                                    <Text
+                                        style={
+                                            styles.dateBlockTitle
+                                        }
+                                    >
+                                        {new Date(
+                                            slot.date
+                                        ).toLocaleDateString(
+                                            'en-US',
+                                            {
+                                                weekday:
+                                                    'short',
+                                                month:
+                                                    'short',
+                                                day:
+                                                    'numeric',
+                                            }
+                                        )}
+                                    </Text>
+
+                                    <Text
+                                        style={
+                                            styles.smallLabel
+                                        }
+                                    >
+                                        Select Hours
+                                    </Text>
+
+                                    {renderHours(
+                                        service,
+                                        hours,
+                                        value =>
+                                            updateServiceDateHours(
+                                                serviceId,
+                                                slot.date,
+                                                value
+                                            ),
+                                        slot.date
+                                    )}
+
+                                    <Text
+                                        style={
+                                            styles.selectedAmountText
+                                        }
+                                    >
+                                        Selected Amount: ₹
+                                        {
+                                            calculateServicePrice(
+                                                service,
+                                                hours
+                                            )
+                                        }
+                                    </Text>
+
+                                    <Text
+                                        style={
+                                            styles.smallLabel
+                                        }
+                                    >
+                                        Select Time
+                                    </Text>
+
+                                    {renderTimeSelector(
+                                        slot.time,
+                                        value =>
+                                            updateServiceDateTime(
+                                                serviceId,
+                                                slot.date,
+                                                value
+                                            ),
+                                        slot.date,
+                                        slot.time
+                                    )}
+
+                                    {renderProfessionalSelector(
+                                        slot.professional,
+                                        value =>
+                                            updateServiceDateProfessional(
+                                                serviceId,
+                                                slot.date,
+                                                value
+                                            ),
+                                        slot.date,
+                                        slot.time
+                                    )}
+
+                                </View>
+                            );
+                        }
+                    )}
+
+                </View>
+            );
+        };
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFESSIONAL MODAL
+    |--------------------------------------------------------------------------
+    */
+
+    const renderProfessionalModal =
+        () => {
+
+            if (
+                !selectedProfessionalDetails
+            ) {
+                return null;
+            }
+
+            const professional =
+                selectedProfessionalDetails;
+
+            return (
+                <Modal
+                    transparent
+                    visible={
+                        showProfessionalModal
+                    }
+                    animationType="none"
+                    onRequestClose={
+                        closeProfessionalModal
+                    }
+                >
+
+                    <TouchableWithoutFeedback
+                        onPress={
+                            closeProfessionalModal
+                        }
+                    >
+
+                        <View
+                            style={
+                                styles.modalOverlay
+                            }
+                        >
+
+                            <TouchableWithoutFeedback>
+
+                                <Animated.View
+                                    style={[
+                                        styles.professionalModalContent,
+                                        {
+                                            transform: [
+                                                {
+                                                    translateY:
+                                                        modalSlideAnim,
+                                                },
+                                            ],
+                                        },
+                                    ]}
+                                >
+
+                                    <View
+                                        style={
+                                            styles.modalHandle
+                                        }
+                                    />
+
+                                    <ScrollView
+                                        showsVerticalScrollIndicator={
+                                            false
+                                        }
+                                    >
+
+                                        <View
+                                            style={
+                                                styles.professionalModalHeader
+                                            }
+                                        >
+
+                                            <Image
+                                                source={{
+                                                    uri:
+                                                        professional.image,
+                                                }}
+                                                style={
+                                                    styles.modalProfessionalImage
+                                                }
+                                            />
+
+                                            <Text
+                                                style={
+                                                    styles.modalProfessionalName
+                                                }
+                                            >
+                                                {
+                                                    professional.name
+                                                }
+                                            </Text>
+
+                                            {!professional.isAny && (
+                                                <View
+                                                    style={
+                                                        styles.modalRating
+                                                    }
+                                                >
+
+                                                    {renderStars(
+                                                        professional.rating,
+                                                        18
+                                                    )}
+
+                                                    <Text
+                                                        style={
+                                                            styles.modalRatingText
+                                                        }
+                                                    >
+                                                        {
+                                                            professional.rating
+                                                        }
+                                                    </Text>
+
+                                                </View>
+                                            )}
+
+                                        </View>
+
+                                        {!professional.isAny && (
+                                            <View
+                                                style={
+                                                    styles.modalStats
+                                                }
+                                            >
+
+                                                <View
+                                                    style={
+                                                        styles.modalStat
+                                                    }
+                                                >
+
+                                                    <Text
+                                                        style={
+                                                            styles.modalStatValue
+                                                        }
+                                                    >
+                                                        {
+                                                            professional.jobsCompleted
+                                                        }
+                                                    </Text>
+
+                                                    <Text
+                                                        style={
+                                                            styles.modalStatLabel
+                                                        }
+                                                    >
+                                                        Jobs Completed
+                                                    </Text>
+
+                                                </View>
+
+                                                <View
+                                                    style={
+                                                        styles.modalStatDivider
+                                                    }
+                                                />
+
+                                                <View
+                                                    style={
+                                                        styles.modalStat
+                                                    }
+                                                >
+
+                                                    <Text
+                                                        style={
+                                                            styles.modalStatValue
+                                                        }
+                                                    >
+                                                        {
+                                                            professional.experience
+                                                        }
+                                                    </Text>
+
+                                                    <Text
+                                                        style={
+                                                            styles.modalStatLabel
+                                                        }
+                                                    >
+                                                        Experience
+                                                    </Text>
+
+                                                </View>
+
+                                                <View
+                                                    style={
+                                                        styles.modalStatDivider
+                                                    }
+                                                />
+
+                                                <View
+                                                    style={
+                                                        styles.modalStat
+                                                    }
+                                                >
+
+                                                    <Text
+                                                        style={
+                                                            styles.modalStatValue
+                                                        }
+                                                    >
+                                                        {
+                                                            professional.lastBookingDate
+                                                        }
+                                                    </Text>
+
+                                                    <Text
+                                                        style={
+                                                            styles.modalStatLabel
+                                                        }
+                                                    >
+                                                        Last Booking
+                                                    </Text>
+
+                                                </View>
+
+                                            </View>
+                                        )}
+
+                                        <View
+                                            style={
+                                                styles.modalSection
+                                            }
+                                        >
+
+                                            <Text
+                                                style={
+                                                    styles.modalSectionTitle
+                                                }
+                                            >
+                                                Available Time Slots
+                                            </Text>
+
+                                            <View
+                                                style={
+                                                    styles.modalSlotsContainer
+                                                }
+                                            >
+
+                                                {professional.availableSlots.map(
+                                                    (
+                                                        slot,
+                                                        index
+                                                    ) => (
+
+                                                        <View
+                                                            key={
+                                                                index
+                                                            }
+                                                            style={
+                                                                styles.modalSlotTag
+                                                            }
+                                                        >
+
+                                                            <Text
+                                                                style={
+                                                                    styles.modalSlotTagText
+                                                                }
+                                                            >
+                                                                {
+                                                                    slot
+                                                                }
+                                                            </Text>
+
+                                                        </View>
+                                                    )
+                                                )}
+
+                                            </View>
+
+                                        </View>
+
+                                        <View
+                                            style={
+                                                styles.modalSection
+                                            }
+                                        >
+
+                                            <Text
+                                                style={
+                                                    styles.modalSectionTitle
+                                                }
+                                            >
+                                                About
+                                            </Text>
+
+                                            <Text
+                                                style={
+                                                    styles.modalAboutText
+                                                }
+                                            >
+                                                {professional.isAny
+                                                    ? 'You can select any available professional for your service.'
+                                                    : `${professional.name} is a professional with ${professional.experience} of experience in home services. They have completed ${professional.jobsCompleted} jobs.`}
+                                            </Text>
+
+                                        </View>
+
+                                    </ScrollView>
+
+                                    <TouchableOpacity
+                                        style={
+                                            styles.modalCloseButton
+                                        }
+                                        onPress={
+                                            closeProfessionalModal
+                                        }
+                                    >
+                                        <Text
+                                            style={
+                                                styles.modalCloseText
+                                            }
+                                        >
+                                            Close
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                </Animated.View>
+
+                            </TouchableWithoutFeedback>
+
+                        </View>
+
+                    </TouchableWithoutFeedback>
+
+                </Modal>
+            );
+        };
+
+    /*
+    |--------------------------------------------------------------------------
+    | BILL SUMMARY MODAL
+    |--------------------------------------------------------------------------
+    */
+
+    const renderBillSummary =
+        () => {
+
+            return (
+                <Modal
+                    transparent
+                    visible={
+                        showBillSummary
+                    }
+                    animationType="none"
+                    onRequestClose={
+                        closeBillSummary
+                    }
+                >
+
+                    <TouchableWithoutFeedback
+                        onPress={
+                            closeBillSummary
+                        }
+                    >
+
+                        <View
+                            style={
+                                styles.modalOverlay
+                            }
+                        >
+
+                            <TouchableWithoutFeedback>
+
+                                <Animated.View
+                                    style={[
+                                        styles.billModalContent,
+                                        {
+                                            transform: [
+                                                {
+                                                    translateY:
+                                                        billModalSlideAnim,
+                                                },
+                                            ],
+                                        },
+                                    ]}
+                                >
+
+                                    <View
+                                        style={
+                                            styles.modalHandle
+                                        }
+                                    />
+
+                                    <View
+                                        style={
+                                            styles.billHeader
+                                        }
+                                    >
+
+                                        <Text
+                                            style={
+                                                styles.billTitle
+                                            }
+                                        >
+                                            Bill Summary
+                                        </Text>
+
+                                        <Text
+                                            style={
+                                                styles.billSubtitle
+                                            }
+                                        >
+                                            Review your booking details
+                                        </Text>
+
+                                    </View>
+
+                                    <ScrollView
+                                        style={styles.billScroll}
+                                        contentContainerStyle={styles.billScrollContent}
+                                        showsVerticalScrollIndicator={
+                                            true
+                                        }
+                                    >
+
+                                        {/* CUSTOMER DETAILS */}
+
+                                        <View
+                                            style={
+                                                styles.customerSummaryCard
+                                            }
+                                        >
+
+                                            <Text
+                                                style={
+                                                    styles.customerSummaryTitle
+                                                }
+                                            >
+                                                Customer Details
+                                            </Text>
+
+                                            <View
+                                                style={
+                                                    styles.customerSummaryRow
+                                                }
+                                            >
+
+                                                <Text
+                                                    style={
+                                                        styles.customerSummaryLabel
+                                                    }
+                                                >
+                                                    Name
+                                                </Text>
+
+                                                <Text
+                                                    style={
+                                                        styles.customerSummaryValue
+                                                    }
+                                                >
+                                                    {customerName ||
+                                                        '-'}
+                                                </Text>
+
+                                            </View>
+
+                                            <View
+                                                style={
+                                                    styles.customerSummaryRow
+                                                }
+                                            >
+
+                                                <Text
+                                                    style={
+                                                        styles.customerSummaryLabel
+                                                    }
+                                                >
+                                                    Phone Number
+                                                </Text>
+
+                                                <Text
+                                                    style={
+                                                        styles.customerSummaryValue
+                                                    }
+                                                >
+                                                    {customerMobile ||
+                                                        '-'}
+                                                </Text>
+
+                                            </View>
+
+                                            <View
+                                                style={
+                                                    styles.customerSummaryAddressRow
+                                                }
+                                            >
+
+                                                <Text
+                                                    style={
+                                                        styles.customerSummaryLabel
+                                                    }
+                                                >
+                                                    Service Address
+                                                </Text>
+
+                                                <Text
+                                                    style={
+                                                        styles.customerAddressValue
+                                                    }
+                                                >
+                                                    {address ||
+                                                        addressDetails?.address ||
+                                                        addressDetails?.fullAddress ||
+                                                        addressDetails?.formattedAddress ||
+                                                        addressDetails?.addressLine1 ||
+                                                        '-'}
+                                                </Text>
+
+                                            </View>
+
+                                        </View>
+
+                                        {/* SERVICE DETAILS */}
+
+                                        <Text
+                                            style={
+                                                styles.billSectionTitle
+                                            }
+                                        >
+                                            Service Details
+                                        </Text>
+
+                                        {addedSlots.map(
+                                            slot => (
+
+                                                <View
+                                                    key={
+                                                        slot.id
+                                                    }
+                                                    style={
+                                                        styles.billSlotItem
+                                                    }
+                                                >
+
+                                                    <View
+                                                        style={
+                                                            styles.billSlotHeader
+                                                        }
+                                                    >
+
+                                                        <View
+                                                            style={
+                                                                styles.billSlotHeaderLeft
+                                                            }
+                                                        >
+
+                                                            <Text
+                                                                style={
+                                                                    styles.billSlotService
+                                                                }
+                                                            >
+                                                                {
+                                                                    slot.serviceName
+                                                                }
+                                                            </Text>
+
+                                                            <Text
+                                                                style={
+                                                                    styles.billSlotDate
+                                                                }
+                                                            >
+                                                                {new Date(
+                                                                    slot.date
+                                                                ).toLocaleDateString(
+                                                                    'en-US',
+                                                                    {
+                                                                        weekday:
+                                                                            'short',
+                                                                        month:
+                                                                            'short',
+                                                                        day:
+                                                                            'numeric',
+                                                                    }
+                                                                )}
+                                                            </Text>
+
+                                                        </View>
+
+                                                        <Text
+                                                            style={
+                                                                styles.billSlotAmount
+                                                            }
+                                                        >
+                                                            ₹
+                                                            {
+                                                                slot.amount
+                                                            }
+                                                        </Text>
+
+                                                    </View>
+
+                                                    <Text
+                                                        style={
+                                                            styles.billSlotDetails
+                                                        }
+                                                    >
+                                                        {
+                                                            slot.time
+                                                        }{' '}
+                                                        •{' '}
+                                                        {
+                                                            slot.hours
+                                                        }{' '}
+                                                        hrs
+                                                    </Text>
+
+                                                    <Text
+                                                        style={
+                                                            styles.billSlotProfessional
+                                                        }
+                                                    >
+                                                        Professional:{' '}
+                                                        {
+                                                            slot.professionalName ||
+                                                            slot.professional?.name ||
+                                                            'Select Any Professional'
+                                                        }
+                                                    </Text>
+
+                                                </View>
+                                            )
+                                        )}
+
+                                        <View
+                                            style={
+                                                styles.billDivider
+                                            }
+                                        />
+
+                                        {/* CALCULATION */}
+
+                                        <View
+                                            style={
+                                                styles.billCalculation
+                                            }
+                                        >
+
+                                            <View
+                                                style={
+                                                    styles.billRow
+                                                }
+                                            >
+
+                                                <Text
+                                                    style={
+                                                        styles.billLabel
+                                                    }
+                                                >
+                                                    Total Hours
+                                                </Text>
+
+                                                <Text
+                                                    style={
+                                                        styles.billValue
+                                                    }
+                                                >
+                                                    {
+                                                        getTotalHours()
+                                                    }{' '}
+                                                    hrs
+                                                </Text>
+
+                                            </View>
+
+                                        </View>
+
+                                        <View
+                                            style={
+                                                styles.billDivider
+                                            }
+                                        />
+
+                                        {/* TOTAL */}
+
+                                        <View
+                                            style={
+                                                styles.billTotalRow
+                                            }
+                                        >
+
+                                            <View>
+
+                                                <Text
+                                                    style={
+                                                        styles.billTotalLabel
+                                                    }
+                                                >
+                                                    Total Amount
+                                                </Text>
+
+                                                <Text
+                                                    style={
+                                                        styles.billTotalSubtext
+                                                    }
+                                                >
+                                                    Including GST
+                                                </Text>
+
+                                            </View>
+
+                                            <Text
+                                                style={
+                                                    styles.billTotalAmount
+                                                }
+                                            >
+                                                ₹
+                                                {
+                                                    getTotalAmount()
+                                                }
+                                            </Text>
+
+                                        </View>
+
+                                        <TouchableOpacity
+                                            style={
+                                                styles.billConfirmButton
+                                            }
+                                            onPress={
+                                                handleConfirmBooking
+                                            }
+                                        >
+
+                                            <Text
+                                                style={
+                                                    styles.billConfirmText
+                                                }
+                                            >
+                                                Confirm Booking
+                                            </Text>
+
+                                            <Image
+                                                source={require('../../asset/right-arrow.png')}
+                                                style={
+                                                    styles.billArrow
+                                                }
+                                            />
+
+                                        </TouchableOpacity>
+
+                                    </ScrollView>
+
+                                    <TouchableOpacity
+                                        style={
+                                            styles.modalCloseButton
+                                        }
+                                        onPress={
+                                            closeBillSummary
+                                        }
+                                    >
+
+                                        <Text
+                                            style={
+                                                styles.modalCloseText
+                                            }
+                                        >
+                                            Cancel
+                                        </Text>
+
+                                    </TouchableOpacity>
+
+                                </Animated.View>
+
+                            </TouchableWithoutFeedback>
+
+                        </View>
+
+                    </TouchableWithoutFeedback>
+
+                </Modal>
+            );
+        };
+
+    /*
+    |--------------------------------------------------------------------------
+    | MAIN UI
+    |--------------------------------------------------------------------------
+    */
+
+    return (
+        <View
+            style={
+                styles.container
+            }
+        >
+
+            <StatusBar
+                translucent={false}
+                barStyle="dark-content"
+                backgroundColor="#d6bceb"
+            />
+
+            {/* HEADER */}
+
+            <SafeAreaView style={styles.headerSafeArea}>
+
+                <View style={styles.header}>
+
+                    {/* BACK BUTTON */}
+
+                    <TouchableOpacity
+                        style={styles.backButton}
+                        onPress={() => navigation.goBack()}
+                        activeOpacity={0.7}
+                        hitSlop={{
+                            top: 10,
+                            bottom: 10,
+                            left: 10,
+                            right: 10,
+                        }}
+                    >
+
+                        <Image
+                            source={require('../../asset/arrow-back.png')}
+                            style={styles.backIcon}
+                        />
+
+                    </TouchableOpacity>
+
+                    {/* TITLE */}
+
+                    <View style={styles.headerTitleContainer}>
+
+                        <Text
+                            style={styles.headerTitle}
+                            numberOfLines={1}
+                        >
+                            Select Slot
+                        </Text>
+
+                    </View>
+
+                    {/* RIGHT SIDE */}
+
+                    <View style={styles.headerRight} />
+
+                </View>
+
+            </SafeAreaView>
+
+            <Animated.ScrollView
+                style={[
+                    styles.content,
+                    {
+                        opacity:
+                            fadeAnim,
+                        transform: [
+                            {
+                                translateY:
+                                    slideAnim,
+                            },
+                        ],
+                    },
+                ]}
+                showsVerticalScrollIndicator={
+                    false
+                }
+            >
+
+                {/* SCHEDULE TYPE */}
+
+                <View
+                    style={
+                        styles.sectionContainer
+                    }
+                >
+
+                    <Text
+                        style={
+                            styles.sectionTitle
+                        }
+                    >
+                        Schedule Type
+                    </Text>
+
+                    <Text
+                        style={
+                            styles.sectionSubtitle
+                        }
+                    >
+                        Choose how you want to schedule your services
+                    </Text>
+
+                    <View
+                        style={
+                            styles.scheduleTypeContainer
+                        }
+                    >
+
+                        <TouchableOpacity
+                            style={[
+                                styles.scheduleTypeCard,
+                                scheduleType ===
+                                'same' &&
+                                styles.scheduleTypeCardSelected,
+                            ]}
+                            onPress={() =>
+                                setScheduleType(
+                                    'same'
+                                )
+                            }
+                        >
+
+                            <Text
+                                style={[
+                                    styles.scheduleTypeTitle,
+                                    scheduleType ===
+                                    'same' &&
+                                    styles.scheduleTypeTitleSelected,
+                                ]}
+                            >
+                                Same Schedule
+                            </Text>
+
+                            <Text
+                                style={[
+                                    styles.scheduleTypeDescription,
+                                    scheduleType ===
+                                    'same' &&
+                                    styles.scheduleTypeDescriptionSelected,
+                                ]}
+                            >
+                                All services can use the same dates
+                            </Text>
+
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[
+                                styles.scheduleTypeCard,
+                                scheduleType ===
+                                'different' &&
+                                styles.scheduleTypeCardSelected,
+                            ]}
+                            onPress={() =>
+                                setScheduleType(
+                                    'different'
+                                )
+                            }
+                        >
+
+                            <Text
+                                style={[
+                                    styles.scheduleTypeTitle,
+                                    scheduleType ===
+                                    'different' &&
+                                    styles.scheduleTypeTitleSelected,
+                                ]}
+                            >
+                                Different Schedule
+                            </Text>
+
+                            <Text
+                                style={[
+                                    styles.scheduleTypeDescription,
+                                    scheduleType ===
+                                    'different' &&
+                                    styles.scheduleTypeDescriptionSelected,
+                                ]}
+                            >
+                                Each service can have its own dates
+                            </Text>
+
+                        </TouchableOpacity>
+
+                    </View>
+
+                </View>
+
+                {/* SAME SCHEDULE */}
+
+                {scheduleType ===
+                    'same' && (
+                        <>
+
+                            <View
+                                style={
+                                    styles.sectionContainer
+                                }
+                            >
+
+                                <Text
+                                    style={
+                                        styles.sectionTitle
+                                    }
+                                >
+                                    Select Dates
+                                </Text>
+
+                                <Text
+                                    style={
+                                        styles.sectionSubtitle
+                                    }
+                                >
+                                    You can select multiple dates
+                                </Text>
+
+                                <View
+                                    style={
+                                        styles.datesContainer
+                                    }
+                                >
+
+                                    {availableDates.map(
+                                        (
+                                            date,
+                                            index
+                                        ) => {
+
+                                            const dateStr =
+                                                date.toDateString();
+
+                                            const isSelected =
+                                                commonDates.includes(
+                                                    dateStr
+                                                );
+
+                                            return (
+                                                <TouchableOpacity
+                                                    key={
+                                                        index
+                                                    }
+                                                    style={[
+                                                        styles.dateCard,
+                                                        isSelected &&
+                                                        styles.dateCardSelected,
+                                                    ]}
+                                                    onPress={() =>
+                                                        addCommonDate(
+                                                            date
+                                                        )
+                                                    }
+                                                >
+
+                                                    <Text
+                                                        style={[
+                                                            styles.dateDay,
+                                                            isSelected &&
+                                                            styles.dateTextSelected,
+                                                        ]}
+                                                    >
+                                                        {
+                                                            [
+                                                                'Sun',
+                                                                'Mon',
+                                                                'Tue',
+                                                                'Wed',
+                                                                'Thu',
+                                                                'Fri',
+                                                                'Sat',
+                                                            ][
+                                                            date.getDay()
+                                                            ]
+                                                        }
+                                                    </Text>
+
+                                                    <Text
+                                                        style={[
+                                                            styles.dateNumber,
+                                                            isSelected &&
+                                                            styles.dateTextSelected,
+                                                        ]}
+                                                    >
+                                                        {
+                                                            date.getDate()
+                                                        }
+                                                    </Text>
+
+                                                    {isTodayDate(date) && (
+                                                        <Text
+                                                            style={[
+                                                                styles.todayBadge,
+                                                                isSelected && styles.todayBadgeSelected,
+                                                            ]}
+                                                        >
+                                                            TODAY
+                                                        </Text>
+                                                    )}
+
+                                                    <Text
+                                                        style={[
+                                                            styles.dateMonth,
+                                                            isSelected &&
+                                                            styles.dateTextSelected,
+                                                        ]}
+                                                    >
+                                                        {date.toLocaleString(
+                                                            'default',
+                                                            {
+                                                                month: 'short',
+                                                            }
+                                                        )}
+                                                    </Text>
+
+                                                </TouchableOpacity>
+                                            );
+                                        }
+                                    )}
+
+                                </View>
+
+                            </View>
+
+                            {selectedServices.map(
+                                renderCommonService
+                            )}
+
+                            {commonDates.length >
+                                0 && (
+                                    <TouchableOpacity
+                                        style={
+                                            styles.addScheduleButton
+                                        }
+                                        onPress={
+                                            addSameSchedule
+                                        }
+                                    >
+
+                                        <Text
+                                            style={
+                                                styles.addScheduleButtonText
+                                            }
+                                        >
+                                            Add Schedule
+                                        </Text>
+
+                                    </TouchableOpacity>
+                                )}
+
+                        </>
+                    )}
+
+                {/* DIFFERENT SCHEDULE */}
+
+                {scheduleType ===
+                    'different' && (
+                        <>
+
+                            {selectedServices.map(
+                                renderDifferentService
+                            )}
+
+                            <TouchableOpacity
+                                style={
+                                    styles.addScheduleButton
+                                }
+                                onPress={
+                                    addDifferentSchedule
+                                }
+                            >
+
+                                <Text
+                                    style={
+                                        styles.addScheduleButtonText
+                                    }
+                                >
+                                    Add Schedule
+                                </Text>
+
+                            </TouchableOpacity>
+
+                        </>
+                    )}
+
+                {/* ADDED SCHEDULE */}
+
+                {addedSlots.length >
+                    0 && (
+                        <View
+                            style={
+                                styles.sectionContainer
+                            }
+                        >
+
+                            <Text
+                                style={
+                                    styles.sectionTitle
+                                }
+                            >
+                                Added Schedule
+                            </Text>
+
+                            {addedSlots.map(
+                                slot => (
+
+                                    <View
+                                        key={
+                                            slot.id
+                                        }
+                                        style={
+                                            styles.addedSlotCard
+                                        }
+                                    >
+
+                                        <View
+                                            style={
+                                                styles.addedSlotTop
+                                            }
+                                        >
+
+                                            <View
+                                                style={
+                                                    styles.addedSlotInfo
+                                                }
+                                            >
+
+                                                <Text
+                                                    style={
+                                                        styles.addedSlotService
+                                                    }
+                                                >
+                                                    {
+                                                        slot.serviceName
+                                                    }
+                                                </Text>
+
+                                                <Text
+                                                    style={
+                                                        styles.addedSlotDate
+                                                    }
+                                                >
+                                                    {
+                                                        slot.date
+                                                    }
+                                                </Text>
+
+                                                <Text
+                                                    style={
+                                                        styles.addedSlotDetails
+                                                    }
+                                                >
+                                                    {
+                                                        slot.time
+                                                    }{' '}
+                                                    •{' '}
+                                                    {
+                                                        slot.hours
+                                                    }{' '}
+                                                    hrs
+                                                </Text>
+
+                                                <Text
+                                                    style={
+                                                        styles.addedSlotProfessional
+                                                    }
+                                                >
+                                                    {
+                                                        slot.professionalName ||
+                                                        'Select Any Professional'
+                                                    }
+                                                </Text>
+
+                                            </View>
+
+                                            <Text
+                                                style={
+                                                    styles.addedSlotAmount
+                                                }
+                                            >
+                                                ₹
+                                                {
+                                                    slot.amount
+                                                }
+                                            </Text>
+
+                                        </View>
+
+                                    </View>
+                                )
+                            )}
+
+                        </View>
+                    )}
+
+                <View
+                    style={
+                        styles.bottomSpacing
+                    }
+                />
+
+            </Animated.ScrollView>
+
+            {/* BOTTOM TOTAL */}
+
+            {addedSlots.length >
+                0 && (
+                    <View
+                        style={
+                            styles.bottomBar
+                        }
+                    >
+
+                        <View>
+
+                            <Text
+                                style={
+                                    styles.bottomTotalLabel
+                                }
+                            >
+                                Total Amount
+                            </Text>
+
+                            <Text
+                                style={
+                                    styles.bottomTotal
+                                }
+                            >
+                                ₹
+                                {
+                                    getTotalAmount()
+                                }
+                            </Text>
+
+                            <Text
+                                style={
+                                    styles.bottomGST
+                                }
+                            >
+                                Including GST
+                            </Text>
+
+                        </View>
+
+                        <TouchableOpacity
+                            style={
+                                styles.reviewButton
+                            }
+                            onPress={
+                                openBillSummary
+                            }
+                        >
+
+                            <Text
+                                style={
+                                    styles.reviewButtonText
+                                }
+                            >
+                                Review & Confirm
+                            </Text>
+
+                        </TouchableOpacity>
+
+                    </View>
+                )}
+
+            {renderProfessionalModal()}
+            {renderBillSummary()}
+
+        </View>
+    );
+};
+
+/*
+|--------------------------------------------------------------------------
+| STYLES
+|--------------------------------------------------------------------------
+*/
+
+const styles = StyleSheet.create({
+
+    container: {
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+    },
+
+    header: {
+        height: 60,
+        backgroundColor: '#d6bceb',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+    },
+
+    backButton: {
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    backIcon: {
+        width: 24,
+        height: 24,
+        resizeMode: 'contain',
+        tintColor: COLORS.txtColor,
+    },
+
+    headerTitle: {
+        fontSize: 19,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+    },
+
+    headerRight: {
+        width: 40,
+    },
+
+    content: {
+        flex: 1,
+    },
+
+    sectionContainer: {
+        marginHorizontal: 16,
+        marginTop: 18,
+    },
+
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+    },
+
+    sectionSubtitle: {
+        fontSize: 12,
+        color: COLORS.textLight,
+        marginTop: 4,
+        marginBottom: 12,
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | SCHEDULE TYPE
+    |--------------------------------------------------------------------------
+    */
+
+    scheduleTypeContainer: {
+        flexDirection: 'row',
+        gap: 10,
+    },
+
+    scheduleTypeCard: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        borderRadius: 12,
+        padding: 14,
+        backgroundColor: '#FFFFFF',
+    },
+
+    scheduleTypeCardSelected: {
+        backgroundColor: COLORS.goldLight,
+        borderColor: COLORS.goldLight,
+    },
+
+    scheduleTypeTitle: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+    },
+
+    scheduleTypeTitleSelected: {
+        color: '#FFFFFF',
+    },
+
+    scheduleTypeDescription: {
+        fontSize: 11,
+        color: COLORS.textLight,
+        marginTop: 5,
+        lineHeight: 16,
+    },
+
+    scheduleTypeDescriptionSelected: {
+        color: '#FFFFFF',
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | DATES
+    |--------------------------------------------------------------------------
+    */
+
+    datesContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+    },
+
+    dateCard: {
+        width: (width - 32 - 40) / 5,
+        minHeight: 82,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FFFFFF',
+    },
+
+    dateCardSelected: {
+        backgroundColor: COLORS.goldLight,
+        borderColor: COLORS.goldLight,
+    },
+
+    dateDay: {
+        fontSize: 11,
+        fontWeight: '600',
+        color: COLORS.textLight,
+    },
+
+    dateNumber: {
+        fontSize: 21,
+        fontWeight: '800',
+        color: COLORS.txtColor,
+        marginVertical: 2,
+    },
+
+    dateMonth: {
+        fontSize: 10,
+        color: COLORS.textLight,
+    },
+
+    dateTextSelected: {
+        color: '#FFFFFF',
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | SERVICE
+    |--------------------------------------------------------------------------
+    */
+
+    serviceScheduleCard: {
+        marginHorizontal: 16,
+        marginTop: 16,
+        padding: 14,
+        borderRadius: 16,
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: COLORS.border,
+    },
+
+    serviceScheduleHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+
+    serviceScheduleImage: {
+        width: 55,
+        height: 55,
+        borderRadius: 10,
+        backgroundColor: COLORS.goldFade,
+    },
+
+    serviceScheduleInfo: {
+        flex: 1,
+        marginLeft: 12,
+    },
+
+    serviceScheduleName: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+    },
+
+    dateServiceBlock: {
+        marginTop: 12,
+        paddingTop: 12,
+        borderTopWidth: 1,
+        borderTopColor: '#EEE',
+    },
+
+    dateBlockTitle: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: COLORS.goldLight,
+        marginBottom: 10,
+    },
+
+    smallLabel: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+        marginTop: 12,
+        marginBottom: 7,
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | HOURS
+    |--------------------------------------------------------------------------
+    */
+
+    hoursContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+    },
+
+    hoursCard: {
+        width: '23%',
+        minHeight: 55,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FFFFFF',
+        paddingVertical: 6,
+    },
+
+    hoursCardSelected: {
+        backgroundColor: COLORS.goldLight,
+        borderColor: COLORS.goldLight,
+    },
+
+    hoursText: {
+        fontSize: 11,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+    },
+
+    hoursTextSelected: {
+        color: '#FFFFFF',
+    },
+
+    hoursAmount: {
+        fontSize: 11,
+        fontWeight: '700',
+        color: '#76577F',
+        marginTop: 3,
+    },
+
+    hoursAmountSelected: {
+        color: '#FFFFFF',
+    },
+
+    selectedAmountText: {
+        fontSize: 11,
+        fontWeight: '700',
+        color: COLORS.goldLight,
+        marginTop: 7,
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | TIME
+    |--------------------------------------------------------------------------
+    */
+
+    smallTimeContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 7,
+    },
+
+    smallTimeCard: {
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        borderRadius: 8,
+        backgroundColor: '#FFFFFF',
+    },
+
+    smallTimeCardSelected: {
+        backgroundColor: COLORS.goldLight,
+        borderColor: COLORS.goldLight,
+    },
+
+    smallTimeText: {
+        fontSize: 10,
+        color: COLORS.txtColor,
+        fontWeight: '600',
+    },
+
+    smallTimeTextSelected: {
+        color: '#FFFFFF',
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFESSIONAL
+    |--------------------------------------------------------------------------
+    */
+
+    professionalColumn: {
+        justifyContent: 'space-between',
+    },
+
+    professionalMiniWrapper: {
+        width: '48%',
+        marginBottom: 10,
+    },
+
+    professionalMiniCard: {
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        borderRadius: 12,
+        padding: 9,
+        backgroundColor: '#FFFFFF',
+    },
+
+    professionalMiniCardSelected: {
+        borderColor: COLORS.goldLight,
+        backgroundColor: COLORS.goldFade,
+    },
+
+    professionalMiniImage: {
+        width: 45,
+        height: 45,
+        borderRadius: 23,
+        alignSelf: 'center',
+        marginBottom: 6,
+    },
+
+    professionalMiniName: {
+        fontSize: 11,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+        textAlign: 'center',
+    },
+
+    miniRating: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 4,
+    },
+
+    miniRatingText: {
+        fontSize: 9,
+        color: COLORS.textLight,
+        marginLeft: 3,
+    },
+
+    miniLastBooking: {
+        fontSize: 9,
+        color: COLORS.textLight,
+        textAlign: 'center',
+        marginTop: 4,
+    },
+
+    miniViewText: {
+        fontSize: 10,
+        fontWeight: '700',
+        color: COLORS.goldLight,
+        textAlign: 'center',
+        marginTop: 6,
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | DIFFERENT DATE
+    |--------------------------------------------------------------------------
+    */
+
+    differentDatesContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 7,
+    },
+
+    differentDateCard: {
+        width: 54,
+        height: 65,
+        borderRadius: 9,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    differentDateCardSelected: {
+        backgroundColor: COLORS.goldLight,
+        borderColor: COLORS.goldLight,
+    },
+
+    differentDateDay: {
+        fontSize: 9,
+        color: COLORS.textLight,
+    },
+
+    differentDateNumber: {
+        fontSize: 17,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+    },
+
+    differentDateMonth: {
+        fontSize: 9,
+        color: COLORS.textLight,
+    },
+
+    differentDateTextSelected: {
+        color: '#FFFFFF',
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADD BUTTON
+    |--------------------------------------------------------------------------
+    */
+
+    addScheduleButton: {
+        marginHorizontal: 16,
+        marginTop: 18,
+        height: 50,
+        borderRadius: 13,
+        backgroundColor: COLORS.goldLight,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    addScheduleButtonText: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        fontWeight: '700',
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADDED SLOT
+    |--------------------------------------------------------------------------
+    */
+
+    addedSlotCard: {
+        padding: 13,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        marginBottom: 9,
+        backgroundColor: '#FFFFFF',
+    },
+
+    addedSlotTop: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+
+    addedSlotInfo: {
+        flex: 1,
+    },
+
+    addedSlotService: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+    },
+
+    addedSlotDate: {
+        fontSize: 11,
+        color: COLORS.goldLight,
+        marginTop: 3,
+    },
+
+    addedSlotDetails: {
+        fontSize: 10,
+        color: COLORS.textLight,
+        marginTop: 3,
+    },
+
+    addedSlotProfessional: {
+        fontSize: 10,
+        color: COLORS.textLight,
+        marginTop: 3,
+    },
+
+    addedSlotAmount: {
+        fontSize: 15,
+        fontWeight: '800',
+        color: COLORS.goldLight,
+    },
+
+    bottomSpacing: {
+        height: 120,
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | BOTTOM BAR
+    |--------------------------------------------------------------------------
+    */
+
+    bottomBar: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: '#FFFFFF',
+        borderTopWidth: 1,
+        borderTopColor: COLORS.border,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+
+    bottomTotalLabel: {
+        fontSize: 10,
+        color: COLORS.textLight,
+    },
+
+    bottomTotal: {
+        fontSize: 20,
+        fontWeight: '800',
+        color: COLORS.goldLight,
+    },
+
+    bottomGST: {
+        fontSize: 9,
+        color: COLORS.textLight,
+    },
+
+    reviewButton: {
+        backgroundColor: COLORS.goldLight,
+        paddingHorizontal: 20,
+        height: 46,
+        borderRadius: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    reviewButtonText: {
+        color: '#FFFFFF',
+        fontSize: 13,
+        fontWeight: '700',
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFESSIONAL MODAL
+    |--------------------------------------------------------------------------
+    */
+
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.45)',
+        justifyContent: 'flex-end',
+    },
+
+    professionalModalContent: {
+        backgroundColor: '#FFFFFF',
+        maxHeight: height * 0.85,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        padding: 18,
+    },
+
+    billModalContent: {
+        backgroundColor: '#FFFFFF',
+        height: height * 0.90,
+        maxHeight: height * 0.92,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        padding: 18,
+    },
+
+    modalHandle: {
+        width: 45,
+        height: 4,
+        borderRadius: 3,
+        backgroundColor: '#DDD',
+        alignSelf: 'center',
+        marginBottom: 15,
+    },
+
+    professionalModalHeader: {
+        alignItems: 'center',
+    },
+
+    modalProfessionalImage: {
+        width: 90,
+        height: 90,
+        borderRadius: 45,
+        marginBottom: 10,
+    },
+
+    modalProfessionalName: {
+        fontSize: 19,
+        fontWeight: '800',
+        color: COLORS.txtColor,
+    },
+
+    modalRating: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 7,
+    },
+
+    modalRatingText: {
+        fontSize: 13,
+        fontWeight: '700',
+        marginLeft: 5,
+        color: COLORS.textLight,
+    },
+
+    modalStats: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        marginTop: 20,
+        paddingVertical: 15,
+        backgroundColor: COLORS.goldFade,
+        borderRadius: 14,
+    },
+
+    modalStat: {
+        flex: 1,
+        alignItems: 'center',
+    },
+
+    modalStatValue: {
+        fontSize: 12,
+        fontWeight: '800',
+        color: COLORS.txtColor,
+        textAlign: 'center',
+    },
+
+    modalStatLabel: {
+        fontSize: 9,
+        color: COLORS.textLight,
+        marginTop: 3,
+        textAlign: 'center',
+    },
+
+    modalStatDivider: {
+        width: 1,
+        height: 35,
+        backgroundColor: COLORS.border,
+    },
+
+    modalSection: {
+        marginTop: 20,
+    },
+
+    modalSectionTitle: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+        marginBottom: 9,
+    },
+
+    modalSlotsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 7,
+    },
+
+    modalSlotTag: {
+        paddingHorizontal: 10,
+        paddingVertical: 7,
+        borderRadius: 8,
+        backgroundColor: COLORS.goldFade,
+    },
+
+    modalSlotTagText: {
+        fontSize: 10,
+        color: COLORS.goldLight,
+        fontWeight: '600',
+    },
+
+    modalAboutText: {
+        fontSize: 12,
+        lineHeight: 19,
+        color: COLORS.textLight,
+    },
+
+    modalCloseButton: {
+        height: 45,
+        borderRadius: 12,
+        backgroundColor: '#F1EDF3',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+    },
+
+    modalCloseText: {
+        color: COLORS.goldLight,
+        fontSize: 13,
+        fontWeight: '700',
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | BILL SUMMARY
+    |--------------------------------------------------------------------------
+    */
+
+    billHeader: {
+        marginBottom: 12,
+    },
+
+    billTitle: {
+        fontSize: 20,
+        fontWeight: '800',
+        color: COLORS.txtColor,
+    },
+
+    billSubtitle: {
+        fontSize: 11,
+        color: COLORS.textLight,
+        marginTop: 3,
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | CUSTOMER DETAILS
+    |--------------------------------------------------------------------------
+    */
+
+    customerSummaryCard: {
+        backgroundColor: COLORS.goldFade,
+        borderRadius: 14,
+        padding: 14,
+        marginBottom: 18,
+    },
+
+    customerSummaryTitle: {
+        fontSize: 14,
+        fontWeight: '800',
+        color: COLORS.txtColor,
+        marginBottom: 10,
+    },
+
+    customerSummaryRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+
+    customerSummaryAddressRow: {
+        marginTop: 2,
+    },
+
+    customerSummaryLabel: {
+        fontSize: 11,
+        color: COLORS.textLight,
+        width: 100,
+    },
+
+    customerSummaryValue: {
+        flex: 1,
+        fontSize: 12,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+        textAlign: 'right',
+    },
+
+    customerAddressValue: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: COLORS.txtColor,
+        lineHeight: 18,
+        marginTop: 4,
+    },
+
+    billSectionTitle: {
+        fontSize: 15,
+        fontWeight: '800',
+        color: COLORS.txtColor,
+        marginBottom: 8,
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | BILL SERVICE
+    |--------------------------------------------------------------------------
+    */
+
+    billSlotItem: {
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F0F0',
+    },
+
+    billSlotHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+
+    billSlotHeaderLeft: {
+        flex: 1,
+    },
+
+    billSlotService: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+    },
+
+    billSlotDate: {
+        fontSize: 10,
+        color: COLORS.goldLight,
+        marginTop: 3,
+    },
+
+    billSlotAmount: {
+        fontSize: 15,
+        fontWeight: '800',
+        color: COLORS.goldLight,
+    },
+
+    billSlotDetails: {
+        fontSize: 10,
+        color: COLORS.textLight,
+        marginTop: 5,
+    },
+
+    billSlotProfessional: {
+        fontSize: 10,
+        color: COLORS.textLight,
+        marginTop: 4,
+    },
+
+    billDivider: {
+        height: 1,
+        backgroundColor: COLORS.border,
+        marginVertical: 12,
+    },
+
+    billCalculation: {
+        gap: 9,
+    },
+
+    billRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+
+    billLabel: {
+        fontSize: 12,
+        color: COLORS.textLight,
+    },
+
+    billValue: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+    },
+
+    billTotalRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+
+    billTotalLabel: {
+        fontSize: 16,
+        fontWeight: '800',
+        color: COLORS.txtColor,
+    },
+
+    billTotalSubtext: {
+        fontSize: 10,
+        color: COLORS.textLight,
+        marginTop: 3,
+    },
+
+    billTotalAmount: {
+        fontSize: 22,
+        fontWeight: '800',
+        color: COLORS.goldLight,
+    },
+
+    billConfirmButton: {
+        height: 50,
+        borderRadius: 12,
+        backgroundColor: COLORS.goldLight,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 18,
+    },
+
+    billConfirmText: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        fontWeight: '700',
+    },
+
+    billArrow: {
+        width: 20,
+        height: 20,
+        resizeMode: 'contain',
+        tintColor: '#FFFFFF',
+        marginLeft: 8,
+    },
+
+    billScroll: {
+        flex: 1,
+    },
+
+    billScrollContent: {
+        paddingBottom: 20,
+        flexGrow: 1,
+    },
+
+    todayBadge: {
+        fontSize: 8,
+        fontWeight: '800',
+        color: COLORS.goldLight,
+        marginBottom: 2,
+    },
+
+    todayBadgeSelected: {
+        color: '#FFFFFF',
+    },
+
+    differentTodayBadge: {
+        fontSize: 7,
+        fontWeight: '800',
+        color: COLORS.goldLight,
+        marginBottom: 1,
+    },
+
+    miniAvailabilityText: {
+        fontSize: 8,
+        fontWeight: '700',
+        color: COLORS.success,
+        textAlign: 'center',
+        marginTop: 5,
+        lineHeight: 12,
+    },
+
+    miniUnavailableText: {
+        color: COLORS.red,
+    },
+
+    professionalHintText: {
+        fontSize: 11,
+        color: COLORS.textLight,
+        marginTop: 3,
+    },
+
+    noAvailabilityText: {
+        fontSize: 11,
+        color: COLORS.red,
+        marginTop: 5,
+        lineHeight: 16,
+    },
+
+    subSectionTitle: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: COLORS.txtColor,
+        marginTop: 14,
+        marginBottom: 7,
+    },
+    headerSafeArea: {
+        backgroundColor: '#d6bceb',
+    },
+
+    header: {
+        height:
+            Platform.OS === 'ios'
+                ? 52
+                : 56,
+
+        flexDirection: 'row',
+
+        alignItems: 'center',
+
+        justifyContent: 'space-between',
+
+        paddingHorizontal: 16,
+
+        backgroundColor: '#d6bceb',
+    },
+
+    backButton: {
+        width: 40,
+        height: 40,
+
+        justifyContent: 'center',
+        alignItems: 'center',
+
+        borderRadius: 20,
+    },
+
+    backIcon: {
+        width: 23,
+        height: 23,
+
+        resizeMode: 'contain',
+
+        tintColor: '#403746',
+    },
+
+    headerTitleContainer: {
+        flex: 1,
+
+        alignItems: 'center',
+
+        justifyContent: 'center',
+
+        marginHorizontal: 10,
+    },
+
+    headerTitle: {
+        fontSize: 18,
+
+        fontWeight: '700',
+
+        color: '#403746',
+
+        textAlign: 'center',
+    },
+
+    headerRight: {
+        width: 40,
+        height: 40,
+    },
+});
+
+export default SelectSlotScreenV1;
