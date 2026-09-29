@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useRef, useEffect } from 'react';
 import {
     View,
@@ -16,6 +17,8 @@ import {
     SafeAreaView,
     Platform,
 } from 'react-native';
+
+import RazorpayCheckout from 'react-native-razorpay';
 
 const { width, height } = Dimensions.get('window');
 
@@ -234,6 +237,9 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
         '8 Hours',
     ];
 
+
+
+
     /*
     |--------------------------------------------------------------------------
     | PROFESSIONALS
@@ -400,6 +406,140 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                 callback();
             }
         });
+    };
+
+
+    const removeServicesFromCart = async () => {
+        try {
+            await AsyncStorage.removeItem('selectedServices');
+
+            console.log('Cart cleared successfully');
+        } catch (error) {
+            console.log('Error clearing cart:', error);
+        }
+    };
+
+
+    const handleDemoPayment = async () => {
+        try {
+            // Get all selected service names
+            const serviceNames = selectedServices
+                .map(service => service?.name)
+                .filter(Boolean)
+                .join(', ');
+
+            // Get total amount from your existing calculation
+            const totalAmount = Number(getTotalAmount()) || 0;
+
+            // Razorpay amount must be in paise
+            const razorpayAmount = Math.round(totalAmount * 100);
+
+            console.log('Selected Services:', serviceNames);
+            console.log('Total Amount:', totalAmount);
+            console.log('Razorpay Amount:', razorpayAmount);
+
+            if (totalAmount <= 0) {
+                Alert.alert(
+                    'Invalid Amount',
+                    'The total booking amount must be greater than ₹0.'
+                );
+                return;
+            }
+
+            const options = {
+                key: 'rzp_test_RIAZiMV1zkO9Ah',
+
+                // ₹ amount converted to paise
+                amount: razorpayAmount,
+
+                currency: 'INR',
+
+                name: 'HomeHelp',
+
+                // All selected service names
+                description: serviceNames || 'HomeHelp Services',
+
+                prefill: {
+                    name: customerName || '',
+                    email: 'demo@example.com',
+                    contact: customerMobile || '',
+                },
+
+                theme: {
+                    color: '#76577F',
+                },
+            };
+
+            console.log(
+                'RAZORPAY OPTIONS:',
+                options
+            );
+
+            const paymentResponse =
+                await RazorpayCheckout.open(options);
+
+            console.log(
+                'RAZORPAY SUCCESS:',
+                paymentResponse
+            );
+
+            Alert.alert(
+                'Payment Successful',
+                '',
+                [
+                    {
+                        text: 'OK',
+                        onPress: async () => {
+                            await removeServicesFromCart();
+
+                            navigation.replace(
+                                'BookingConfirmationScreen',
+                                {
+                                    slots: addedSlots,
+
+                                    bookingRows: addedSlots,
+
+                                    totalAmount: totalAmount,
+
+                                    totalHours: getTotalHours(),
+
+                                    selectedServices,
+
+                                    customerDetails: {
+                                        name: customerName,
+                                        mobile: customerMobile,
+                                    },
+
+                                    addressDetails,
+
+                                    address,
+
+                                    scheduleType,
+
+                                    paymentDetails: paymentResponse,
+                                }
+                            );
+                        },
+                    },
+                ],
+                {
+                    cancelable: false,
+                }
+            );
+
+        } catch (error) {
+
+            console.log(
+                'RAZORPAY PAYMENT ERROR:',
+                error
+            );
+
+            Alert.alert(
+                'Payment Failed',
+                error?.description ||
+                'Payment was cancelled or failed.'
+            );
+        }
     };
 
     /*
@@ -1714,37 +1854,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
             closeBillSummary();
 
-            navigation.replace(
-                'BookingConfirmationScreen',
-                {
-                    slots:
-                        addedSlots,
-
-                    bookingRows:
-                        addedSlots,
-
-                    totalAmount:
-                        getTotalAmount(),
-
-                    totalHours:
-                        getTotalHours(),
-
-                    selectedServices,
-
-                    customerDetails: {
-                        name:
-                            customerName,
-                        mobile:
-                            customerMobile,
-                    },
-
-                    addressDetails,
-
-                    address,
-
-                    scheduleType,
-                }
-            );
+            handleDemoPayment();
         };
 
     /*

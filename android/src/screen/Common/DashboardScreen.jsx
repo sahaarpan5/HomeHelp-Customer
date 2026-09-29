@@ -22,6 +22,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import CachedImage from '../../util/CachedImage';
 
 
 const { width, height } = Dimensions.get('window');
@@ -1454,8 +1455,8 @@ const DashboardScreen = ({ navigation }) => {
 
             });
         }}>
-            <Image
-                source={item.image}
+            <CachedImage
+                uri={item.image?.uri}
                 style={styles.offerImage}
                 resizeMode="cover"
             />

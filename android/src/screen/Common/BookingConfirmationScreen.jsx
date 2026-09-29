@@ -1,4 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+} from 'react';
 import {
   View,
   Text,
@@ -10,9 +15,10 @@ import {
   Dimensions,
   Animated,
   Alert,
+  BackHandler,
 } from 'react-native';
 
-
+import { CommonActions } from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
 
 const BookingConfirmationScreen = ({ navigation, route }) => {
@@ -104,8 +110,30 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
     ]).start();
   }, []);
 
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        handleDashboard();
+        return true;
+      },
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
   const handleDashboard = () => {
-    navigation.replace('DashboardScreen');
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'DashboardScreen',
+          },
+        ],
+      }),
+    );
   };
 
   const handleMyBookings = () => {
@@ -167,7 +195,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={handleDashboard}
         >
 
           <Image

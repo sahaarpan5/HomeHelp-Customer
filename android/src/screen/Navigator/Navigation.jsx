@@ -33,6 +33,7 @@ import SubscribedServiceScreen from '../Common/SubscribedServiceScreen';
 import LoginScreenV1 from '../Common/LoginScreenV1';
 import LoginScreenV2 from '../Common/LoginScreenV2';
 import SelectSlotScreenV1 from '../Common/SelectSlotScreenV1';
+import DemoPaymentScreen from '../Common/DemoPaymentScreen';
 
 
 
@@ -76,6 +77,7 @@ const Navigation = () => {
           <Stack.Screen name="LoginScreenV1" component={LoginScreenV1} />
           <Stack.Screen name="LoginScreenV2" component={LoginScreenV2} />
           <Stack.Screen name="SelectSlotScreenV1" component={SelectSlotScreenV1} />
+          <Stack.Screen name="DemoPaymentScreen" component={DemoPaymentScreen} />
       </Stack.Navigator>
 
     </SafeAreaProvider>

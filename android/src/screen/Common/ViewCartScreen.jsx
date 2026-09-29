@@ -21,6 +21,7 @@ import {
 import API from '../../util/API';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
+import CachedImage from '../../util/CachedImage';
 
 
 const { width, height } = Dimensions.get('window');
@@ -693,9 +694,14 @@ const ViewCartScreen = ({ navigation, route }) => {
                     })
                 }
             >
-                <Image
-                    source={item.image}
+                <CachedImage
+                    uri={
+                        typeof item.image === 'string'
+                            ? item.image
+                            : item.image?.uri
+                    }
                     style={styles.peopleLikeImage}
+                    resizeMode="cover"
                 />
             </TouchableOpacity>
 
@@ -1994,24 +2000,77 @@ const ViewCartScreen = ({ navigation, route }) => {
                 ) : (
                     <View style={styles.sectionContainer}>
                         <Text style={styles.sectionTitle}>Service Address</Text>
-                        <TouchableOpacity style={styles.addressCard} onPress={openAddressModal}>
-                            <View style={styles.addressRow}>
+
+                        {address?.trim() ? (
+                            // Address available
+                            <TouchableOpacity
+                                style={styles.addressCard}
+                                onPress={openAddressModal}
+                                activeOpacity={0.8}
+                            >
+                                <View style={styles.addressRow}>
+                                    <Image
+                                        source={require('../../asset/location-outline.png')}
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            resizeMode: 'contain',
+                                            tintColor: COLORS.gold,
+                                        }}
+                                    />
+
+                                    <Text
+                                        style={styles.addressText}
+                                        numberOfLines={2}
+                                    >
+                                        {address}
+                                    </Text>
+                                </View>
+
+                                <Text style={styles.changeAddressText}>
+                                    Change
+                                </Text>
+                            </TouchableOpacity>
+                        ) : (
+                            // Address is blank
+                            <TouchableOpacity
+                                style={styles.addAddressCard}
+                                onPress={() => navigation.navigate('AddAddressScreen')}
+                                activeOpacity={0.8}
+                            >
+                                <View style={styles.addAddressIconContainer}>
+                                    <Image
+                                        source={require('../../asset/add.png')}
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            resizeMode: 'contain',
+                                            tintColor: '#76577F',
+                                        }}
+                                    />
+                                </View>
+
+                                <View style={styles.addAddressContent}>
+                                    <Text style={styles.addAddressTitle}>
+                                        Add Address
+                                    </Text>
+
+                                    <Text style={styles.addAddressSubtitle}>
+                                        Please add a service address to continue
+                                    </Text>
+                                </View>
 
                                 <Image
-                                    source={require('../../asset/location-outline.png')} // Update the path as needed
+                                    source={require('../../asset/arrow-forward.png')}
                                     style={{
-                                        width: 20,
-                                        height: 20,
+                                        width: 18,
+                                        height: 18,
                                         resizeMode: 'contain',
-                                        tintColor: COLORS.gold
-
-
+                                        tintColor: '#76577F',
                                     }}
                                 />
-                                <Text style={styles.addressText} numberOfLines={2}>{address}</Text>
-                            </View>
-                            <Text style={styles.changeAddressText}>Change</Text>
-                        </TouchableOpacity>
+                            </TouchableOpacity>
+                        )}
                     </View>
                 )}
 
@@ -2021,9 +2080,23 @@ const ViewCartScreen = ({ navigation, route }) => {
 
 
                 {/* Select Date & Time Button - After Bill Summary */}
+                {/* Select Date & Time Button */}
                 <TouchableOpacity
-                    style={styles.selectSlotButton}
+                    style={[
+                        styles.selectSlotButton,
+                        !address?.trim() && styles.selectSlotButtonDisabled,
+                    ]}
+                    activeOpacity={address?.trim() ? 0.8 : 1}
+                    disabled={!address?.trim()}
                     onPress={() => {
+                        if (!address?.trim()) {
+                            Alert.alert(
+                                'Address Required',
+                                'Please add a service address before selecting date and time.'
+                            );
+                            return;
+                        }
+
                         navigation.navigate('SelectSlotScreenV1', {
                             selectedServices: selectedServices,
 
@@ -3130,6 +3203,47 @@ const styles = StyleSheet.create({
     disabledInput: {
         backgroundColor: '#76577F',
         color: '#FFF',
+    },
+    addAddressCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 12,
+        borderWidth: 1,
+        borderColor: '#76577F',
+        borderStyle: 'dashed',
+    },
+
+    addAddressIconContainer: {
+        width: 42,
+        height: 42,
+        borderRadius: 21,
+        backgroundColor: '#F0E8F4',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    addAddressContent: {
+        flex: 1,
+        marginLeft: 12,
+    },
+
+    addAddressTitle: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#76577F',
+    },
+
+    addAddressSubtitle: {
+        fontSize: 11,
+        color: '#777777',
+        marginTop: 3,
+    },
+
+    selectSlotButtonDisabled: {
+        backgroundColor: '#BDBDBD',
+        opacity: 0.7,
     },
 });
 

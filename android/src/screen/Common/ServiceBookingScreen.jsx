@@ -22,6 +22,7 @@ import API from '../../util/API';
 import Loader from '../../util/Loader';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
+import CachedImage from '../../util/CachedImage';
 
 
 
@@ -752,7 +753,17 @@ const ServiceBookingScreen = ({ navigation, route }) => {
     };
 
     const renderServiceImage = ({ item }) => (
-        <Image source={{ uri: item }} style={styles.galleryImage} resizeMode="cover" />
+        <CachedImage
+            uri={item}
+            style={styles.galleryImage}
+            resizeMode="cover"
+        />
+
+        // <CachedImage
+        //     uri={item?.uri}
+        //     style={styles.galleryImage}
+        //     resizeMode="cover"
+        // />
     );
 
 
@@ -824,9 +835,14 @@ const ServiceBookingScreen = ({ navigation, route }) => {
         return (
             <View style={styles.childServiceCard}>
 
-                <Image
-                    source={item.coverImage}
+                <CachedImage
+                    uri={
+                        typeof item.coverImage === 'string'
+                            ? item.coverImage
+                            : item.coverImage?.uri
+                    }
                     style={styles.childServiceImage}
+                    resizeMode="cover"
                 />
 
                 <View style={styles.childServiceInfo}>
@@ -1397,7 +1413,17 @@ const ServiceBookingScreen = ({ navigation, route }) => {
             >
                 {/* Cover Image with Back & Share Icons */}
                 <View style={styles.coverContainer}>
-                    <Image source={serviceData.coverImage} style={styles.coverImage} />
+                    {/* <Image source={serviceData.coverImage} style={styles.coverImage} /> */}
+
+                    <CachedImage
+                        uri={
+                            typeof serviceData.coverImage === 'string'
+                                ? serviceData.coverImage
+                                : serviceData.coverImage?.uri
+                        }
+                        style={styles.coverImage}
+                        resizeMode="cover"
+                    />
                     <View style={styles.coverGradient} />
 
 
@@ -1578,7 +1604,12 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                             <View key={index} style={styles.processStepWrapper}>
                                 <View style={styles.processCard}>
                                     <View style={styles.processImageContainer}>
-                                        <Image source={{ uri: item.image }} style={styles.processImage} />
+                                        <CachedImage
+                                            uri={item.image}
+                                            style={styles.processImage}
+                                            resizeMode="cover"
+                                        />
+
                                         <View style={styles.processStepBadge}>
                                             <Text style={styles.processStepBadgeText}>{item.step}</Text>
                                         </View>
