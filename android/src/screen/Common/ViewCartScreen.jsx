@@ -565,9 +565,15 @@ const ViewCartScreen = ({ navigation, route }) => {
             // 2. GET HOURLY PRICING
             //    Only this price will be displayed
             // ==========================================
-            const hourlyPricing = activePricing.find(
-                item => Number(item.pricingType) === 1
-            );
+            const pricingPriority = [1, 2, 3, 4, 5];
+
+            const displayPricing = pricingPriority
+                .map(type =>
+                    activePricing.find(
+                        item => Number(item.pricingType) === type
+                    )
+                )
+                .find(Boolean);
 
             // ==========================================
             // 3. GET COMPLETE PROCESS ARRAY
@@ -591,10 +597,12 @@ const ViewCartScreen = ({ navigation, route }) => {
 
                 name: data.serviceName,
 
-                // ⭐ ONLY HOURLY PRICE FOR DISPLAY
-                price: hourlyPricing
-                    ? `₹${hourlyPricing.price}`
+                price: displayPricing
+                    ? `₹${displayPricing.price}`
                     : 'Price unavailable',
+
+                // Store the pricing selected for display
+                selectedPricing: displayPricing,
 
                 coverImage: {
                     uri: data.imageUrl,
@@ -604,32 +612,25 @@ const ViewCartScreen = ({ navigation, route }) => {
                     uri: data.imageUrl,
                 },
 
-                duration: hourlyPricing
-                    ? `${hourlyPricing.durationHours || 1} hour`
+                duration: displayPricing
+                    ? displayPricing.durationHours
+                        ? `${displayPricing.durationHours} hours`
+                        : ''
                     : '',
 
                 description:
-                    hourlyPricing?.pricingDescription ||
+                    displayPricing?.pricingDescription ||
                     data.workProfile ||
                     data.serviceName,
 
-                // ==========================================
-                // ⭐ WHAT'S INCLUDED
-                // ==========================================
                 whatIsCovered: Array.isArray(data.included)
                     ? data.included.map(
                         item => item.includedService
                     )
                     : [],
 
-                // ==========================================
-                // ⭐ COMPLETE PRICING ARRAY
-                // ==========================================
                 pricing: activePricing,
 
-                // ==========================================
-                // ⭐ COMPLETE PROCESS ARRAY
-                // ==========================================
                 ourProcess: processArray,
             };
 
@@ -1815,7 +1816,23 @@ const ViewCartScreen = ({ navigation, route }) => {
                                 </Text>
 
                                 <Text style={styles.selectedServicePrice}>
-                                    {service.price} / hour
+                                    {service.price}
+
+                                    {service.selectedPricing && (
+                                        <Text style={styles.selectedServicePriceUnit}>
+                                            {Number(service.selectedPricing.pricingType) === 1
+                                                ? ' / hour'
+                                                : Number(service.selectedPricing.pricingType) === 2
+                                                    ? ' / 4hrs'
+                                                    : Number(service.selectedPricing.pricingType) === 3
+                                                        ? ' / 8hrs'
+                                                        : Number(service.selectedPricing.pricingType) === 4
+                                                            ? ' / month'
+                                                            : Number(service.selectedPricing.pricingType) === 5
+                                                                ? ' / project'
+                                                                : ''}
+                                        </Text>
+                                    )}
                                 </Text>
 
 

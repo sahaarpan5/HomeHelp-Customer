@@ -23,6 +23,8 @@ import { useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import CachedImage from '../../util/CachedImage';
+import ServiceOrbitLoader from '../../util/ServiceOrbitLoader';
+
 
 
 const { width, height } = Dimensions.get('window');
@@ -39,6 +41,7 @@ const DashboardScreen = ({ navigation }) => {
     const [currentThoughtfulIndex, setCurrentThoughtfulIndex] = useState(0);
 
     const [isLoading, setIsLoading] = useState(false);
+    const [imagesLoading, setImagesLoading] = useState(0);
     const [profileImage, setProfileImage] = useState(null);
 
     const [firstName, setFirstName] = useState('');
@@ -619,6 +622,8 @@ const DashboardScreen = ({ navigation }) => {
     );
 
 
+
+
     useEffect(() => {
         if (offers.length <= 1) {
             return;
@@ -857,10 +862,28 @@ const DashboardScreen = ({ navigation }) => {
         }
     };
 
-    const getServiceColor = (index, total) => {
-        const hue = Math.round((index * 360) / total);
+    const getServiceColor = (index) => {
+        const vibrantColors = [
+            '#7C3AED', // Vibrant Purple
+            '#FF6B00', // Vibrant Orange
+            '#00C853', // Vibrant Green
+            '#2979FF', // Vibrant Blue
+            '#E91E63', // Vibrant Pink
+            '#F50057', // Deep Pink
+            '#00B8D4', // Vibrant Cyan
+            '#FF1744', // Vibrant Red
+            '#651FFF', // Indigo
+            '#00A86B', // Emerald Green
+            '#FF4081', // Hot Pink
+            '#FF9100', // Amber Orange
+            '#304FFE', // Royal Blue
+            '#AA00FF', // Electric Purple
+            '#00BFA5', // Teal
+            '#590881',
+            '#148644',
+        ];
 
-        return `hsl(${hue}, 50%, 40%)`;
+        return vibrantColors[index % vibrantColors.length];
     };
 
 
@@ -873,6 +896,7 @@ const DashboardScreen = ({ navigation }) => {
                 return;
             }
 
+            // Show full-screen loader
             setIsLoading(true);
 
             const response = await axios.get(
@@ -885,9 +909,16 @@ const DashboardScreen = ({ navigation }) => {
                 }
             );
 
-            console.log('SERVICE API RESPONSE:', response.data);
+            console.log(
+                'SERVICE API RESPONSE:',
+                response.data
+            );
 
             if (Array.isArray(response.data)) {
+
+                // ---------------------------------------------
+                // SERVICE COLORS
+                // ---------------------------------------------
 
                 const serviceColors = [
                     '#8B5CF6',
@@ -901,50 +932,162 @@ const DashboardScreen = ({ navigation }) => {
                     '#EAB308',
                 ];
 
-                const formattedServices = response.data.map((item, index) => ({
-                    id: item.serviceId,
-                    name: item.serviceName,
-                    icon: {
-                        uri: item.icon,
-                    },
-                    image: {
-                        uri: item.imageUrl,
-                    },
-                    color: getServiceColor(index, response.data.length),
-                }));
+                // ---------------------------------------------
+                // FORMAT SERVICES
+                // ---------------------------------------------
 
-                console.log('FORMATTED SERVICES:', formattedServices);
+                const formattedServices = response.data.map(
+                    (item, index) => ({
+                        id: item.serviceId,
+                        name: item.serviceName,
+
+                        icon: {
+                            uri: item.icon,
+                        },
+
+                        image: {
+                            uri: item.imageUrl,
+                        },
+
+                        color: getServiceColor(
+                            index,
+                            response.data.length
+                        ),
+                    })
+                );
+
+                console.log(
+                    'FORMATTED SERVICES:',
+                    formattedServices
+                );
+
+                // ---------------------------------------------
+                // FORMAT OFFERS
+                // ---------------------------------------------
+
+                const formattedOffers = response.data.map(
+                    (item, index) => ({
+                        id: item.serviceId,
+                        title: item.serviceName,
+                        description: getServiceDescription(
+                            item.serviceName
+                        ),
+                        image: {
+                            uri: item.imageUrl,
+                        },
+                    })
+                );
+
+                // ---------------------------------------------
+                // COLLECT ALL IMAGE URLS
+                // ---------------------------------------------
+
+                const imageUrls = response.data.flatMap(
+                    item => [
+                        item?.icon,
+                        item?.imageUrl,
+                    ]
+                );
+
+                // Remove empty URLs
+                const validImageUrls = imageUrls.filter(
+                    url =>
+                        typeof url === 'string' &&
+                        url.trim().length > 0
+                );
+
+                // Remove duplicate URLs
+                const uniqueImageUrls = [
+                    ...new Set(validImageUrls),
+                ];
+
+                console.log(
+                    'TOTAL UNIQUE IMAGES:',
+                    uniqueImageUrls.length
+                );
+
+                // ---------------------------------------------
+                // PRELOAD ALL IMAGES
+                // ---------------------------------------------
+
+                await Promise.all(
+                    uniqueImageUrls.map(async url => {
+                        try {
+                            const result =
+                                await Image.prefetch(url);
+
+                            console.log(
+                                'IMAGE PRELOADED:',
+                                url,
+                                result
+                            );
+
+                            return result;
+
+                        } catch (imageError) {
+
+                            console.log(
+                                'IMAGE PRELOAD ERROR:',
+                                url,
+                                imageError
+                            );
+
+                            // Don't stop all other images
+                            return false;
+                        }
+                    })
+                );
+
+                console.log(
+                    '===================================='
+                );
+
+                console.log(
+                    'ALL SERVICE IMAGES PRELOADED'
+                );
+
+                console.log(
+                    '===================================='
+                );
+
+                // ---------------------------------------------
+                // NOW SET DATA
+                // ---------------------------------------------
 
                 setAllServices(formattedServices);
-
-
-                // Services for "Offers"
-                const formattedOffers = response.data.map((item, index) => ({
-                    id: item.serviceId,
-                    title: item.serviceName,
-                    description: getServiceDescription(item.serviceName),
-                    image: { uri: item.imageUrl },
-                    // discount: getServiceDiscount(index),
-                    //validTill: getServiceValidTill(index),
-                }));
-
                 setOffers(formattedOffers);
 
             } else {
+
                 setAllServices([]);
                 setOffers([]);
+
             }
 
         } catch (error) {
-            console.log('FETCH SERVICES ERROR:', error);
-            console.log('SERVICE ERROR RESPONSE:', error?.response?.data);
+
+            console.log(
+                'FETCH SERVICES ERROR:',
+                error
+            );
+
+            console.log(
+                'SERVICE ERROR RESPONSE:',
+                error?.response?.data
+            );
 
             Alert.alert(
                 'Error',
                 error?.response?.data?.message ||
                 'Unable to load services.'
             );
+
         } finally {
+
+            // ---------------------------------------------
+            // ALL API + IMAGE PRELOADING COMPLETED
+            // ---------------------------------------------
+
             setIsLoading(false);
         }
     };
@@ -1459,6 +1602,7 @@ const DashboardScreen = ({ navigation }) => {
                 uri={item.image?.uri}
                 style={styles.offerImage}
                 resizeMode="cover"
+                
             />
             <View style={styles.offerOverlay}>
                 <View style={styles.offerDiscountContainer}>
@@ -1801,7 +1945,7 @@ const DashboardScreen = ({ navigation }) => {
 
             {isLoading && (
                 <View style={styles.loaderOverlay}>
-                    <Loader />
+                    <ServiceOrbitLoader />
                 </View>
             )}
 

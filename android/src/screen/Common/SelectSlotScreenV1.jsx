@@ -15,6 +15,7 @@ import {
     Modal,
     TouchableWithoutFeedback,
     SafeAreaView,
+    Pressable,
     Platform,
 } from 'react-native';
 
@@ -78,6 +79,8 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
     | STATES
     |--------------------------------------------------------------------------
     */
+
+    const billScrollRef = useRef(null);
 
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
@@ -200,42 +203,187 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
     ];
 
     /*
-    |--------------------------------------------------------------------------
-    | DURATION TYPES
-    |--------------------------------------------------------------------------
-    */
+ |-------------------------------------------------------------------------- 
+ | SCHEDULE BUTTON STATE
+ |-------------------------------------------------------------------------- 
+ */
 
-    const durationTypes = [
-        {
-            id: 'hourly',
-            label: 'Hourly',
-            icon: require('../../asset/time-outline.png'),
-            description: 'Pay per hour',
-        },
-        {
-            id: 'halfDay',
-            label: 'Half Day',
-            icon: require('../../asset/sun.png'),
-            description: '4 hours',
-        },
-        {
-            id: 'fullDay',
-            label: 'Full Day',
-            icon: require('../../asset/sun.png'),
-            description: '8 hours',
-        },
-    ];
+    const getProfessionalKey = professional => {
+        if (!professional) {
+            return '';
+        }
 
-    const hoursOptions = [
-        '1 Hour',
-        '2 Hours',
-        '3 Hours',
-        '4 Hours',
-        '5 Hours',
-        '6 Hours',
-        '7 Hours',
-        '8 Hours',
-    ];
+        return String(
+            professional.id ??
+            professional.professionalId ??
+            professional.userId ??
+            professional.name ??
+            ''
+        );
+    };
+
+    const getCurrentScheduleSignature = () => {
+
+        const rows = [];
+
+        if (scheduleType === 'same') {
+
+            commonDates.forEach(date => {
+
+                const data =
+                    commonDateServices[date] || {};
+
+                selectedServices.forEach(service => {
+
+                    const item =
+                        data[String(service.id)];
+
+                    if (!item) {
+                        return;
+                    }
+
+                    rows.push({
+                        serviceId: String(service.id),
+                        date: String(date),
+                        time: item.time || '',
+                        hours: Number(item.hours || 0),
+                        professional: getProfessionalKey(
+                            item.professional
+                        ),
+                    });
+                });
+            });
+
+        } else {
+
+            selectedServices.forEach(service => {
+
+                const schedules =
+                    serviceSchedules[service.id] || [];
+
+                schedules.forEach(item => {
+
+                    rows.push({
+                        serviceId: String(service.id),
+                        date: String(item.date),
+                        time: item.time || '',
+                        hours: Number(item.hours || 0),
+                        professional: getProfessionalKey(
+                            item.professional
+                        ),
+                    });
+
+                });
+            });
+        }
+
+        return rows.sort((a, b) => {
+
+            const first =
+                `${a.serviceId}-${a.date}`;
+
+            const second =
+                `${b.serviceId}-${b.date}`;
+
+            return first.localeCompare(second);
+        });
+    };
+
+
+    const getAddedScheduleSignature = () => {
+
+        return addedSlots
+            .map(slot => ({
+                serviceId: String(slot.serviceId),
+                date: String(slot.date),
+                time: slot.time || '',
+                hours: Number(slot.hours || 0),
+                professional: getProfessionalKey(
+                    slot.professional
+                ),
+            }))
+            .sort((a, b) => {
+
+                const first =
+                    `${a.serviceId}-${a.date}`;
+
+                const second =
+                    `${b.serviceId}-${b.date}`;
+
+                return first.localeCompare(second);
+            });
+    };
+
+
+    const getScheduleButtonText = () => {
+
+        // No schedule added yet
+        if (addedSlots.length === 0) {
+            return 'Add Schedule';
+        }
+
+        const current =
+            getCurrentScheduleSignature();
+
+        const added =
+            getAddedScheduleSignature();
+
+        // Nothing changed
+        if (
+            JSON.stringify(current) ===
+            JSON.stringify(added)
+        ) {
+            return '';
+        }
+
+        /*
+        |---------------------------------------------------------
+        | Check DATE change
+        |---------------------------------------------------------
+        */
+
+        const currentDates = current
+            .map(item =>
+                `${item.serviceId}-${item.date}`
+            )
+            .sort();
+
+        const addedDates = added
+            .map(item =>
+                `${item.serviceId}-${item.date}`
+            )
+            .sort();
+
+        const dateChanged =
+            JSON.stringify(currentDates) !==
+            JSON.stringify(addedDates);
+
+        /*
+        |---------------------------------------------------------
+        | DATE changed
+        |---------------------------------------------------------
+        */
+
+        if (dateChanged) {
+            return 'Add Schedule';
+        }
+
+        /*
+        |---------------------------------------------------------
+        | Same date but hours/time/professional changed
+        |---------------------------------------------------------
+        */
+
+        return 'Update Schedule';
+    };
+
+
+    const scheduleButtonText =
+        getScheduleButtonText();
+
+    const shouldShowScheduleButton =
+        scheduleButtonText !== '';
+
 
 
 
@@ -375,6 +523,20 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
             }),
         ]).start();
     }, []);
+
+
+
+    useEffect(() => {
+        if (showBillSummary) {
+            const timer = setTimeout(() => {
+                billScrollRef.current?.scrollToEnd({
+                    animated: true,
+                });
+            }, 500);
+
+            return () => clearTimeout(timer);
+        }
+    }, [showBillSummary]);
 
     /*
     |--------------------------------------------------------------------------
@@ -650,19 +812,96 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
     |--------------------------------------------------------------------------
     */
 
+    // const renderHours = (
+    //     service,
+    //     selected,
+    //     onSelect
+    // ) => {
+
+    //     return (
+    //         <View
+    //             style={
+    //                 styles.hoursContainer
+    //             }
+    //         >
+
+    //             {[
+    //                 1,
+    //                 2,
+    //                 3,
+    //                 4,
+    //                 5,
+    //                 6,
+    //                 7,
+    //                 8,
+    //             ].map(hour => {
+
+    //                 const amount =
+    //                     calculateServicePrice(
+    //                         service,
+    //                         hour
+    //                     );
+
+    //                 const isSelected =
+    //                     Number(selected) ===
+    //                     hour;
+
+    //                 return (
+    //                     <TouchableOpacity
+    //                         key={hour}
+    //                         style={[
+    //                             styles.hoursCard,
+    //                             isSelected &&
+    //                             styles.hoursCardSelected,
+    //                         ]}
+    //                         onPress={() =>
+    //                             onSelect(hour)
+    //                         }
+    //                         activeOpacity={0.8}
+    //                     >
+
+    //                         <Text
+    //                             style={[
+    //                                 styles.hoursText,
+    //                                 isSelected &&
+    //                                 styles.hoursTextSelected,
+    //                             ]}
+    //                         >
+    //                             {hour}{' '}
+    //                             {hour === 1
+    //                                 ? 'Hour'
+    //                                 : 'Hours'}
+    //                         </Text>
+
+    //                         <Text
+    //                             style={[
+    //                                 styles.hoursAmount,
+    //                                 isSelected &&
+    //                                 styles.hoursAmountSelected,
+    //                             ]}
+    //                         >
+    //                             ₹{amount}
+    //                         </Text>
+
+    //                     </TouchableOpacity>
+    //                 );
+    //             })}
+
+    //         </View>
+    //     );
+    // };
+
+
+
     const renderHours = (
         service,
         selected,
-        onSelect
+        onSelect,
+        date
     ) => {
 
         return (
-            <View
-                style={
-                    styles.hoursContainer
-                }
-            >
-
+            <View style={styles.hoursContainer}>
                 {[
                     1,
                     2,
@@ -674,33 +913,51 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                     8,
                 ].map(hour => {
 
-                    const amount =
-                        calculateServicePrice(
-                            service,
-                            hour
-                        );
+                    const amount = calculateServicePrice(
+                        service,
+                        hour
+                    );
+
+                    // If price is 0, this hour is unavailable
+                    const isAvailable = Number(amount) > 0;
 
                     const isSelected =
-                        Number(selected) ===
-                        hour;
+                        isAvailable &&
+                        Number(selected) === hour;
 
                     return (
                         <TouchableOpacity
                             key={hour}
                             style={[
                                 styles.hoursCard,
+
+                                // Disabled card
+                                !isAvailable &&
+                                styles.hoursCardDisabled,
+
+                                // Selected card
                                 isSelected &&
                                 styles.hoursCardSelected,
                             ]}
-                            onPress={() =>
-                                onSelect(hour)
-                            }
-                            activeOpacity={0.8}
-                        >
+                            onPress={() => {
+                                if (!isAvailable) {
+                                    return;
+                                }
 
+                                onSelect(hour);
+                            }}
+                            activeOpacity={
+                                isAvailable ? 0.8 : 1
+                            }
+                            disabled={!isAvailable}
+                        >
                             <Text
                                 style={[
                                     styles.hoursText,
+
+                                    !isAvailable &&
+                                    styles.hoursTextDisabled,
+
                                     isSelected &&
                                     styles.hoursTextSelected,
                                 ]}
@@ -714,21 +971,24 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                             <Text
                                 style={[
                                     styles.hoursAmount,
+
+                                    !isAvailable &&
+                                    styles.hoursAmountDisabled,
+
                                     isSelected &&
                                     styles.hoursAmountSelected,
                                 ]}
                             >
-                                ₹{amount}
+                                {isAvailable
+                                    ? `₹${amount}`
+                                    : 'Not Available'}
                             </Text>
-
                         </TouchableOpacity>
                     );
                 })}
-
             </View>
         );
     };
-
     /*
     |--------------------------------------------------------------------------
     | STAR RENDER
@@ -1428,6 +1688,8 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
     */
 
     const addSameSchedule = () => {
+        const isUpdating =
+            addedSlots.length > 0;
 
         if (
             commonDates.length === 0
@@ -1577,8 +1839,12 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
         setAddedSlots(rows);
 
         Alert.alert(
-            'Schedule Added',
-            'Your schedule has been added successfully.'
+            isUpdating
+                ? 'Schedule Updated'
+                : 'Schedule Added',
+            isUpdating
+                ? 'Your schedule has been updated successfully.'
+                : 'Your schedule has been added successfully.'
         );
     };
 
@@ -1590,6 +1856,9 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
     const addDifferentSchedule =
         () => {
+
+            const isUpdating =
+                addedSlots.length > 0;
 
             if (
                 selectedServices.length ===
@@ -1705,8 +1974,12 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
             setAddedSlots(rows);
 
             Alert.alert(
-                'Schedule Added',
-                'Your schedule has been added successfully.'
+                isUpdating
+                    ? 'Schedule Updated'
+                    : 'Schedule Added',
+                isUpdating
+                    ? 'Your schedule has been updated successfully.'
+                    : 'Your schedule has been added successfully.'
             );
         };
 
@@ -2810,443 +3083,426 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
     |--------------------------------------------------------------------------
     */
 
-    const renderBillSummary =
-        () => {
+    const renderBillSummary = () => {
+        const billData = [
+            {
+                id: 'customer',
+                type: 'customer',
+            },
+            {
+                id: 'services',
+                type: 'services',
+            },
+            {
+                id: 'calculation',
+                type: 'calculation',
+            },
+            {
+                id: 'total',
+                type: 'total',
+            },
+        ];
 
-            return (
-                <Modal
-                    transparent
-                    visible={
-                        showBillSummary
-                    }
-                    animationType="none"
-                    onRequestClose={
-                        closeBillSummary
-                    }
-                >
+        const renderBillItem = ({ item }) => {
 
-                    <TouchableWithoutFeedback
-                        onPress={
-                            closeBillSummary
-                        }
-                    >
+            /* ============================= */
+            /* CUSTOMER DETAILS */
+            /* ============================= */
 
-                        <View
-                            style={
-                                styles.modalOverlay
-                            }
-                        >
+            if (item.type === 'customer') {
+                return (
+                    <View style={styles.customerSummaryCard}>
 
-                            <TouchableWithoutFeedback>
+                        <Text style={styles.customerSummaryTitle}>
+                            Customer Details
+                        </Text>
 
-                                <Animated.View
-                                    style={[
-                                        styles.billModalContent,
-                                        {
-                                            transform: [
-                                                {
-                                                    translateY:
-                                                        billModalSlideAnim,
-                                                },
-                                            ],
-                                        },
-                                    ]}
-                                >
+                        <View style={styles.customerSummaryRow}>
+
+                            <Text style={styles.customerSummaryLabel}>
+                                Name
+                            </Text>
+
+                            <Text style={styles.customerSummaryValue}>
+                                {customerName || '-'}
+                            </Text>
+
+                        </View>
+
+                        <View style={styles.customerSummaryRow}>
+
+                            <Text style={styles.customerSummaryLabel}>
+                                Phone Number
+                            </Text>
+
+                            <Text style={styles.customerSummaryValue}>
+                                {customerMobile || '-'}
+                            </Text>
+
+                        </View>
+
+                        <View style={styles.customerSummaryAddressRow}>
+
+                            <Text style={styles.customerSummaryLabel}>
+                                Service Address
+                            </Text>
+
+                            <Text style={styles.customerAddressValue}>
+                                {address ||
+                                    addressDetails?.address ||
+                                    addressDetails?.fullAddress ||
+                                    addressDetails?.formattedAddress ||
+                                    addressDetails?.addressLine1 ||
+                                    '-'}
+                            </Text>
+
+                        </View>
+
+                    </View>
+                );
+            }
+
+
+            /* ============================= */
+            /* SERVICE DETAILS */
+            /* ============================= */
+
+            if (item.type === 'services') {
+                return (
+                    <View>
+
+                        <Text style={styles.billSectionTitle}>
+                            Service Details
+                        </Text>
+
+                        {addedSlots.map((slot, index) => (
+                            <View
+                                key={
+                                    slot.id ||
+                                    `${slot.serviceId}-${slot.date}-${index}`
+                                }
+                                style={styles.billSlotItem}
+                            >
+
+                                <View style={styles.billSlotHeader}>
 
                                     <View
                                         style={
-                                            styles.modalHandle
-                                        }
-                                    />
-
-                                    <View
-                                        style={
-                                            styles.billHeader
+                                            styles.billSlotHeaderLeft
                                         }
                                     >
 
                                         <Text
                                             style={
-                                                styles.billTitle
+                                                styles.billSlotService
                                             }
                                         >
-                                            Bill Summary
+                                            {slot.serviceName}
                                         </Text>
 
                                         <Text
                                             style={
-                                                styles.billSubtitle
+                                                styles.billSlotDate
                                             }
                                         >
-                                            Review your booking details
+                                            {new Date(
+                                                slot.date
+                                            ).toLocaleDateString(
+                                                'en-US',
+                                                {
+                                                    weekday: 'short',
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                }
+                                            )}
                                         </Text>
 
                                     </View>
 
-                                    <ScrollView
-                                        style={styles.billScroll}
-                                        contentContainerStyle={styles.billScrollContent}
-                                        showsVerticalScrollIndicator={
-                                            true
-                                        }
-                                    >
-
-                                        {/* CUSTOMER DETAILS */}
-
-                                        <View
-                                            style={
-                                                styles.customerSummaryCard
-                                            }
-                                        >
-
-                                            <Text
-                                                style={
-                                                    styles.customerSummaryTitle
-                                                }
-                                            >
-                                                Customer Details
-                                            </Text>
-
-                                            <View
-                                                style={
-                                                    styles.customerSummaryRow
-                                                }
-                                            >
-
-                                                <Text
-                                                    style={
-                                                        styles.customerSummaryLabel
-                                                    }
-                                                >
-                                                    Name
-                                                </Text>
-
-                                                <Text
-                                                    style={
-                                                        styles.customerSummaryValue
-                                                    }
-                                                >
-                                                    {customerName ||
-                                                        '-'}
-                                                </Text>
-
-                                            </View>
-
-                                            <View
-                                                style={
-                                                    styles.customerSummaryRow
-                                                }
-                                            >
-
-                                                <Text
-                                                    style={
-                                                        styles.customerSummaryLabel
-                                                    }
-                                                >
-                                                    Phone Number
-                                                </Text>
-
-                                                <Text
-                                                    style={
-                                                        styles.customerSummaryValue
-                                                    }
-                                                >
-                                                    {customerMobile ||
-                                                        '-'}
-                                                </Text>
-
-                                            </View>
-
-                                            <View
-                                                style={
-                                                    styles.customerSummaryAddressRow
-                                                }
-                                            >
-
-                                                <Text
-                                                    style={
-                                                        styles.customerSummaryLabel
-                                                    }
-                                                >
-                                                    Service Address
-                                                </Text>
-
-                                                <Text
-                                                    style={
-                                                        styles.customerAddressValue
-                                                    }
-                                                >
-                                                    {address ||
-                                                        addressDetails?.address ||
-                                                        addressDetails?.fullAddress ||
-                                                        addressDetails?.formattedAddress ||
-                                                        addressDetails?.addressLine1 ||
-                                                        '-'}
-                                                </Text>
-
-                                            </View>
-
-                                        </View>
-
-                                        {/* SERVICE DETAILS */}
-
-                                        <Text
-                                            style={
-                                                styles.billSectionTitle
-                                            }
-                                        >
-                                            Service Details
-                                        </Text>
-
-                                        {addedSlots.map(
-                                            slot => (
-
-                                                <View
-                                                    key={
-                                                        slot.id
-                                                    }
-                                                    style={
-                                                        styles.billSlotItem
-                                                    }
-                                                >
-
-                                                    <View
-                                                        style={
-                                                            styles.billSlotHeader
-                                                        }
-                                                    >
-
-                                                        <View
-                                                            style={
-                                                                styles.billSlotHeaderLeft
-                                                            }
-                                                        >
-
-                                                            <Text
-                                                                style={
-                                                                    styles.billSlotService
-                                                                }
-                                                            >
-                                                                {
-                                                                    slot.serviceName
-                                                                }
-                                                            </Text>
-
-                                                            <Text
-                                                                style={
-                                                                    styles.billSlotDate
-                                                                }
-                                                            >
-                                                                {new Date(
-                                                                    slot.date
-                                                                ).toLocaleDateString(
-                                                                    'en-US',
-                                                                    {
-                                                                        weekday:
-                                                                            'short',
-                                                                        month:
-                                                                            'short',
-                                                                        day:
-                                                                            'numeric',
-                                                                    }
-                                                                )}
-                                                            </Text>
-
-                                                        </View>
-
-                                                        <Text
-                                                            style={
-                                                                styles.billSlotAmount
-                                                            }
-                                                        >
-                                                            ₹
-                                                            {
-                                                                slot.amount
-                                                            }
-                                                        </Text>
-
-                                                    </View>
-
-                                                    <Text
-                                                        style={
-                                                            styles.billSlotDetails
-                                                        }
-                                                    >
-                                                        {
-                                                            slot.time
-                                                        }{' '}
-                                                        •{' '}
-                                                        {
-                                                            slot.hours
-                                                        }{' '}
-                                                        hrs
-                                                    </Text>
-
-                                                    <Text
-                                                        style={
-                                                            styles.billSlotProfessional
-                                                        }
-                                                    >
-                                                        Professional:{' '}
-                                                        {
-                                                            slot.professionalName ||
-                                                            slot.professional?.name ||
-                                                            'Select Any Professional'
-                                                        }
-                                                    </Text>
-
-                                                </View>
-                                            )
-                                        )}
-
-                                        <View
-                                            style={
-                                                styles.billDivider
-                                            }
-                                        />
-
-                                        {/* CALCULATION */}
-
-                                        <View
-                                            style={
-                                                styles.billCalculation
-                                            }
-                                        >
-
-                                            <View
-                                                style={
-                                                    styles.billRow
-                                                }
-                                            >
-
-                                                <Text
-                                                    style={
-                                                        styles.billLabel
-                                                    }
-                                                >
-                                                    Total Hours
-                                                </Text>
-
-                                                <Text
-                                                    style={
-                                                        styles.billValue
-                                                    }
-                                                >
-                                                    {
-                                                        getTotalHours()
-                                                    }{' '}
-                                                    hrs
-                                                </Text>
-
-                                            </View>
-
-                                        </View>
-
-                                        <View
-                                            style={
-                                                styles.billDivider
-                                            }
-                                        />
-
-                                        {/* TOTAL */}
-
-                                        <View
-                                            style={
-                                                styles.billTotalRow
-                                            }
-                                        >
-
-                                            <View>
-
-                                                <Text
-                                                    style={
-                                                        styles.billTotalLabel
-                                                    }
-                                                >
-                                                    Total Amount
-                                                </Text>
-
-                                                <Text
-                                                    style={
-                                                        styles.billTotalSubtext
-                                                    }
-                                                >
-                                                    Including GST
-                                                </Text>
-
-                                            </View>
-
-                                            <Text
-                                                style={
-                                                    styles.billTotalAmount
-                                                }
-                                            >
-                                                ₹
-                                                {
-                                                    getTotalAmount()
-                                                }
-                                            </Text>
-
-                                        </View>
-
-                                        <TouchableOpacity
-                                            style={
-                                                styles.billConfirmButton
-                                            }
-                                            onPress={
-                                                handleConfirmBooking
-                                            }
-                                        >
-
-                                            <Text
-                                                style={
-                                                    styles.billConfirmText
-                                                }
-                                            >
-                                                Confirm Booking
-                                            </Text>
-
-                                            <Image
-                                                source={require('../../asset/right-arrow.png')}
-                                                style={
-                                                    styles.billArrow
-                                                }
-                                            />
-
-                                        </TouchableOpacity>
-
-                                    </ScrollView>
-
-                                    <TouchableOpacity
+                                    <Text
                                         style={
-                                            styles.modalCloseButton
-                                        }
-                                        onPress={
-                                            closeBillSummary
+                                            styles.billSlotAmount
                                         }
                                     >
+                                        ₹{slot.amount}
+                                    </Text>
 
-                                        <Text
-                                            style={
-                                                styles.modalCloseText
-                                            }
-                                        >
-                                            Cancel
-                                        </Text>
+                                </View>
 
-                                    </TouchableOpacity>
 
-                                </Animated.View>
+                                <Text
+                                    style={
+                                        styles.billSlotDetails
+                                    }
+                                >
+                                    {slot.time || '-'}
+                                    {' • '}
+                                    {slot.hours || 0} hrs
+                                </Text>
 
-                            </TouchableWithoutFeedback>
+
+                                <Text
+                                    style={
+                                        styles.billSlotProfessional
+                                    }
+                                >
+                                    Professional:{' '}
+                                    {slot.professionalName ||
+                                        slot.professional?.name ||
+                                        'Select Any Professional'}
+                                </Text>
+
+                            </View>
+                        ))}
+
+                    </View>
+                );
+            }
+
+
+            /* ============================= */
+            /* CALCULATION */
+            /* ============================= */
+
+            if (item.type === 'calculation') {
+                return (
+                    <View>
+
+                        <View style={styles.billDivider} />
+
+                        <View style={styles.billCalculation}>
+
+                            <View style={styles.billRow}>
+
+                                <Text style={styles.billLabel}>
+                                    Total Hours
+                                </Text>
+
+                                <Text style={styles.billValue}>
+                                    {getTotalHours()} hrs
+                                </Text>
+
+                            </View>
 
                         </View>
 
-                    </TouchableWithoutFeedback>
+                        <View style={styles.billDivider} />
 
-                </Modal>
-            );
+                    </View>
+                );
+            }
+
+
+            /* ============================= */
+            /* TOTAL + CONFIRM */
+            /* ============================= */
+
+            if (item.type === 'total') {
+                return (
+                    <View style={styles.billBottomSection}>
+
+                        <View style={styles.billTotalRow}>
+
+                            <View>
+
+                                <Text
+                                    style={
+                                        styles.billTotalLabel
+                                    }
+                                >
+                                    Total Amount
+                                </Text>
+
+                                <Text
+                                    style={
+                                        styles.billTotalSubtext
+                                    }
+                                >
+                                    Including GST
+                                </Text>
+
+                            </View>
+
+
+                            <Text
+                                style={
+                                    styles.billTotalAmount
+                                }
+                            >
+                                ₹{getTotalAmount()}
+                            </Text>
+
+                        </View>
+
+
+                        <TouchableOpacity
+                            style={
+                                styles.billConfirmButton
+                            }
+                            onPress={handleConfirmBooking}
+                            activeOpacity={0.8}
+                        >
+
+                            <Text
+                                style={
+                                    styles.billConfirmText
+                                }
+                            >
+                                Confirm Booking
+                            </Text>
+
+                            <Image
+                                source={require('../../asset/right-arrow.png')}
+                                style={styles.billArrow}
+                            />
+
+                        </TouchableOpacity>
+
+                    </View>
+                );
+            }
+
+            return null;
         };
+
+
+        return (
+            <Modal
+                transparent
+                visible={showBillSummary}
+                animationType="none"
+                onRequestClose={closeBillSummary}
+            >
+
+                <View style={styles.modalOverlay}>
+
+                    {/* BACKDROP */}
+
+                    <Pressable
+                        style={StyleSheet.absoluteFillObject}
+                        onPress={closeBillSummary}
+                    />
+
+
+                    {/* MODAL */}
+
+                    <Animated.View
+                        style={[
+                            styles.billModalContent,
+                            {
+                                transform: [
+                                    {
+                                        translateY:
+                                            billModalSlideAnim,
+                                    },
+                                ],
+                            },
+                        ]}
+                    >
+
+                        {/* HANDLE */}
+
+                        <View style={styles.modalHandle} />
+
+
+                        {/* HEADER */}
+
+                        <View style={styles.billHeader}>
+
+                            <View
+                                style={
+                                    styles.billHeaderTextContainer
+                                }
+                            >
+
+                                <Text
+                                    style={
+                                        styles.billTitle
+                                    }
+                                >
+                                    Bill Summary
+                                </Text>
+
+                                <Text
+                                    style={
+                                        styles.billSubtitle
+                                    }
+                                >
+                                    Review your booking details
+                                </Text>
+
+                            </View>
+
+
+                            {/* CLOSE */}
+
+                            <TouchableOpacity
+                                style={
+                                    styles.billCloseButton
+                                }
+                                onPress={closeBillSummary}
+                                activeOpacity={0.7}
+                            >
+
+                                <Text
+                                    style={
+                                        styles.billCloseButtonText
+                                    }
+                                >
+                                    ×
+                                </Text>
+
+                            </TouchableOpacity>
+
+                        </View>
+
+
+                        {/* ============================= */}
+                        {/* FLATLIST */}
+                        {/* ============================= */}
+
+                        <FlatList
+                            ref={billScrollRef}
+                            data={billData}
+                            keyExtractor={item => item.id}
+                            renderItem={renderBillItem}
+
+                            style={styles.billFlatList}
+
+                            contentContainerStyle={
+                                styles.billFlatListContent
+                            }
+
+                            showsVerticalScrollIndicator={true}
+
+                            nestedScrollEnabled={true}
+
+                            keyboardShouldPersistTaps="handled"
+
+                            bounces={true}
+
+                            alwaysBounceVertical={true}
+
+                            removeClippedSubviews={false}
+
+                            initialNumToRender={4}
+
+                            windowSize={5}
+
+                            scrollEventThrottle={16}
+                        />
+
+                    </Animated.View>
+
+                </View>
+
+            </Modal>
+        );
+    };
+
+
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -3302,7 +3558,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                             style={styles.headerTitle}
                             numberOfLines={1}
                         >
-                            Select Slot
+                            Select Schedule
                         </Text>
 
                     </View>
@@ -3335,114 +3591,116 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
             >
 
                 {/* SCHEDULE TYPE */}
-
-                <View
-                    style={
-                        styles.sectionContainer
-                    }
-                >
-
-                    <Text
-                        style={
-                            styles.sectionTitle
-                        }
-                    >
-                        Schedule Type
-                    </Text>
-
-                    <Text
-                        style={
-                            styles.sectionSubtitle
-                        }
-                    >
-                        Choose how you want to schedule your services
-                    </Text>
-
+                {selectedServices.length > 1 && (
                     <View
                         style={
-                            styles.scheduleTypeContainer
+                            styles.sectionContainer
                         }
                     >
 
-                        <TouchableOpacity
-                            style={[
-                                styles.scheduleTypeCard,
-                                scheduleType ===
-                                'same' &&
-                                styles.scheduleTypeCardSelected,
-                            ]}
-                            onPress={() =>
-                                setScheduleType(
-                                    'same'
-                                )
+                        <Text
+                            style={
+                                styles.sectionTitle
+                            }
+                        >
+                            Schedule Type
+                        </Text>
+
+                        <Text
+                            style={
+                                styles.sectionSubtitle
+                            }
+                        >
+                            Choose how you want to schedule your services
+                        </Text>
+
+                        <View
+                            style={
+                                styles.scheduleTypeContainer
                             }
                         >
 
-                            <Text
+                            <TouchableOpacity
                                 style={[
-                                    styles.scheduleTypeTitle,
+                                    styles.scheduleTypeCard,
                                     scheduleType ===
                                     'same' &&
-                                    styles.scheduleTypeTitleSelected,
+                                    styles.scheduleTypeCardSelected,
                                 ]}
+                                onPress={() =>
+                                    setScheduleType(
+                                        'same'
+                                    )
+                                }
                             >
-                                Same Schedule
-                            </Text>
 
-                            <Text
+                                <Text
+                                    style={[
+                                        styles.scheduleTypeTitle,
+                                        scheduleType ===
+                                        'same' &&
+                                        styles.scheduleTypeTitleSelected,
+                                    ]}
+                                >
+                                    Same Schedule
+                                </Text>
+
+                                <Text
+                                    style={[
+                                        styles.scheduleTypeDescription,
+                                        scheduleType ===
+                                        'same' &&
+                                        styles.scheduleTypeDescriptionSelected,
+                                    ]}
+                                >
+                                    All services can use the same dates
+                                </Text>
+
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
                                 style={[
-                                    styles.scheduleTypeDescription,
-                                    scheduleType ===
-                                    'same' &&
-                                    styles.scheduleTypeDescriptionSelected,
-                                ]}
-                            >
-                                All services can use the same dates
-                            </Text>
-
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={[
-                                styles.scheduleTypeCard,
-                                scheduleType ===
-                                'different' &&
-                                styles.scheduleTypeCardSelected,
-                            ]}
-                            onPress={() =>
-                                setScheduleType(
-                                    'different'
-                                )
-                            }
-                        >
-
-                            <Text
-                                style={[
-                                    styles.scheduleTypeTitle,
-                                    scheduleType ===
-                                    'different' &&
-                                    styles.scheduleTypeTitleSelected,
-                                ]}
-                            >
-                                Different Schedule
-                            </Text>
-
-                            <Text
-                                style={[
-                                    styles.scheduleTypeDescription,
+                                    styles.scheduleTypeCard,
                                     scheduleType ===
                                     'different' &&
-                                    styles.scheduleTypeDescriptionSelected,
+                                    styles.scheduleTypeCardSelected,
                                 ]}
+                                onPress={() =>
+                                    setScheduleType(
+                                        'different'
+                                    )
+                                }
                             >
-                                Each service can have its own dates
-                            </Text>
 
-                        </TouchableOpacity>
+                                <Text
+                                    style={[
+                                        styles.scheduleTypeTitle,
+                                        scheduleType ===
+                                        'different' &&
+                                        styles.scheduleTypeTitleSelected,
+                                    ]}
+                                >
+                                    Different Schedule
+                                </Text>
+
+                                <Text
+                                    style={[
+                                        styles.scheduleTypeDescription,
+                                        scheduleType ===
+                                        'different' &&
+                                        styles.scheduleTypeDescriptionSelected,
+                                    ]}
+                                >
+                                    Each service can have its own dates
+                                </Text>
+
+                            </TouchableOpacity>
+
+                        </View>
 
                     </View>
 
-                </View>
+                )}
 
                 {/* SAME SCHEDULE */}
 
@@ -3582,8 +3840,8 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                                 renderCommonService
                             )}
 
-                            {commonDates.length >
-                                0 && (
+                            {commonDates.length > 0 &&
+                                shouldShowScheduleButton && (
                                     <TouchableOpacity
                                         style={
                                             styles.addScheduleButton
@@ -3592,15 +3850,13 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                                             addSameSchedule
                                         }
                                     >
-
                                         <Text
                                             style={
                                                 styles.addScheduleButtonText
                                             }
                                         >
-                                            Add Schedule
+                                            {scheduleButtonText}
                                         </Text>
-
                                     </TouchableOpacity>
                                 )}
 
@@ -3617,24 +3873,24 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                                 renderDifferentService
                             )}
 
-                            <TouchableOpacity
-                                style={
-                                    styles.addScheduleButton
-                                }
-                                onPress={
-                                    addDifferentSchedule
-                                }
-                            >
-
-                                <Text
+                            {shouldShowScheduleButton && (
+                                <TouchableOpacity
                                     style={
-                                        styles.addScheduleButtonText
+                                        styles.addScheduleButton
+                                    }
+                                    onPress={
+                                        addDifferentSchedule
                                     }
                                 >
-                                    Add Schedule
-                                </Text>
-
-                            </TouchableOpacity>
+                                    <Text
+                                        style={
+                                            styles.addScheduleButtonText
+                                        }
+                                    >
+                                        {scheduleButtonText}
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
 
                         </>
                     )}
@@ -4419,10 +4675,13 @@ const styles = StyleSheet.create({
     billModalContent: {
         backgroundColor: '#FFFFFF',
         height: height * 0.90,
-        maxHeight: height * 0.92,
+        maxHeight: height * 0.90,
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
-        padding: 18,
+        paddingTop: 18,
+        paddingHorizontal: 18,
+        paddingBottom: 0,
+        overflow: 'hidden',
     },
 
     modalHandle: {
@@ -4759,11 +5018,13 @@ const styles = StyleSheet.create({
 
     billScroll: {
         flex: 1,
+        width: '100%',
     },
 
     billScrollContent: {
-        paddingBottom: 20,
-        flexGrow: 1,
+        paddingBottom: 30,
+        paddingTop: 4,
+        flexGrow: 0,
     },
 
     todayBadge: {
@@ -4880,6 +5141,343 @@ const styles = StyleSheet.create({
     headerRight: {
         width: 40,
         height: 40,
+    },
+
+    hoursCardDisabled: {
+        backgroundColor: '#F3F3F3',
+        borderColor: '#E5E5E5',
+        opacity: 0.55,
+    },
+
+    hoursTextDisabled: {
+        color: '#999999',
+    },
+
+    hoursAmountDisabled: {
+        color: '#999999',
+    },
+
+
+
+    billModalContent: {
+        backgroundColor: '#FFFFFF',
+
+        height: height * 0.90,
+        maxHeight: height * 0.90,
+
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+
+        paddingTop: 18,
+        paddingHorizontal: 18,
+        paddingBottom: 0,
+
+        overflow: 'hidden',
+    },
+
+    billHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+
+        paddingBottom: 14,
+    },
+
+    billHeaderTextContainer: {
+        flex: 1,
+    },
+
+    billTitle: {
+        fontSize: 22,
+        fontWeight: '700',
+        color: '#76577F',
+    },
+
+    billSubtitle: {
+        fontSize: 13,
+        color: '#777777',
+        marginTop: 4,
+    },
+
+    billCloseButton: {
+        width: 36,
+        height: 36,
+
+        borderRadius: 18,
+
+        backgroundColor: '#F4EFF6',
+
+        alignItems: 'center',
+        justifyContent: 'center',
+
+        marginLeft: 10,
+    },
+
+    billCloseButtonText: {
+        fontSize: 25,
+        lineHeight: 27,
+        fontWeight: '400',
+
+        color: '#76577F',
+    },
+
+    billScroll: {
+        flex: 1,
+        width: '100%',
+    },
+
+    billScrollContent: {
+        paddingTop: 4,
+        paddingBottom: 30,
+    },
+
+    billSection: {
+        marginBottom: 18,
+    },
+
+    billSectionTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#333333',
+
+        marginBottom: 10,
+    },
+
+    billRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+
+        paddingVertical: 7,
+    },
+
+    billLabel: {
+        width: '30%',
+
+        fontSize: 13,
+        color: '#777777',
+    },
+
+    billValue: {
+        width: '67%',
+
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#333333',
+
+        textAlign: 'right',
+    },
+
+    billAddressValue: {
+        lineHeight: 19,
+    },
+
+    scheduleTypeBillCard: {
+        backgroundColor: '#F7F3F8',
+
+        borderRadius: 12,
+
+        paddingVertical: 12,
+        paddingHorizontal: 14,
+    },
+
+    scheduleTypeBillText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#76577F',
+    },
+
+    billServiceCard: {
+        backgroundColor: '#F8F8F8',
+
+        borderRadius: 14,
+
+        padding: 14,
+
+        marginBottom: 10,
+
+        borderWidth: 1,
+        borderColor: '#EEEEEE',
+    },
+
+    billServiceHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+
+        marginBottom: 10,
+    },
+
+    billServiceName: {
+        flex: 1,
+
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#333333',
+
+        marginRight: 10,
+    },
+
+    billServiceAmount: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#76577F',
+    },
+
+    billDetailRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+
+        paddingVertical: 4,
+    },
+
+    billDetailLabel: {
+        fontSize: 12,
+        color: '#888888',
+    },
+
+    billDetailValue: {
+        maxWidth: '65%',
+
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#444444',
+
+        textAlign: 'right',
+    },
+
+    emptyBillCard: {
+        backgroundColor: '#F8F8F8',
+
+        borderRadius: 12,
+
+        padding: 16,
+    },
+
+    emptyBillText: {
+        textAlign: 'center',
+
+        fontSize: 13,
+        color: '#888888',
+    },
+
+    billCalculationCard: {
+        backgroundColor: '#F8F8F8',
+
+        borderRadius: 14,
+
+        padding: 15,
+
+        borderWidth: 1,
+        borderColor: '#EEEEEE',
+    },
+
+    billCalculationRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+
+        paddingVertical: 7,
+    },
+
+    billCalculationLabel: {
+        fontSize: 13,
+        color: '#666666',
+    },
+
+    billCalculationValue: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#333333',
+    },
+
+    discountText: {
+        color: '#4CAF50',
+    },
+
+    billCalculationDivider: {
+        height: 1,
+
+        backgroundColor: '#E5E5E5',
+
+        marginVertical: 8,
+    },
+
+    totalBillRow: {
+        flexDirection: 'row',
+
+        justifyContent: 'space-between',
+        alignItems: 'center',
+
+        paddingTop: 10,
+    },
+
+    totalBillLabel: {
+        fontSize: 17,
+        fontWeight: '700',
+        color: '#333333',
+    },
+
+    totalBillSmallText: {
+        fontSize: 10,
+        color: '#999999',
+
+        marginTop: 3,
+    },
+
+    totalBillValue: {
+        fontSize: 21,
+        fontWeight: '800',
+
+        color: '#76577F',
+    },
+
+    confirmBookingSection: {
+        marginTop: 2,
+        marginBottom: 5,
+    },
+
+    confirmBookingButton: {
+        height: 54,
+
+        borderRadius: 14,
+
+        backgroundColor: '#76577F',
+
+        alignItems: 'center',
+        justifyContent: 'center',
+
+        elevation: 3,
+
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+    },
+
+    confirmBookingButtonText: {
+        color: '#FFFFFF',
+
+        fontSize: 16,
+        fontWeight: '700',
+    },
+
+    billFlatList: {
+        flex: 1,
+        width: '100%',
+    },
+
+    billFlatListContent: {
+        paddingTop: 4,
+        paddingBottom: 35,
+    },
+
+    billBottomSection: {
+        marginTop: 5,
+        paddingBottom: 20,
     },
 });
 

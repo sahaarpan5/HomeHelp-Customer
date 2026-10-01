@@ -44,6 +44,7 @@ const LoginScreen = ({ navigation }) => {
     const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
     const [isMpinModalVisible, setIsMpinModalVisible] = useState(false);
     const [mpinStep, setMpinStep] = useState('set');
+    const [isPreparingDashboard, setIsPreparingDashboard] = useState(false);
 
     // Refs
     const otpInputs = useRef([]);
@@ -250,6 +251,111 @@ const LoginScreen = ({ navigation }) => {
             setIsLoading(false);
         }
     };
+
+
+    const preloadServiceImages = async (token) => {
+        try {
+            if (!token) {
+                console.log('Token not available for image preload');
+                return;
+            }
+
+            console.log('====================================');
+            console.log('STARTING SERVICE IMAGE PRELOAD');
+            console.log('====================================');
+
+            const response = await axios.get(
+                API.CUSTOMER_SERVICES,
+                {
+                    headers: {
+                        Accept: 'text/plain',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log(
+                'CUSTOMER SERVICES RESPONSE:',
+                response.data
+            );
+
+            if (!Array.isArray(response.data)) {
+                console.log('No services available for preload');
+                return;
+            }
+
+            // -----------------------------------------
+            // Get all icon + image URLs
+            // -----------------------------------------
+
+            const imageUrls = response.data.flatMap(item => [
+                item?.icon,
+                item?.imageUrl,
+            ]);
+
+            // Remove empty URLs
+            const validUrls = imageUrls.filter(
+                url =>
+                    typeof url === 'string' &&
+                    url.trim().length > 0
+            );
+
+            // Remove duplicate URLs
+            const uniqueUrls = [
+                ...new Set(validUrls),
+            ];
+
+            console.log(
+                'TOTAL IMAGES/ICONS TO DOWNLOAD:',
+                uniqueUrls.length
+            );
+
+            // -----------------------------------------
+            // Download all images simultaneously
+            // -----------------------------------------
+
+            await Promise.all(
+                uniqueUrls.map(async (url) => {
+                    try {
+                        const result =
+                            await Image.prefetch(url);
+
+                        console.log(
+                            'PRELOADED:',
+                            url,
+                            result
+                        );
+
+                        return result;
+
+                    } catch (error) {
+
+                        console.log(
+                            'IMAGE PRELOAD FAILED:',
+                            url
+                        );
+
+                        return false;
+                    }
+                })
+            );
+
+            console.log('====================================');
+            console.log('ALL SERVICE IMAGES PRELOADED');
+            console.log('====================================');
+
+        } catch (error) {
+
+            console.log(
+                'SERVICE IMAGE PRELOAD ERROR:',
+                error?.response?.data ||
+                error?.message ||
+                error
+            );
+
+            // Don't stop login if image preload fails
+        }
+    };
     const verifyOTP = async () => {
         const otpString = otp.join('');
 
@@ -300,7 +406,13 @@ const LoginScreen = ({ navigation }) => {
                         response.data.token
                     );
 
-                    navigation.replace('DashboardScreen');
+                    setIsPreparingDashboard(true);
+                    setTimeout(() => {
+                        navigation.replace('DashboardScreen');
+                    }, 1000);
+                    await preloadServiceImages(response.data.token);
+
+
                 }
 
             } else {
@@ -968,7 +1080,11 @@ const LoginScreen = ({ navigation }) => {
                     disabled={phoneNumber.length !== 10 || isLoading}
                 >
                     <Text style={styles.primaryButtonText}>
-                        {isLoading ? 'Sending OTP...' : 'Continue with OTP'}
+                        {isPreparingDashboard
+                            ? 'Navigating to Dashboard...'
+                            : isLoading
+                                ? 'Sending OTP...'
+                                : 'Continue with OTP'}
                     </Text>
 
                     <Image
@@ -1710,7 +1826,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: '900',
         color: '#000000',
-       fontFamily: 'Segoe UI Bold',
+        fontFamily: 'Segoe UI Bold',
     },
     headerTitleNormal: {
         fontSize: 24,

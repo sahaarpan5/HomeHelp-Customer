@@ -23,6 +23,7 @@ import Loader from '../../util/Loader';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 import CachedImage from '../../util/CachedImage';
+import ServiceOrbitLoader from '../../util/ServiceOrbitLoader';
 
 
 
@@ -294,9 +295,19 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                 : [];
 
             // ⭐ Only hourly pricing is used for displaying price
-            const hourlyPricing = activePricing.find(
-                item => Number(item.pricingType) === 1
-            );
+            // const hourlyPricing = activePricing.find(
+            //     item => Number(item.pricingType) === 1
+            // );
+
+            const pricingPriority = [1, 2, 3, 4, 5];
+
+            const displayPricing = pricingPriority
+                .map(type =>
+                    activePricing.find(
+                        item => Number(item.pricingType) === type
+                    )
+                )
+                .find(Boolean);
 
             // ⭐ Complete process array
             const processArray = Array.isArray(data.processSteps)
@@ -317,9 +328,11 @@ const ServiceBookingScreen = ({ navigation, route }) => {
 
                     name: data.serviceName,
 
-                    // ⭐ ONLY HOURLY PRICE FOR DISPLAY
-                    price: hourlyPricing
-                        ? `₹${hourlyPricing.price}`
+                    // Use Hourly first.
+                    // If Hourly is unavailable, use 4 Hours,
+                    // then 8 Hours, Monthly, Project Based.
+                    price: displayPricing
+                        ? `₹${displayPricing.price}`
                         : 'Price unavailable',
 
                     coverImage: {
@@ -327,26 +340,28 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                     },
 
                     description:
-                        hourlyPricing?.pricingDescription ||
+                        displayPricing?.pricingDescription ||
                         data.workProfile ||
                         data.serviceName,
 
-                    // ⭐ Included services
                     whatIsCovered: Array.isArray(data.included)
                         ? data.included.map(
                             item => item.includedService
                         )
                         : [],
 
-                    // ⭐ COMPLETE PRICING ARRAY
+                    // Keep complete pricing array
                     pricing: activePricing,
 
-                    // ⭐ COMPLETE PROCESS ARRAY
+                    // Store which pricing was selected for display
+                    selectedPricing: displayPricing,
+
                     ourProcess: processArray,
 
-                    // ⭐ Display duration
-                    duration: hourlyPricing
-                        ? `${hourlyPricing.durationHours || 1} hour`
+                    duration: displayPricing
+                        ? displayPricing.durationHours
+                            ? `${displayPricing.durationHours} hours`
+                            : getPricingLabel(displayPricing)
                         : '',
                 },
             ];
@@ -888,9 +903,22 @@ const ServiceBookingScreen = ({ navigation, route }) => {
 
                     <Text style={styles.childServicePrice}>
                         {item.price}
-                        <Text style={styles.childServicePerHour}>
-                            {' / hour'}
-                        </Text>
+
+                        {item.selectedPricing && (
+                            <Text style={styles.childServicePerHour}>
+                                {Number(item.selectedPricing.pricingType) === 1
+                                    ? ' / hour'
+                                    : Number(item.selectedPricing.pricingType) === 2
+                                        ? ' / 4hrs'
+                                        : Number(item.selectedPricing.pricingType) === 3
+                                            ? ' / 8hrs'
+                                            : Number(item.selectedPricing.pricingType) === 4
+                                                ? ' / month'
+                                                : Number(item.selectedPricing.pricingType) === 5
+                                                    ? ' / project'
+                                                    : ''}
+                            </Text>
+                        )}
                     </Text>
 
                     <TouchableOpacity
@@ -1390,7 +1418,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                     translucent
                 />
 
-                <Loader />
+                <ServiceOrbitLoader />
             </View>
         );
     }
