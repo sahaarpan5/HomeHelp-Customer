@@ -536,90 +536,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
     */
 
     const professionals = [
-        {
-            id: 'p1',
-            name: 'Rajesh Kumar',
-            image:
-                'https://ui-avatars.com/api/?name=Rajesh+Kumar&background=6C5CE7&color=fff&size=100',
-            rating: 4.9,
-            jobsCompleted: 1240,
-            isActive: true,
-            experience: '8 years',
-            availableSlots: [
-                '09:00 AM',
-                '11:00 AM',
-                '02:00 PM',
-            ],
-            lastBookingDate: '10 Jan 2027',
-        },
 
-        {
-            id: 'p2',
-            name: 'Priya Sharma',
-            image:
-                'https://ui-avatars.com/api/?name=Priya+Sharma&background=FD79A8&color=fff&size=100',
-            rating: 4.8,
-            jobsCompleted: 890,
-            isActive: true,
-            experience: '6 years',
-            availableSlots: [
-                '10:00 AM',
-                '01:00 PM',
-                '03:00 PM',
-            ],
-            lastBookingDate: '05 Jan 2027',
-        },
-
-        {
-            id: 'p3',
-            name: 'Amit Patel',
-            image:
-                'https://ui-avatars.com/api/?name=Amit+Patel&background=0984E3&color=fff&size=100',
-            rating: 4.7,
-            jobsCompleted: 650,
-            isActive: true,
-            experience: '5 years',
-            availableSlots: [
-                '09:00 AM',
-                '12:00 PM',
-                '04:00 PM',
-            ],
-            lastBookingDate: '15 Dec 2026',
-        },
-
-        {
-            id: 'p4',
-            name: 'Sunita Reddy',
-            image:
-                'https://ui-avatars.com/api/?name=Sunita+Reddy&background=00B894&color=fff&size=100',
-            rating: 4.9,
-            jobsCompleted: 1560,
-            isActive: true,
-            experience: '10 years',
-            availableSlots: [
-                '09:00 AM',
-                '12:00 PM',
-                '04:00 PM',
-            ],
-            lastBookingDate: '20 Dec 2026',
-        },
-
-        {
-            id: 'p5',
-            name: 'Vikram Singh',
-            image:
-                'https://ui-avatars.com/api/?name=Vikram+Singh&background=E17055&color=fff&size=100',
-            rating: 4.6,
-            jobsCompleted: 450,
-            isActive: true,
-            experience: '4 years',
-            availableSlots: [
-                '10:00 AM',
-                '01:00 PM',
-                '05:00 PM',
-            ],
-            lastBookingDate: '28 Dec 2026',
-        },
     ];
 
     const ANY_PROFESSIONAL = {
@@ -1278,19 +1195,23 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
             isProfessionalAvailable(professional, date, time)
         );
 
-        return available.length > 0
-            ? [ANY_PROFESSIONAL, ...available]
-            : [];
+        return [ANY_PROFESSIONAL, ...available];
     };
+
+    // const getAvailableTimes = date => {
+    //     if (!date) return [];
+
+    //     return timeSlots.filter(time =>
+    //         professionals.some(professional =>
+    //             isProfessionalAvailable(professional, date, time)
+    //         )
+    //     );
+    // };
 
     const getAvailableTimes = date => {
         if (!date) return [];
 
-        return timeSlots.filter(time =>
-            professionals.some(professional =>
-                isProfessionalAvailable(professional, date, time)
-            )
-        );
+        return [...timeSlots];
     };
 
     const getCurrentDateAvailabilityText = professional => {
@@ -2372,9 +2293,9 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
                 const orderId =
                     response.data?.booking?.orderId;
-                    setOrderID(orderId);
+                setOrderID(orderId);
 
-                    
+
 
                 if (!orderId) {
                     Alert.alert(
@@ -5927,169 +5848,169 @@ const styles = StyleSheet.create({
 
 
     paymentModalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-},
-
-paymentModalCard: {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 28,
-    padding: 24,
-    alignItems: 'center',
-
-    shadowColor: '#000',
-    shadowOffset: {
-        width: 0,
-        height: 10,
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.65)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 20,
-    elevation: 15,
-},
 
-paymentSuccessCircle: {
-    width: 78,
-    height: 78,
-    borderRadius: 39,
-    backgroundColor: '#25B864',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 18,
-},
+    paymentModalCard: {
+        width: '100%',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 28,
+        padding: 24,
+        alignItems: 'center',
 
-paymentSuccessCheck: {
-    color: '#FFFFFF',
-    fontSize: 46,
-    fontWeight: '700',
-    marginTop: -3,
-},
-
-paymentSuccessTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#2A2030',
-    marginBottom: 7,
-    textAlign: 'center',
-},
-
-paymentSuccessSubtitle: {
-    fontSize: 14,
-    color: '#817687',
-    textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: 22,
-},
-
-paymentAmountBox: {
-    width: '100%',
-    backgroundColor: '#F7F3F9',
-    borderRadius: 17,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginBottom: 12,
-},
-
-paymentAmountLabel: {
-    fontSize: 12,
-    color: '#817687',
-    marginBottom: 4,
-},
-
-paymentAmount: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#76577F',
-},
-
-paymentIdBox: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#E8E2EB',
-    borderRadius: 15,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    marginBottom: 14,
-},
-
-paymentIdLabel: {
-    fontSize: 11,
-    color: '#8A7D90',
-    marginBottom: 5,
-},
-
-paymentIdValue: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#302635',
-},
-
-paymentInfoBox: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#EFFAF3',
-    borderRadius: 14,
-    padding: 12,
-    marginBottom: 20,
-},
-
-paymentSmallCheck: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#25B864',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 9,
-},
-
-paymentSmallCheckText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
-},
-
-paymentInfoText: {
-    flex: 1,
-    fontSize: 12,
-    color: '#53615A',
-    lineHeight: 18,
-},
-
-paymentContinueButton: {
-    width: '100%',
-    height: 54,
-    borderRadius: 16,
-    backgroundColor: '#76577F',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-
-    shadowColor: '#76577F',
-    shadowOffset: {
-        width: 0,
-        height: 5,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 10,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 20,
+        elevation: 15,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 5,
-},
 
-paymentContinueText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-},
+    paymentSuccessCircle: {
+        width: 78,
+        height: 78,
+        borderRadius: 39,
+        backgroundColor: '#25B864',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 18,
+    },
 
-paymentArrow: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    marginLeft: 10,
-},
+    paymentSuccessCheck: {
+        color: '#FFFFFF',
+        fontSize: 46,
+        fontWeight: '700',
+        marginTop: -3,
+    },
+
+    paymentSuccessTitle: {
+        fontSize: 24,
+        fontWeight: '700',
+        color: '#2A2030',
+        marginBottom: 7,
+        textAlign: 'center',
+    },
+
+    paymentSuccessSubtitle: {
+        fontSize: 14,
+        color: '#817687',
+        textAlign: 'center',
+        lineHeight: 20,
+        marginBottom: 22,
+    },
+
+    paymentAmountBox: {
+        width: '100%',
+        backgroundColor: '#F7F3F9',
+        borderRadius: 17,
+        paddingVertical: 14,
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+
+    paymentAmountLabel: {
+        fontSize: 12,
+        color: '#817687',
+        marginBottom: 4,
+    },
+
+    paymentAmount: {
+        fontSize: 28,
+        fontWeight: '800',
+        color: '#76577F',
+    },
+
+    paymentIdBox: {
+        width: '100%',
+        borderWidth: 1,
+        borderColor: '#E8E2EB',
+        borderRadius: 15,
+        paddingHorizontal: 14,
+        paddingVertical: 12,
+        marginBottom: 14,
+    },
+
+    paymentIdLabel: {
+        fontSize: 11,
+        color: '#8A7D90',
+        marginBottom: 5,
+    },
+
+    paymentIdValue: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#302635',
+    },
+
+    paymentInfoBox: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#EFFAF3',
+        borderRadius: 14,
+        padding: 12,
+        marginBottom: 20,
+    },
+
+    paymentSmallCheck: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: '#25B864',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 9,
+    },
+
+    paymentSmallCheckText: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        fontWeight: '700',
+    },
+
+    paymentInfoText: {
+        flex: 1,
+        fontSize: 12,
+        color: '#53615A',
+        lineHeight: 18,
+    },
+
+    paymentContinueButton: {
+        width: '100%',
+        height: 54,
+        borderRadius: 16,
+        backgroundColor: '#76577F',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+
+        shadowColor: '#76577F',
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+        elevation: 5,
+    },
+
+    paymentContinueText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '700',
+    },
+
+    paymentArrow: {
+        color: '#FFFFFF',
+        fontSize: 22,
+        marginLeft: 10,
+    },
 });
 
 export default SelectSlotScreenV1;
