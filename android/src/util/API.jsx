@@ -12,6 +12,8 @@ const API = {
     CUSTOMER_DELETE_ADDRESS: `${BASE_URL}/Customer/Address`,
     CUSTOMER_SERVICES: `${BASE_URL}/Service/list-for-customer`,
     CUSTOMER_SERVICE_DETAILS: `${BASE_URL}/Service/get-for-customer`,
+
+    CUSTOMER_BOOKING: `${BASE_URL}/Booking`,
 };
 
 // Add more endpoints here as needed

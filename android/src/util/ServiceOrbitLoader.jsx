@@ -11,188 +11,505 @@ import {
 
 const { width } = Dimensions.get('window');
 
+// ============================================================
+// BRAND COLORS
+// ============================================================
+
+const BRAND_PRIMARY = '#B39AC7';
+const BRAND_DARK = '#76577F';
+const BRAND_LIGHT = '#F7F2FA';
+const BRAND_SOFT = '#E9DFF0';
+
+
+// ============================================================
+// SERVICE ORBIT LOADER
+// ============================================================
+
 const ServiceOrbitLoader = ({
-  message = 'Loading...',
-  orbitSize = 260,
-  logoSize = 130,
-  iconSize = 70,
-  duration = 8000,
+  message = 'Preparing your services',
+  orbitSize = Math.min(width * 0.68, 270),
+  logoSize = Math.min(width * 0.30, 118),
+  iconSize = Math.min(width * 0.16, 62),
+  duration = 8500,
 }) => {
-  // 5 rotation values for 5 icons
-  const rotate1 = useRef(new Animated.Value(0)).current;
-  const rotate2 = useRef(new Animated.Value(0)).current;
-  const rotate3 = useRef(new Animated.Value(0)).current;
-  const rotate4 = useRef(new Animated.Value(0)).current;
-  const rotate5 = useRef(new Animated.Value(0)).current;
 
-  // Logo pulse
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const opacityAnim = useRef(new Animated.Value(0.7)).current;
+  // ==========================================================
+  // ANIMATIONS
+  // ==========================================================
 
-  // Service icons (replace with your actual assets)
+  // Main orbit rotation
+  const orbitAnim = useRef(
+    new Animated.Value(0)
+  ).current;
+
+  // Logo breathing
+  const logoScale = useRef(
+    new Animated.Value(1)
+  ).current;
+
+  const logoOpacity = useRef(
+    new Animated.Value(1)
+  ).current;
+
+  // Glow animation
+  const glowScale = useRef(
+    new Animated.Value(0.85)
+  ).current;
+
+  const glowOpacity = useRef(
+    new Animated.Value(0.25)
+  ).current;
+
+  // Loading dots
+  const dot1 = useRef(
+    new Animated.Value(0.3)
+  ).current;
+
+  const dot2 = useRef(
+    new Animated.Value(0.3)
+  ).current;
+
+  const dot3 = useRef(
+    new Animated.Value(0.3)
+  ).current;
+
+  // Progress animation
+  const progressAnim = useRef(
+    new Animated.Value(0)
+  ).current;
+
+
+  // ==========================================================
+  // SERVICE ICONS
+  // ==========================================================
+
   const serviceIcons = [
-    require('../asset/maid.png'),      // Service 1
-    require('../asset/box.png'),      // Service 2
-    require('../asset/chef.png'),      // Service 3
-    require('../asset/street-sweeper.png'),      // Service 4
-    require('../asset/helping.png'),      // Service 5
+    require('../asset/maid.png'),
+    require('../asset/box.png'),
+    require('../asset/chef.png'),
+    require('../asset/street-sweeper.png'),
+    require('../asset/helping.png'),
   ];
 
-  // Fallback if images don't exist - using emojis
-  const serviceEmojis = ['🔧', '⚡', '🧹', '🪚', '🎨'];
+
+  // ==========================================================
+  // START ANIMATIONS
+  // ==========================================================
 
   useEffect(() => {
-    // Start rotation animations - each offset by 72deg (360/5)
-    const startRotation = (animValue, delay) => {
-      animValue.setValue(0);
-      Animated.loop(
-        Animated.timing(animValue, {
-          toValue: 1,
-          duration: duration,
-          easing: Easing.linear,
-          useNativeDriver: true,
-        })
-      ).start();
+
+    // --------------------------------------------------------
+    // Main orbit
+    // --------------------------------------------------------
+
+    const orbitLoop = Animated.loop(
+      Animated.timing(orbitAnim, {
+        toValue: 1,
+        duration: duration,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    );
+
+    orbitLoop.start();
+
+
+    // --------------------------------------------------------
+    // Logo breathing
+    // --------------------------------------------------------
+
+    const logoLoop = Animated.loop(
+      Animated.sequence([
+
+        Animated.parallel([
+
+          Animated.timing(logoScale, {
+            toValue: 1.055,
+            duration: 1400,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+
+          Animated.timing(logoOpacity, {
+            toValue: 0.92,
+            duration: 1400,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+
+        ]),
+
+        Animated.parallel([
+
+          Animated.timing(logoScale, {
+            toValue: 1,
+            duration: 1400,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+
+          Animated.timing(logoOpacity, {
+            toValue: 1,
+            duration: 1400,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+
+        ]),
+
+      ])
+    );
+
+    logoLoop.start();
+
+
+    // --------------------------------------------------------
+    // Soft glow
+    // --------------------------------------------------------
+
+    const glowLoop = Animated.loop(
+      Animated.sequence([
+
+        Animated.parallel([
+
+          Animated.timing(glowScale, {
+            toValue: 1.12,
+            duration: 1800,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+
+          Animated.timing(glowOpacity, {
+            toValue: 0.42,
+            duration: 1800,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+
+        ]),
+
+        Animated.parallel([
+
+          Animated.timing(glowScale, {
+            toValue: 0.85,
+            duration: 1800,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+
+          Animated.timing(glowOpacity, {
+            toValue: 0.2,
+            duration: 1800,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+
+        ]),
+
+      ])
+    );
+
+    glowLoop.start();
+
+
+    // --------------------------------------------------------
+    // Loading dots
+    // --------------------------------------------------------
+
+    const animateDot = (dot, delay) => {
+
+      return Animated.loop(
+
+        Animated.sequence([
+
+          Animated.delay(delay),
+
+          Animated.timing(dot, {
+            toValue: 1,
+            duration: 500,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+
+          Animated.timing(dot, {
+            toValue: 0.3,
+            duration: 500,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+
+        ])
+
+      );
     };
 
-    startRotation(rotate1, 0);
-    startRotation(rotate2, 0);
-    startRotation(rotate3, 0);
-    startRotation(rotate4, 0);
-    startRotation(rotate5, 0);
 
-    // Logo pulse animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+    const dotLoop1 = animateDot(dot1, 0);
+    const dotLoop2 = animateDot(dot2, 180);
+    const dotLoop3 = animateDot(dot3, 360);
 
-    // Opacity pulse
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacityAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacityAnim, {
-          toValue: 0.7,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, []);
+    dotLoop1.start();
+    dotLoop2.start();
+    dotLoop3.start();
 
-  // Interpolate rotation for each icon with 72deg offset
-  const rotation1 = rotate1.interpolate({
+
+    // --------------------------------------------------------
+    // Progress animation
+    // --------------------------------------------------------
+
+    const progressLoop = Animated.loop(
+
+      Animated.timing(progressAnim, {
+        toValue: 1,
+        duration: 2200,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: false,
+      })
+
+    );
+
+    progressLoop.start();
+
+
+    // --------------------------------------------------------
+    // Cleanup
+    // --------------------------------------------------------
+
+    return () => {
+
+      orbitLoop.stop();
+      logoLoop.stop();
+      glowLoop.stop();
+
+      dotLoop1.stop();
+      dotLoop2.stop();
+      dotLoop3.stop();
+
+      progressLoop.stop();
+
+    };
+
+  }, [duration]);
+
+
+  // ==========================================================
+  // INTERPOLATIONS
+  // ==========================================================
+
+  const rotation = orbitAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
   });
 
-  const rotation2 = rotate2.interpolate({
+
+  const progressWidth = progressAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['72deg', '432deg'],
+    outputRange: ['8%', '78%'],
   });
 
-  const rotation3 = rotate3.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['144deg', '504deg'],
-  });
 
-  const rotation4 = rotate4.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['216deg', '576deg'],
-  });
-
-  const rotation5 = rotate5.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['288deg', '648deg'],
-  });
-
-  const rotations = [rotation1, rotation2, rotation3, rotation4, rotation5];
+  // ==========================================================
+  // ORBIT RADIUS
+  // ==========================================================
 
   const orbitRadius = orbitSize / 2;
 
+
+  // ==========================================================
+  // RENDER
+  // ==========================================================
+
   return (
+
     <View style={styles.container}>
+
       <View style={styles.loaderWrapper}>
-        {/* Orbit container */}
+
+        {/* ==================================================
+            ORBIT AREA
+        ================================================== */}
+
         <View
           style={[
             styles.orbitContainer,
-            { width: orbitSize, height: orbitSize }
+            {
+              width: orbitSize,
+              height: orbitSize,
+            },
           ]}
         >
-          {/* Orbit ring (visual guide) */}
+
+          {/* ------------------------------------------------
+              OUTER GLOW
+          ------------------------------------------------ */}
+
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.outerGlow,
+              {
+                width: orbitSize + 18,
+                height: orbitSize + 18,
+                borderRadius: (orbitSize + 18) / 2,
+                opacity: glowOpacity,
+                transform: [
+                  {
+                    scale: glowScale,
+                  },
+                ],
+              },
+            ]}
+          />
+
+
+          {/* ------------------------------------------------
+              MAIN ORBIT RING
+          ------------------------------------------------ */}
+
           <View
+            pointerEvents="none"
             style={[
               styles.orbitRing,
               {
                 width: orbitSize,
                 height: orbitSize,
-                borderRadius: orbitSize / 2,
-              }
+                borderRadius: orbitRadius,
+              },
             ]}
           />
 
-          {/* 5 Rotating Service Icons */}
-          {rotations.map((rotation, index) => (
-            <Animated.View
-              key={index}
-              style={[
-                styles.iconContainer,
-                {
-                  width: orbitSize,
-                  height: orbitSize,
-                  transform: [{ rotate: rotation }],
-                }
-              ]}
-              pointerEvents="none"
-            >
-              <View
-                style={[
-                  styles.iconWrapper,
+
+          {/* ------------------------------------------------
+              INNER ORBIT RING
+          ------------------------------------------------ */}
+
+          <View
+            pointerEvents="none"
+            style={[
+              styles.innerRing,
+              {
+                width: orbitSize * 0.78,
+                height: orbitSize * 0.78,
+                borderRadius: orbitSize * 0.39,
+              },
+            ]}
+          />
+
+
+          {/* ==================================================
+              ROTATING SERVICE ICONS
+          ================================================== */}
+
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.orbitAnimation,
+              {
+                width: orbitSize,
+                height: orbitSize,
+
+                transform: [
                   {
-                    width: iconSize,
-                    height: iconSize,
-                    borderRadius: iconSize / 2,
-                    // Position at top of orbit
-                    top: 0,
-                    left: (orbitSize - iconSize) / 2,
-                  }
-                ]}
-              >
-                {/* <Text style={[styles.iconEmoji, { fontSize: iconSize * 0.55 }]}>
-                  {serviceEmojis[index]}
-                </Text> */}
+                    rotate: rotation,
+                  },
+                ],
+              },
+            ]}
+          >
 
-                <Image
-                  source={serviceIcons[index]}
-                  style={{
-                    width: iconSize * 0.6,
-                    height: iconSize * 0.6,
-                    resizeMode: 'contain',
-                    tintColor: '#FF8C00',
-                  }}
-                />
-              </View>
-            </Animated.View>
-          ))}
+            {serviceIcons.map((icon, index) => {
 
-          {/* Center Logo */}
+              const angle =
+                (360 / serviceIcons.length) * index;
+
+              return (
+
+                <View
+                  key={index}
+                  style={[
+                    styles.servicePosition,
+                    {
+                      width: orbitSize,
+                      height: orbitSize,
+
+                      transform: [
+                        {
+                          rotate: `${angle}deg`,
+                        },
+                      ],
+                    },
+                  ]}
+                >
+
+                  {/* ----------------------------------------
+                      SERVICE ICON CARD
+                  ---------------------------------------- */}
+
+                  <View
+                    style={[
+                      styles.iconWrapper,
+                      {
+                        width: iconSize,
+                        height: iconSize,
+                        borderRadius: iconSize / 2,
+
+                        transform: [
+                          {
+                            rotate: `-${angle}deg`,
+                          },
+                        ],
+                      },
+                    ]}
+                  >
+
+                    <Image
+                      source={icon}
+                      style={{
+                        width: iconSize * 0.55,
+                        height: iconSize * 0.55,
+                        resizeMode: 'contain',
+                      }}
+                    />
+
+                  </View>
+
+                </View>
+
+              );
+            })}
+
+          </Animated.View>
+
+
+          {/* ==================================================
+              CENTER GLOW
+          ================================================== */}
+
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.centerGlow,
+              {
+                width: logoSize + 22,
+                height: logoSize + 22,
+                borderRadius: (logoSize + 22) / 2,
+
+                opacity: glowOpacity,
+
+                transform: [
+                  {
+                    scale: glowScale,
+                  },
+                ],
+              },
+            ]}
+          />
+
+
+          {/* ==================================================
+              CENTER LOGO
+          ================================================== */}
+
           <Animated.View
             style={[
               styles.logoContainer,
@@ -200,97 +517,422 @@ const ServiceOrbitLoader = ({
                 width: logoSize,
                 height: logoSize,
                 borderRadius: logoSize / 2,
-                transform: [{ scale: pulseAnim }],
-              }
+
+                transform: [
+                  {
+                    scale: logoScale,
+                  },
+                ],
+
+                opacity: logoOpacity,
+              },
             ]}
           >
-            <Image
-              source={require('../asset/genlogo.png')}
-              style={{
-                width: logoSize * 0.7,
-                height: logoSize * 0.7,
-                resizeMode: 'contain',
-              }}
-            />
+
+            <View
+              style={[
+                styles.logoInner,
+                {
+                  width: logoSize - 12,
+                  height: logoSize - 12,
+                  borderRadius: (logoSize - 12) / 2,
+                },
+              ]}
+            >
+
+              <Image
+                source={require('../asset/genlogo.png')}
+                style={{
+                  width: logoSize * 0.66,
+                  height: logoSize * 0.66,
+                  resizeMode: 'contain',
+                }}
+              />
+
+            </View>
+
           </Animated.View>
+
         </View>
 
-        {/* Loading Text */}
-        <Animated.Text
-          style={[
-            styles.loadingText,
-            { opacity: opacityAnim }
-          ]}
-        >
-          {message}
-        </Animated.Text>
+
+        {/* ==================================================
+            LOADING MESSAGE
+        ================================================== */}
+
+        <View style={styles.messageContainer}>
+
+          <Text style={styles.loadingMessage}>
+            {message}
+          </Text>
+
+
+          <View style={styles.dotsContainer}>
+
+            <Animated.View
+              style={[
+                styles.loadingDot,
+                {
+                  opacity: dot1,
+                },
+              ]}
+            />
+
+            <Animated.View
+              style={[
+                styles.loadingDot,
+                {
+                  opacity: dot2,
+                },
+              ]}
+            />
+
+            <Animated.View
+              style={[
+                styles.loadingDot,
+                {
+                  opacity: dot3,
+                },
+              ]}
+            />
+
+          </View>
+
+        </View>
+
+
+        {/* ==================================================
+            PROGRESS BAR
+        ================================================== */}
+
+        <View style={styles.progressContainer}>
+
+          <Animated.View
+            style={[
+              styles.progressBar,
+              {
+                width: progressWidth,
+              },
+            ]}
+          />
+
+        </View>
+
+
+        {/* ==================================================
+            SUB MESSAGE
+        ================================================== */}
+
+        <Text style={styles.subText}>
+          Please wait a moment
+        </Text>
+
       </View>
+
     </View>
+
   );
 };
 
+
+// ============================================================
+// STYLES
+// ============================================================
+
 const styles = StyleSheet.create({
+
+  // ----------------------------------------------------------
+  // MAIN CONTAINER
+  // ----------------------------------------------------------
+
   container: {
     flex: 1,
+
     justifyContent: 'center',
     alignItems: 'center',
+
     backgroundColor: '#FFFFFF',
   },
+
+
+  // ----------------------------------------------------------
+  // LOADER WRAPPER
+  // ----------------------------------------------------------
+
   loaderWrapper: {
+    width: '100%',
+
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+
+  // ----------------------------------------------------------
+  // ORBIT CONTAINER
+  // ----------------------------------------------------------
+
   orbitContainer: {
+    position: 'relative',
+
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
   },
+
+
+  // ----------------------------------------------------------
+  // OUTER GLOW
+  // ----------------------------------------------------------
+
+  outerGlow: {
+    position: 'absolute',
+
+    borderWidth: 1,
+
+    borderColor: BRAND_SOFT,
+  },
+
+
+  // ----------------------------------------------------------
+  // MAIN ORBIT
+  // ----------------------------------------------------------
+
   orbitRing: {
     position: 'absolute',
+
     borderWidth: 1.5,
-    borderColor: '#FFE0CC',
-    borderStyle: 'dashed',
+
+    borderColor: BRAND_SOFT,
   },
-  iconContainer: {
+
+
+  // ----------------------------------------------------------
+  // INNER ORBIT
+  // ----------------------------------------------------------
+
+  innerRing: {
     position: 'absolute',
+
+    borderWidth: 1,
+
+    borderColor: '#F1EAF4',
+  },
+
+
+  // ----------------------------------------------------------
+  // ORBIT ANIMATION
+  // ----------------------------------------------------------
+
+  orbitAnimation: {
+    position: 'absolute',
+
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  iconWrapper: {
-    backgroundColor: '#FFF8F3',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#FF8C00',
-    shadowColor: '#FF8C00',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  iconEmoji: {
-    textAlign: 'center',
-  },
-  logoContainer: {
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: '#FF8C00',
-    shadowColor: '#FF8C00',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
+
+
+  // ----------------------------------------------------------
+  // SERVICE POSITION
+  // ----------------------------------------------------------
+
+  servicePosition: {
     position: 'absolute',
+
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
-  loadingText: {
-    marginTop: 40,
-    fontSize: 15,
-    color: '#666',
+
+
+  // ----------------------------------------------------------
+  // SERVICE ICON CARD
+  // ----------------------------------------------------------
+
+  iconWrapper: {
+    position: 'absolute',
+
+    top: -2,
+
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    backgroundColor: '#FFFFFF',
+
+    borderWidth: 1.5,
+
+    borderColor: BRAND_PRIMARY,
+
+    shadowColor: BRAND_DARK,
+
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+
+    shadowOpacity: 0.16,
+
+    shadowRadius: 8,
+
+    elevation: 5,
+  },
+
+
+  // ----------------------------------------------------------
+  // CENTER GLOW
+  // ----------------------------------------------------------
+
+  centerGlow: {
+    position: 'absolute',
+
+    backgroundColor: BRAND_SOFT,
+  },
+
+
+  // ----------------------------------------------------------
+  // LOGO OUTER
+  // ----------------------------------------------------------
+
+  logoContainer: {
+    position: 'absolute',
+
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    backgroundColor: '#FFFFFF',
+
+    borderWidth: 2,
+
+    borderColor: BRAND_PRIMARY,
+
+    shadowColor: BRAND_DARK,
+
+    shadowOffset: {
+      width: 0,
+      height: 7,
+    },
+
+    shadowOpacity: 0.2,
+
+    shadowRadius: 14,
+
+    elevation: 9,
+  },
+
+
+  // ----------------------------------------------------------
+  // LOGO INNER
+  // ----------------------------------------------------------
+
+  logoInner: {
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    backgroundColor: BRAND_LIGHT,
+
+    borderWidth: 1,
+
+    borderColor: '#E3D5E9',
+  },
+
+
+  // ----------------------------------------------------------
+  // MESSAGE
+  // ----------------------------------------------------------
+
+  messageContainer: {
+    marginTop: 34,
+
+    flexDirection: 'row',
+
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+
+  loadingMessage: {
+    fontSize: 16,
+
     fontWeight: '600',
-    letterSpacing: 0.5,
+
+    color: BRAND_DARK,
+
+    letterSpacing: 0.2,
   },
+
+
+  // ----------------------------------------------------------
+  // LOADING DOTS
+  // ----------------------------------------------------------
+
+  dotsContainer: {
+    flexDirection: 'row',
+
+    alignItems: 'center',
+
+    marginLeft: 5,
+
+    gap: 3,
+  },
+
+
+  loadingDot: {
+    width: 4,
+
+    height: 4,
+
+    borderRadius: 2,
+
+    backgroundColor: BRAND_PRIMARY,
+  },
+
+
+  // ----------------------------------------------------------
+  // PROGRESS BAR
+  // ----------------------------------------------------------
+
+  progressContainer: {
+    width: Math.min(width * 0.42, 170),
+
+    height: 4,
+
+    marginTop: 18,
+
+    backgroundColor: '#F0EAF3',
+
+    borderRadius: 10,
+
+    overflow: 'hidden',
+  },
+
+
+  progressBar: {
+    height: 4,
+
+    backgroundColor: BRAND_PRIMARY,
+
+    borderRadius: 10,
+  },
+
+
+  // ----------------------------------------------------------
+  // SUB TEXT
+  // ----------------------------------------------------------
+
+  subText: {
+    marginTop: 10,
+
+    fontSize: 12,
+
+    fontWeight: '500',
+
+    color: '#9A8FA0',
+
+    letterSpacing: 0.3,
+  },
+
 });
+
+
+// ============================================================
+// EXPORT
+// ============================================================
 
 export default ServiceOrbitLoader;

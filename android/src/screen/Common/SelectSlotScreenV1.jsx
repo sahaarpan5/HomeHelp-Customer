@@ -17,9 +17,13 @@ import {
     SafeAreaView,
     Pressable,
     Platform,
+    ActivityIndicator,
 } from 'react-native';
 
 import RazorpayCheckout from 'react-native-razorpay';
+
+import API from '../../util/API';
+import axios from 'axios';
 
 const { width, height } = Dimensions.get('window');
 
@@ -55,6 +59,93 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
     |--------------------------------------------------------------------------
     */
 
+
+    const getBookingTimeRange = (time, hours) => {
+        if (!time) {
+            return {
+                startTime: '',
+                endTime: '',
+            };
+        }
+
+        const match = String(time).match(
+            /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i
+        );
+
+        if (!match) {
+            console.log('Invalid booking time:', time);
+
+            return {
+                startTime: '',
+                endTime: '',
+            };
+        }
+
+        let hour = Number(match[1]);
+        const minute = Number(match[2]);
+        const period = match[3].toUpperCase();
+
+        // Convert 12-hour time to 24-hour time
+        if (period === 'PM' && hour !== 12) {
+            hour += 12;
+        }
+
+        if (period === 'AM' && hour === 12) {
+            hour = 0;
+        }
+
+        const startDate = new Date();
+        startDate.setHours(hour, minute, 0, 0);
+
+        const endDate = new Date(startDate);
+
+        endDate.setMinutes(
+            endDate.getMinutes() +
+            (Number(hours) || 1) * 60
+        );
+
+        const formatTime = date => {
+            const h = String(date.getHours()).padStart(2, '0');
+            const m = String(date.getMinutes()).padStart(2, '0');
+            const s = String(date.getSeconds()).padStart(2, '0');
+
+            return `${h}:${m}:${s}`;
+        };
+
+        return {
+            startTime: formatTime(startDate),
+            endTime: formatTime(endDate),
+        };
+    };
+
+
+    const formatServiceDate = date => {
+        if (!date) {
+            return '';
+        }
+
+        // Already YYYY-MM-DD
+        if (/^\d{4}-\d{2}-\d{2}$/.test(String(date))) {
+            return String(date);
+        }
+
+        const parsedDate = new Date(date);
+
+        if (isNaN(parsedDate.getTime())) {
+            return '';
+        }
+
+        const year = parsedDate.getFullYear();
+        const month = String(
+            parsedDate.getMonth() + 1
+        ).padStart(2, '0');
+        const day = String(
+            parsedDate.getDate()
+        ).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    };
+
     const {
         selectedServices = [],
         customerDetails = {},
@@ -74,6 +165,15 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
     console.log('Address Details:', addressDetails);
     console.log('Address:', address);
 
+
+    const [isBookingLoading, setIsBookingLoading] = useState(false);
+
+    const [orderID, setOrderID] = useState('');
+
+    const [paymentResponse, setPaymentResponse] = useState(null);
+
+    const [totalAmt, setTotalAmt] = useState(0);
+
     /*
     |--------------------------------------------------------------------------
     | STATES
@@ -81,6 +181,8 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
     */
 
     const billScrollRef = useRef(null);
+
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
 
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
@@ -242,14 +344,53 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                         return;
                     }
 
+                    const hours = Number(item.hours) || 1;
+
+                    const {
+                        startTime,
+                        endTime,
+                    } = getBookingTimeRange(
+                        item.time,
+                        hours
+                    );
+
                     rows.push({
-                        serviceId: String(service.id),
-                        date: String(date),
-                        time: item.time || '',
-                        hours: Number(item.hours || 0),
-                        professional: getProfessionalKey(
-                            item.professional
-                        ),
+                        id: `${service.id}-${date}`,
+
+                        serviceId: service.id,
+
+                        serviceName: service.name,
+
+                        date,
+
+                        // UI display value
+                        time: item.time,
+
+                        // Selected duration
+                        hours,
+
+                        // API booking time
+                        startTime,
+
+                        endTime,
+
+                        amount:
+                            Number(item.amount) || 0,
+
+                        professional:
+                            item.professional,
+
+                        professionalName:
+                            item.professional?.name ||
+                            'Select Any Professional',
+
+                        pricing:
+                            service.pricing || [],
+
+                        ourProcess:
+                            service.ourProcess || [],
+
+                        service,
                     });
                 });
             });
@@ -582,7 +723,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
     };
 
 
-    const handleDemoPayment = async () => {
+    const handleDemoPayment = async (orderId) => {
         try {
             // Get all selected service names
             const serviceNames = selectedServices
@@ -618,6 +759,8 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
                 name: 'HomeHelp',
 
+                order_id: orderId,
+
                 // All selected service names
                 description: serviceNames || 'HomeHelp Services',
 
@@ -645,49 +788,52 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                 paymentResponse
             );
 
-            Alert.alert(
-                'Payment Successful',
-                '',
-                [
-                    {
-                        text: 'OK',
-                        onPress: async () => {
-                            await removeServicesFromCart();
+            setPaymentResponse(paymentResponse);
+            setShowPaymentModal(true);
 
-                            navigation.replace(
-                                'BookingConfirmationScreen',
-                                {
-                                    slots: addedSlots,
+            // Alert.alert(
+            //     'Payment Successful',
+            //     '',
+            //     [
+            //         {
+            //             text: 'OK',
+            //             onPress: async () => {
+            //                 await removeServicesFromCart();
 
-                                    bookingRows: addedSlots,
+            //                 navigation.replace(
+            //                     'BookingConfirmationScreen',
+            //                     {
+            //                         slots: addedSlots,
 
-                                    totalAmount: totalAmount,
+            //                         bookingRows: addedSlots,
 
-                                    totalHours: getTotalHours(),
+            //                         totalAmount: totalAmount,
 
-                                    selectedServices,
+            //                         totalHours: getTotalHours(),
 
-                                    customerDetails: {
-                                        name: customerName,
-                                        mobile: customerMobile,
-                                    },
+            //                         selectedServices,
 
-                                    addressDetails,
+            //                         customerDetails: {
+            //                             name: customerName,
+            //                             mobile: customerMobile,
+            //                         },
 
-                                    address,
+            //                         addressDetails,
 
-                                    scheduleType,
+            //                         address,
 
-                                    paymentDetails: paymentResponse,
-                                }
-                            );
-                        },
-                    },
-                ],
-                {
-                    cancelable: false,
-                }
-            );
+            //                         scheduleType,
+
+            //                         paymentDetails: paymentResponse,
+            //                     }
+            //                 );
+            //             },
+            //         },
+            //     ],
+            //     {
+            //         cancelable: false,
+            //     }
+            // );
 
         } catch (error) {
 
@@ -1691,9 +1837,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
         const isUpdating =
             addedSlots.length > 0;
 
-        if (
-            commonDates.length === 0
-        ) {
+        if (commonDates.length === 0) {
             Alert.alert(
                 'Select Date',
                 'Please select at least one date.'
@@ -1701,65 +1845,38 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
             return;
         }
 
-        for (
-            const date of commonDates
-        ) {
-
+        for (const date of commonDates) {
             const data =
-                commonDateServices[
-                date
-                ] || {};
+                commonDateServices[date] || {};
 
             const totalHours =
-                getCommonDateTotalHours(
-                    date
-                );
+                getCommonDateTotalHours(date);
 
-            if (
-                totalHours > 8
-            ) {
-
+            if (totalHours > 8) {
                 Alert.alert(
                     'Maximum 8 Hours',
                     `${date} has ${totalHours} hours selected. Maximum combined hours per date is 8 hours.`
                 );
-
                 return;
             }
 
-            for (
-                const service
-                of selectedServices
-            ) {
-
+            for (const service of selectedServices) {
                 const item =
-                    data[
-                    String(
-                        service.id
-                    )
-                    ];
+                    data[String(service.id)];
 
-                if (
-                    !item?.time
-                ) {
-
+                if (!item?.time) {
                     Alert.alert(
                         'Select Time',
                         `Please select time for ${service.name} on ${date}.`
                     );
-
                     return;
                 }
 
-                if (
-                    !item?.professional
-                ) {
-
+                if (!item?.professional) {
                     Alert.alert(
                         'Select Professional',
                         `Please select professional for ${service.name} on ${date}.`
                     );
-
                     return;
                 }
             }
@@ -1767,73 +1884,79 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
         const rows = [];
 
-        commonDates.forEach(
-            date => {
+        commonDates.forEach(date => {
+            const data =
+                commonDateServices[date] || {};
 
-                const data =
-                    commonDateServices[
-                    date
-                    ] || {};
+            selectedServices.forEach(service => {
+                const item =
+                    data[String(service.id)];
 
-                selectedServices.forEach(
-                    service => {
+                if (!item) {
+                    return;
+                }
 
-                        const item =
-                            data[
-                            String(
-                                service.id
-                            )
-                            ];
+                // Selected duration
+                const hours =
+                    Number(item.hours) || 1;
 
-                        if (!item) {
-                            return;
-                        }
-
-                        rows.push({
-                            id:
-                                `${service.id}-${date}`,
-
-                            serviceId:
-                                service.id,
-
-                            serviceName:
-                                service.name,
-
-                            date,
-
-                            time:
-                                item.time,
-
-                            hours:
-                                Number(
-                                    item.hours
-                                ) || 1,
-
-                            amount:
-                                Number(
-                                    item.amount
-                                ) || 0,
-
-                            professional:
-                                item.professional,
-
-                            professionalName:
-                                item.professional?.name ||
-                                'Select Any Professional',
-
-                            pricing:
-                                service.pricing ||
-                                [],
-
-                            ourProcess:
-                                service.ourProcess ||
-                                [],
-
-                            service,
-                        });
-                    }
+                // Calculate API start/end time
+                const {
+                    startTime,
+                    endTime,
+                } = getBookingTimeRange(
+                    item.time,
+                    hours
                 );
-            }
+
+                rows.push({
+                    id:
+                        `${service.id}-${date}`,
+
+                    serviceId:
+                        service.id,
+
+                    serviceName:
+                        service.name,
+
+                    // UI date
+                    date,
+
+                    // UI time
+                    time:
+                        item.time,
+
+                    // Duration
+                    hours,
+
+                    // API time values
+                    startTime,
+                    endTime,
+
+                    amount:
+                        Number(item.amount) || 0,
+
+                    professional:
+                        item.professional,
+
+                    professionalName:
+                        item.professional?.name ||
+                        'Select Any Professional',
+
+                    pricing:
+                        service.pricing || [],
+
+                    ourProcess:
+                        service.ourProcess || [],
+
+                    service,
+                });
+            });
+        });
+
+        console.log(
+            'Added Same Schedule:',
+            JSON.stringify(rows, null, 2)
         );
 
         setAddedSlots(rows);
@@ -1925,6 +2048,16 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                         return;
                     }
 
+                    const hours = Number(item.hours) || 1;
+
+                    const {
+                        startTime,
+                        endTime,
+                    } = getBookingTimeRange(
+                        item.time,
+                        hours
+                    );
+
                     rows.push({
                         id:
                             `${service.id}-${item.date}`,
@@ -1938,18 +2071,20 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                         date:
                             item.date,
 
+                        // UI display value
                         time:
                             item.time,
 
-                        hours:
-                            Number(
-                                item.hours
-                            ) || 1,
+                        // Duration
+                        hours,
+
+                        // API values
+                        startTime,
+
+                        endTime,
 
                         amount:
-                            Number(
-                                item.amount
-                            ) || 0,
+                            Number(item.amount) || 0,
 
                         professional:
                             item.professional,
@@ -1959,12 +2094,10 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                             'Select Any Professional',
 
                         pricing:
-                            service.pricing ||
-                            [],
+                            service.pricing || [],
 
                         ourProcess:
-                            service.ourProcess ||
-                            [],
+                            service.ourProcess || [],
 
                         service,
                     });
@@ -2104,31 +2237,199 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
         );
     };
 
+
+
+
     /*
     |--------------------------------------------------------------------------
     | CONFIRM
     |--------------------------------------------------------------------------
     */
 
-    const handleConfirmBooking =
-        () => {
 
-            if (
-                addedSlots.length === 0
-            ) {
 
+
+    const handleConfirmBooking = async () => {
+        if (addedSlots.length === 0) {
+            Alert.alert(
+                'No Schedule',
+                'Please add your schedule first.'
+            );
+            return;
+        }
+
+        if (isBookingLoading) {
+            return;
+        }
+
+        try {
+            setIsBookingLoading(true);
+
+            const token = await AsyncStorage.getItem('token');
+
+            if (!token) {
                 Alert.alert(
-                    'No Schedule',
-                    'Please add your schedule first.'
+                    'Session Expired',
+                    'Please login again.'
                 );
-
                 return;
             }
 
-            closeBillSummary();
+            const totalAmount = Number(getTotalAmount()) || 0;
+            setTotalAmt(totalAmount);
 
-            handleDemoPayment();
-        };
+            const payload = {
+                customerName: customerName,
+                customerPhone: customerMobile,
+                customerEmail: "sahha@gmail.com",
+
+                addressId: addressDetails?.addressId || '',
+                addressLine1: addressDetails?.addressLine1 || '',
+                addressLine2: addressDetails?.addressLine2 || '',
+
+                city: addressDetails?.city || '',
+                state: addressDetails?.state || '',
+                postalCode: addressDetails?.pinCode || '',
+
+                latitude: Number(
+                    addressDetails?.latitude || 0
+                ),
+
+                longitude: Number(
+                    addressDetails?.longitude || 0
+                ),
+
+                subTotal: totalAmount,
+                discountAmount: 0,
+                taxAmount: 0,
+
+                notes: 'ok',
+
+                items: addedSlots.map(slot => {
+                    const hours =
+                        Number(slot.hours) || 1;
+
+                    // Safety fallback in case start/end are missing
+                    const timeRange =
+                        slot.startTime && slot.endTime
+                            ? {
+                                startTime: slot.startTime,
+                                endTime: slot.endTime,
+                            }
+                            : getBookingTimeRange(
+                                slot.time,
+                                hours
+                            );
+
+                    return {
+                        serviceId:
+                            slot.serviceId,
+
+                        serviceDate:
+                            formatServiceDate(slot.date),
+
+                        startTime:
+                            timeRange.startTime,
+
+                        endTime:
+                            timeRange.endTime,
+
+                        rate:
+                            Number(slot.amount) || 0,
+
+                        notes:
+                            slot.notes || 'string',
+
+                        PartnerID:
+                            slot.PartnerID || '',
+                    };
+                }),
+            };
+
+            console.log(
+                'Booking Payload:',
+                JSON.stringify(payload, null, 2)
+            );
+
+            const response = await axios.post(
+                API.CUSTOMER_BOOKING,
+                payload,
+                {
+                    headers: {
+                        accept: 'text/plain',
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            console.log(
+                'Booking Response:',
+                JSON.stringify(response.data, null, 2)
+            );
+
+            if (response.data?.success === true) {
+
+                const orderId =
+                    response.data?.booking?.orderId;
+                    setOrderID(orderId);
+
+                    
+
+                if (!orderId) {
+                    Alert.alert(
+                        'Booking Error',
+                        'Booking created but Razorpay order ID was not received.'
+                    );
+                    return;
+                }
+
+                console.log(
+                    'Booking ID:',
+                    response.data.booking.bookingId
+                );
+
+                console.log(
+                    'Booking No:',
+                    response.data.booking.bookingNo
+                );
+
+                console.log(
+                    'Razorpay Order ID:',
+                    orderId
+                );
+
+                // Close bill summary
+                closeBillSummary();
+
+                // Open Razorpay
+                handleDemoPayment(orderId);
+
+            } else {
+                Alert.alert(
+                    'Booking Failed',
+                    response.data?.message ||
+                    'Unable to create booking.'
+                );
+            }
+
+        } catch (error) {
+
+            console.log(
+                'Booking API Error:',
+                error?.response?.data || error?.message
+            );
+
+            Alert.alert(
+                'Booking Failed',
+                error?.response?.data?.message ||
+                'Something went wrong while creating your booking.'
+            );
+
+        } finally {
+            setIsBookingLoading(false);
+        }
+    };
 
     /*
     |--------------------------------------------------------------------------
@@ -3343,13 +3644,22 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                             activeOpacity={0.8}
                         >
 
-                            <Text
-                                style={
-                                    styles.billConfirmText
-                                }
-                            >
-                                Confirm Booking
-                            </Text>
+                            {isBookingLoading ? (
+                                <View style={styles.bookingButtonLoader}>
+                                    <ActivityIndicator
+                                        size="small"
+                                        color="#FFFFFF"
+                                    />
+
+                                    <Text style={styles.confirmButtonText}>
+                                        Creating Booking...
+                                    </Text>
+                                </View>
+                            ) : (
+                                <Text style={styles.confirmButtonText}>
+                                    Confirm Booking
+                                </Text>
+                            )}
 
                             <Image
                                 source={require('../../asset/right-arrow.png')}
@@ -4078,6 +4388,125 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
             {renderProfessionalModal()}
             {renderBillSummary()}
+
+
+            <Modal
+                visible={showPaymentModal}
+                transparent
+                animationType="fade"
+                statusBarTranslucent
+                onRequestClose={() => { }}
+            >
+                <View style={styles.paymentModalOverlay}>
+
+                    <View style={styles.paymentModalCard}>
+
+                        {/* Success Circle */}
+                        <View style={styles.paymentSuccessCircle}>
+                            <Text style={styles.paymentSuccessCheck}>
+                                ✓
+                            </Text>
+                        </View>
+
+                        {/* Title */}
+                        <Text style={styles.paymentSuccessTitle}>
+                            Payment Successful
+                        </Text>
+
+                        <Text style={styles.paymentSuccessSubtitle}>
+                            Your payment has been completed successfully.
+                        </Text>
+
+                        {/* Amount */}
+                        <View style={styles.paymentAmountBox}>
+                            <Text style={styles.paymentAmountLabel}>
+                                Amount Paid
+                            </Text>
+
+                            <Text style={styles.paymentAmount}>
+                                ₹{Number(totalAmt || 0).toLocaleString('en-IN')}
+                            </Text>
+                        </View>
+
+                        {/* Razorpay Payment ID */}
+                        <View style={styles.paymentIdBox}>
+                            <Text style={styles.paymentIdLabel}>
+                                Payment ID
+                            </Text>
+
+                            <Text style={styles.paymentIdValue}>
+                                {paymentResponse?.razorpay_payment_id || 'N/A'}
+                            </Text>
+                        </View>
+
+                        {/* Success Message */}
+                        <View style={styles.paymentInfoBox}>
+                            <View style={styles.paymentSmallCheck}>
+                                <Text style={styles.paymentSmallCheckText}>
+                                    ✓
+                                </Text>
+                            </View>
+
+                            <Text style={styles.paymentInfoText}>
+                                Your booking payment has been received successfully.
+                            </Text>
+                        </View>
+
+                        {/* Continue Button */}
+                        <TouchableOpacity
+                            activeOpacity={0.85}
+                            style={styles.paymentContinueButton}
+                            onPress={async () => {
+
+                                setShowPaymentModal(false);
+
+                                await removeServicesFromCart();
+
+                                navigation.replace(
+                                    'BookingConfirmationScreen',
+                                    {
+                                        bookingId: orderID,
+                                        slots: addedSlots,
+
+                                        bookingRows: addedSlots,
+
+                                        totalAmount: totalAmt,
+
+                                        totalHours: getTotalHours(),
+
+                                        selectedServices,
+
+                                        customerDetails: {
+                                            name: customerName,
+                                            mobile: customerMobile,
+                                        },
+
+                                        addressDetails,
+
+                                        address,
+
+                                        scheduleType,
+
+                                        paymentDetails: paymentResponse,
+                                    }
+                                );
+                            }}
+                        >
+                            <Text style={styles.paymentContinueText}>
+                                Continue
+                            </Text>
+
+                            <Text style={styles.paymentArrow}>
+                                →
+                            </Text>
+                        </TouchableOpacity>
+
+                    </View>
+
+                </View>
+            </Modal>
+
+
 
         </View>
     );
@@ -5479,6 +5908,188 @@ const styles = StyleSheet.create({
         marginTop: 5,
         paddingBottom: 20,
     },
+
+    confirmButtonDisabled: {
+        opacity: 0.7,
+    },
+
+    bookingButtonLoader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+    },
+    confirmButtonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+
+
+    paymentModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+},
+
+paymentModalCard: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 28,
+    padding: 24,
+    alignItems: 'center',
+
+    shadowColor: '#000',
+    shadowOffset: {
+        width: 0,
+        height: 10,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+    elevation: 15,
+},
+
+paymentSuccessCircle: {
+    width: 78,
+    height: 78,
+    borderRadius: 39,
+    backgroundColor: '#25B864',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 18,
+},
+
+paymentSuccessCheck: {
+    color: '#FFFFFF',
+    fontSize: 46,
+    fontWeight: '700',
+    marginTop: -3,
+},
+
+paymentSuccessTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#2A2030',
+    marginBottom: 7,
+    textAlign: 'center',
+},
+
+paymentSuccessSubtitle: {
+    fontSize: 14,
+    color: '#817687',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 22,
+},
+
+paymentAmountBox: {
+    width: '100%',
+    backgroundColor: '#F7F3F9',
+    borderRadius: 17,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginBottom: 12,
+},
+
+paymentAmountLabel: {
+    fontSize: 12,
+    color: '#817687',
+    marginBottom: 4,
+},
+
+paymentAmount: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#76577F',
+},
+
+paymentIdBox: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#E8E2EB',
+    borderRadius: 15,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 14,
+},
+
+paymentIdLabel: {
+    fontSize: 11,
+    color: '#8A7D90',
+    marginBottom: 5,
+},
+
+paymentIdValue: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#302635',
+},
+
+paymentInfoBox: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#EFFAF3',
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 20,
+},
+
+paymentSmallCheck: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#25B864',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 9,
+},
+
+paymentSmallCheckText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+},
+
+paymentInfoText: {
+    flex: 1,
+    fontSize: 12,
+    color: '#53615A',
+    lineHeight: 18,
+},
+
+paymentContinueButton: {
+    width: '100%',
+    height: 54,
+    borderRadius: 16,
+    backgroundColor: '#76577F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    shadowColor: '#76577F',
+    shadowOffset: {
+        width: 0,
+        height: 5,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 5,
+},
+
+paymentContinueText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+},
+
+paymentArrow: {
+    color: '#FFFFFF',
+    fontSize: 22,
+    marginLeft: 10,
+},
 });
 
 export default SelectSlotScreenV1;

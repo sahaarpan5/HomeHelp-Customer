@@ -1,74 +1,92 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Image,
-  StyleSheet,
-  ActivityIndicator,
+    View,
+    Image,
+    ActivityIndicator,
+    StyleSheet,
 } from 'react-native';
 
 const CachedImage = ({
-  uri,
-  style,
-  resizeMode = 'cover',
+    uri,
+    style,
+    resizeMode = 'cover',
 }) => {
-  const [loading, setLoading] = useState(!!uri);
-  const [error, setError] = useState(false);
+    const [loaded, setLoaded] = useState(false);
 
-  return (
-    <View style={[style, styles.imageContainer]}>
-      {uri && !error ? (
-        <>
-          {/* Loader */}
-          {loading && (
-            <View style={styles.loaderContainer}>
-              <ActivityIndicator
-                size="small"
-                color="#76577F"
-              />
-            </View>
-          )}
+    useEffect(() => {
+        let mounted = true;
 
-          <Image
-            source={{ uri }}
-            style={StyleSheet.absoluteFillObject}
-            resizeMode={resizeMode}
-            onLoadStart={() => {
-              setLoading(true);
-              setError(false);
-            }}
-            onLoad={() => {
-              setLoading(false);
-            }}
-            onError={() => {
-              setLoading(false);
-              setError(true);
-            }}
-          />
-        </>
-      ) : (
-        <Image
-          source={require('../asset/heroic.png')}
-          style={StyleSheet.absoluteFillObject}
-          resizeMode="contain"
-        />
-      )}
-    </View>
-  );
+        const preload = async () => {
+            if (!uri) {
+                return;
+            }
+
+            try {
+                await Image.prefetch(uri);
+
+                if (mounted) {
+                    setLoaded(true);
+                }
+            } catch (error) {
+                console.log(
+                    'IMAGE LOAD ERROR:',
+                    uri,
+                    error?.message
+                );
+
+                if (mounted) {
+                    setLoaded(true);
+                }
+            }
+        };
+
+        preload();
+
+        return () => {
+            mounted = false;
+        };
+    }, [uri]);
+
+    if (!uri) {
+        return <View style={style} />;
+    }
+
+    return (
+        <View style={[style, styles.container]}>
+
+            {!loaded && (
+                <View style={styles.loader}>
+                    <ActivityIndicator
+                        size="small"
+                        color="#76577F"
+                    />
+                </View>
+            )}
+
+            {loaded && (
+                <Image
+                    source={{ uri }}
+                    style={StyleSheet.absoluteFillObject}
+                    resizeMode={resizeMode}
+                    onError={() => setLoaded(true)}
+                />
+            )}
+
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
-  imageContainer: {
-    overflow: 'hidden',
-    position: 'relative',
-  },
+    container: {
+        overflow: 'hidden',
+    },
 
-  loaderContainer: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5EFF8',
-    zIndex: 2,
-  },
+    loader: {
+        ...StyleSheet.absoluteFillObject,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5F5F5',
+    },
 });
 
 export default CachedImage;

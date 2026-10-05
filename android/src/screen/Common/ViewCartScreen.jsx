@@ -219,6 +219,8 @@ const ViewCartScreen = ({ navigation, route }) => {
                 }
             );
 
+            console.log('Fetch Addresses Response:', response.data);
+
             const addresses = Array.isArray(response.data?.addresses)
                 ? response.data.addresses
                 : [];

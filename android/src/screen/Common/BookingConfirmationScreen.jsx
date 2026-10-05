@@ -22,6 +22,21 @@ import { CommonActions } from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
 
 const BookingConfirmationScreen = ({ navigation, route }) => {
+
+
+  const {
+    bookingId,
+    slots = [],
+    bookingRows = [],
+    totalAmount = 0,
+    totalHours = 0,
+    selectedServices = [],
+    customerDetails = {},
+    addressDetails = {},
+    address = '',
+    scheduleType = '',
+    paymentDetails = {},
+  } = route.params || {};
   // States
   const [isLoading, setIsLoading] = useState(false);
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
@@ -53,33 +68,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
   };
 
   // Sample booking data
-  const bookingData = {
-    bookingId: 'BK-2027-001',
-    serviceName: 'Home Cleaning',
-    customerName: 'Rahul Sharma',
-    customerMobile: '+91 98765 43210',
-    address: '123, Main Street, Mumbai, Maharashtra - 400001',
-    professional: 'Rajesh Kumar',
-    professionalImage: 'https://ui-avatars.com/api/?name=Rajesh+Kumar&background=6C5CE7&color=fff&size=100',
-    amount: '₹499',
-    status: 'Confirmed',
-    slots: [
-      { date: '15 Jan 2027', time: '09:00 AM - 11:00 AM', professional: 'Rajesh Kumar' },
-      { date: '16 Jan 2027', time: '11:00 AM - 01:00 PM', professional: 'Priya Sharma' },
-    ],
-    selectedServices: [
-      { name: 'House maid service', price: '₹299/hr', quantity: 1 },
 
-    ],
-    payment: {
-      subtotal: '₹897',
-      discount: '₹0',
-      gst: '₹161.46',
-      total: '₹1,058.46',
-      paymentMethod: 'Credit Card',
-      lastFour: '4532',
-    },
-  };
 
   useEffect(() => {
     Animated.sequence([
@@ -169,19 +158,51 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
   const renderSlotProfessional = (slot, index) => (
     <View key={index} style={styles.slotItem}>
       <View style={styles.slotDot} />
+
       <View style={styles.slotContent}>
-        <Text style={styles.slotDate}>{slot.date}</Text>
-        <Text style={styles.slotTime}>{slot.time}</Text>
-        <TouchableOpacity style={styles.slotProfessionalRow} onPress={() => navigation.navigate('ProfessionalDetailsScreen', { professional: slot.professional })}>
+
+        <Text style={styles.slotDate}>
+          {slot.date}
+        </Text>
+
+        <Text style={styles.slotTime}>
+          {slot.time}
+        </Text>
+
+        {slot.startTime && slot.endTime && (
+          <Text style={styles.slotTime}>
+            {slot.startTime} - {slot.endTime}
+          </Text>
+        )}
+
+        <TouchableOpacity
+          style={styles.slotProfessionalRow}
+          onPress={() =>
+            navigation.navigate(
+              'ProfessionalDetailsScreen',
+              {
+                professional:
+                  slot.professional,
+              }
+            )
+          }
+        >
           <Image
-            source={require('../../asset/profile-one.png')} // Update the path as needed
+            source={require('../../asset/profile-one.png')}
             style={styles.slotProfessionalImage}
           />
 
-          <Text style={styles.slotProfessional}>with {slot.professional}</Text>
+          <Text style={styles.slotProfessional}>
+            with{' '}
+            {slot.professionalName ||
+              slot.professional?.name ||
+              'Select Any Professional'}
+          </Text>
         </TouchableOpacity>
+
       </View>
-      {index < bookingData.slots.length - 1 && (
+
+      {index < slots.length - 1 && (
         <View style={styles.slotLine} />
       )}
     </View>
@@ -251,7 +272,13 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
           <Text style={styles.successSubtitle}>Your booking has been confirmed successfully</Text>
           <View style={styles.bookingIdContainer}>
             <Text style={styles.bookingIdLabel}>Booking ID</Text>
-            <Text style={styles.bookingIdValue}>{bookingData.bookingId}</Text>
+            <Text style={styles.bookingIdValue}> {bookingId || 'N/A'}</Text>
+          </View>
+
+
+          <View style={styles.bookingIdContainer}>
+            <Text style={styles.bookingIdLabel}>Payment ID</Text>
+            <Text style={styles.bookingIdValue}> {paymentDetails?.razorpay_payment_id || 'N/A'}</Text>
           </View>
         </View>
 
@@ -319,27 +346,52 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Selected Services</Text>
           <View style={styles.servicesCard}>
-            {bookingData.selectedServices.map((service, index) => (
-              <View key={index} style={[styles.serviceItem, index === bookingData.selectedServices.length - 1 && styles.serviceItemLast]}>
+            {selectedServices.map((service, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.serviceItem,
+                  index === selectedServices.length - 1 &&
+                  styles.serviceItemLast,
+                ]}
+              >
                 <View style={styles.serviceLeft}>
                   <View style={styles.serviceDot} />
-                  <View>
-                    <Text style={styles.serviceName}>{service.name}</Text>
 
+                  <View>
+                    <Text style={styles.serviceName}>
+                      {service.name ||
+                        service.serviceName ||
+                        'Service'}
+                    </Text>
+
+                    {service.hours && (
+                      <Text style={styles.serviceQuantity}>
+                        {service.hours} hour
+                        {Number(service.hours) > 1 ? 's' : ''}
+                      </Text>
+                    )}
                   </View>
                 </View>
 
+                {service.amount != null && (
+                  <Text style={styles.servicePrice}>
+                    ₹{Number(service.amount).toLocaleString('en-IN')}
+                  </Text>
+                )}
               </View>
             ))}
           </View>
         </View>
 
         {/* All Slots - Moved after Services */}
-        {bookingData.slots.length > 0 && (
+        {slots.length > 0 && (
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>All Slots</Text>
             <View style={styles.slotsCard}>
-              {bookingData.slots.map((slot, index) => renderSlotProfessional(slot, index))}
+              {slots.map((slot, index) =>
+                renderSlotProfessional(slot, index)
+              )}
             </View>
           </View>
         )}
@@ -381,43 +433,61 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
 
         {showPaymentDetails && (
           <View style={styles.paymentCard}>
+
             <View style={styles.paymentRow}>
-              <Text style={styles.paymentLabel}>Subtotal</Text>
-              <Text style={styles.paymentValue}>{bookingData.payment.subtotal}</Text>
+              <Text style={styles.paymentLabel}>
+                Amount Paid
+              </Text>
+
+              <Text style={styles.paymentValue}>
+                ₹{Number(totalAmount || 0).toLocaleString('en-IN')}
+              </Text>
             </View>
-            <View style={styles.paymentRow}>
-              <Text style={styles.paymentLabel}>Discount</Text>
-              <Text style={[styles.paymentValue, styles.discountValue]}>{bookingData.payment.discount}</Text>
-            </View>
-            <View style={styles.paymentRow}>
-              <Text style={styles.paymentLabel}>GST (18%)</Text>
-              <Text style={styles.paymentValue}>{bookingData.payment.gst}</Text>
-            </View>
+
             <View style={styles.paymentDivider} />
+
             <View style={styles.paymentTotalRow}>
               <View>
-                <Text style={styles.paymentTotalLabel}>Total Amount</Text>
-                <Text style={styles.paymentTotalSubtext}>Including all taxes</Text>
+                <Text style={styles.paymentTotalLabel}>
+                  Total Amount
+                </Text>
+
+                <Text style={styles.paymentTotalSubtext}>
+                  Payment completed successfully
+                </Text>
               </View>
-              <Text style={styles.paymentTotalValue}>{bookingData.payment.total}</Text>
+
+              <Text style={styles.paymentTotalValue}>
+                ₹{Number(totalAmount || 0).toLocaleString('en-IN')}
+              </Text>
             </View>
+
             <View style={styles.paymentMethodRow}>
 
               <Image
-                source={require('../../asset/credit-card.png')} // Update the path as needed
+                source={require('../../asset/credit-card.png')}
                 style={{
                   width: 16,
                   height: 16,
                   resizeMode: 'contain',
-                  tintColor: COLORS.textLight
-
-
+                  tintColor: COLORS.textLight,
                 }}
               />
+
               <Text style={styles.paymentMethodText}>
-                Paid via {bookingData.payment.paymentMethod} •••• {bookingData.payment.lastFour}
+                Razorpay
               </Text>
             </View>
+
+            <View style={styles.paymentMethodRow}>
+
+              <Text style={styles.paymentMethodText}>
+                Payment ID:{' '}
+                {paymentDetails?.razorpay_payment_id || 'N/A'}
+              </Text>
+
+            </View>
+
           </View>
         )}
 
@@ -442,7 +512,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
               </View>
               <View style={styles.detailContent}>
                 <Text style={styles.detailLabel}>Customer Name</Text>
-                <Text style={styles.detailValue}>{bookingData.customerName}</Text>
+                <Text style={styles.detailValue}>{customerDetails?.name || 'N/A'}</Text>
               </View>
             </View>
             <View style={styles.detailRow}>
@@ -462,7 +532,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
               </View>
               <View style={styles.detailContent}>
                 <Text style={styles.detailLabel}>Mobile Number</Text>
-                <Text style={styles.detailValue}>{bookingData.customerMobile}</Text>
+                <Text style={styles.detailValue}>{customerDetails?.mobile || 'N/A'}</Text>
               </View>
             </View>
             <View style={[styles.detailRow, styles.detailRowLast]}>
@@ -482,7 +552,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
               </View>
               <View style={styles.detailContent}>
                 <Text style={styles.detailLabel}>Address</Text>
-                <Text style={styles.detailValue} numberOfLines={2}>{bookingData.address}</Text>
+                <Text style={styles.detailValue} numberOfLines={2}>{address || addressDetails?.address || 'N/A'}</Text>
               </View>
             </View>
           </View>
@@ -492,7 +562,9 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
         <View style={styles.statusContainer}>
           <View style={styles.statusBadge}>
             <View style={styles.statusDot} />
-            <Text style={styles.statusText}>{bookingData.status}</Text>
+            <Text style={styles.statusText}>{paymentDetails?.razorpay_payment_id
+              ? 'Confirmed'
+              : 'Pending'}</Text>
           </View>
         </View>
 

@@ -249,6 +249,91 @@ const ServiceBookingScreen = ({ navigation, route }) => {
     };
 
 
+    const preloadServiceImagesInBackground = async (data) => {
+        try {
+            if (!data) {
+                return;
+            }
+
+            // Main service image
+            const mainImage = data?.imageUrl;
+
+            // Process images
+            const processImages = Array.isArray(data?.processSteps)
+                ? data.processSteps
+                    .map(item => item?.imageUrl)
+                    .filter(Boolean)
+                : [];
+
+            // Gallery images
+            const galleryImages = Array.isArray(data?.galaries)
+                ? data.galaries
+                    .map(item => item?.imageUrl)
+                    .filter(Boolean)
+                : [];
+
+            // Combine all images
+            const imageUrls = [
+                mainImage,
+                ...processImages,
+                ...galleryImages,
+            ];
+
+            // Remove empty URLs
+            const validUrls = imageUrls.filter(
+                url =>
+                    typeof url === 'string' &&
+                    url.trim().length > 0
+            );
+
+            // Remove duplicates
+            const uniqueUrls = [
+                ...new Set(validUrls),
+            ];
+
+            console.log(
+                'BACKGROUND IMAGE DOWNLOAD STARTED:',
+                uniqueUrls.length
+            );
+
+            // Download in background
+            await Promise.all(
+                uniqueUrls.map(async (url) => {
+                    try {
+                        const result = await Image.prefetch(url);
+
+                        console.log(
+                            'BACKGROUND IMAGE DOWNLOADED:',
+                            url,
+                            result
+                        );
+
+                        return true;
+
+                    } catch (error) {
+                        console.log(
+                            'BACKGROUND IMAGE DOWNLOAD FAILED:',
+                            url,
+                            error?.message
+                        );
+
+                        return false;
+                    }
+                })
+            );
+
+            console.log(
+                'BACKGROUND IMAGE DOWNLOAD COMPLETED'
+            );
+
+        } catch (error) {
+            console.log(
+                'BACKGROUND IMAGE PRELOAD ERROR:',
+                error?.message || error
+            );
+        }
+    };
+
 
     const fetchServiceDetails = async () => {
         try {
@@ -266,6 +351,10 @@ const ServiceBookingScreen = ({ navigation, route }) => {
 
             setIsLoading(true);
 
+            // =====================================================
+            // FETCH SERVICE DETAILS
+            // =====================================================
+
             const response = await axios.get(
                 `${API.CUSTOMER_SERVICE_DETAILS}/${serviceId}`,
                 {
@@ -282,8 +371,13 @@ const ServiceBookingScreen = ({ navigation, route }) => {
 
             if (!data) {
                 Alert.alert('Error', 'Service details not found.');
+                setIsLoading(false);
                 return;
             }
+
+            // =====================================================
+            // ACTIVE PRICING
+            // =====================================================
 
             const activePricing = Array.isArray(data.pricing)
                 ? data.pricing.filter(
@@ -293,11 +387,6 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                         item.isActive === 1
                 )
                 : [];
-
-            // ⭐ Only hourly pricing is used for displaying price
-            // const hourlyPricing = activePricing.find(
-            //     item => Number(item.pricingType) === 1
-            // );
 
             const pricingPriority = [1, 2, 3, 4, 5];
 
@@ -309,7 +398,10 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                 )
                 .find(Boolean);
 
-            // ⭐ Complete process array
+            // =====================================================
+            // PROCESS STEPS
+            // =====================================================
+
             const processArray = Array.isArray(data.processSteps)
                 ? [...data.processSteps]
                     .sort((a, b) => a.ordinal - b.ordinal)
@@ -321,16 +413,30 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                     }))
                 : [];
 
-            // ⭐ Service object
+            // =====================================================
+            // GALLERY IMAGES
+            // =====================================================
+
+            const galleryImages = Array.isArray(data.galaries)
+                ? data.galaries
+                    .map(item => item.imageUrl)
+                    .filter(
+                        url =>
+                            typeof url === 'string' &&
+                            url.trim().length > 0
+                    )
+                : [];
+
+            // =====================================================
+            // CHILD SERVICE
+            // =====================================================
+
             const childServices = [
                 {
                     id: data.serviceId,
 
                     name: data.serviceName,
 
-                    // Use Hourly first.
-                    // If Hourly is unavailable, use 4 Hours,
-                    // then 8 Hours, Monthly, Project Based.
                     price: displayPricing
                         ? `₹${displayPricing.price}`
                         : 'Price unavailable',
@@ -350,10 +456,8 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                         )
                         : [],
 
-                    // Keep complete pricing array
                     pricing: activePricing,
 
-                    // Store which pricing was selected for display
                     selectedPricing: displayPricing,
 
                     ourProcess: processArray,
@@ -366,74 +470,15 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                 },
             ];
 
-            // const formattedService = {
-            //     id: data.serviceId,
-            //     name: data.serviceName,
-            //     categoryName: data.categoryName,
-
-            //     tagline: data.workProfile
-            //         ? `✨ ${data.workProfile}`
-            //         : `✨ ${data.serviceName}`,
-
-            //     coverImage: {
-            //         uri: data.imageUrl,
-            //     },
-
-            //     rating: 0,
-            //     totalReviews: 0,
-            //     bookingCount: 0,
-
-            //     price:
-            //         activePricing.length > 0
-            //             ? `₹${Math.min(
-            //                 ...activePricing.map(
-            //                     item => Number(item.price) || 0
-            //                 )
-            //             )}`
-            //             : 'Price unavailable',
-
-            //     whatIsCovered: Array.isArray(data.included)
-            //         ? data.included.map(
-            //             item => item.includedService
-            //         )
-            //         : [],
-
-            //     ourProcess: Array.isArray(data.processSteps)
-            //         ? [...data.processSteps]
-            //             .sort((a, b) => a.ordinal - b.ordinal)
-            //             .map(item => ({
-            //                 step: String(item.ordinal),
-            //                 title: item.header,
-            //                 description: item.description,
-            //                 image: item.imageUrl,
-            //             }))
-            //         : [],
-
-            //     images: Array.isArray(data.galaries)
-            //         ? data.galaries
-            //             .map(item => item.imageUrl)
-            //             .filter(Boolean)
-            //         : [],
-
-            //     childServices,
-
-            //     faqs: Array.isArray(data.faQs)
-            //         ? [...data.faQs]
-            //             .sort((a, b) => a.ordinal - b.ordinal)
-            //             .map((item, index) => ({
-            //                 id: String(item.ordinal || index + 1),
-            //                 question: item.question,
-            //                 answer: item.answer,
-            //             }))
-            //         : [],
-
-            //     reviews: [],
-            // };
-
+            // =====================================================
+            // FORMATTED SERVICE
+            // =====================================================
 
             const formattedService = {
                 id: data.serviceId,
+
                 name: data.serviceName,
+
                 categoryName: data.categoryName,
 
                 tagline: data.workProfile
@@ -445,7 +490,9 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                 },
 
                 rating: 0,
+
                 totalReviews: 0,
+
                 bookingCount: 0,
 
                 price:
@@ -457,7 +504,6 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                         )}`
                         : 'Price unavailable',
 
-                // IMPORTANT
                 pricing: activePricing,
 
                 whatIsCovered: Array.isArray(data.included)
@@ -466,22 +512,9 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                     )
                     : [],
 
-                ourProcess: Array.isArray(data.processSteps)
-                    ? [...data.processSteps]
-                        .sort((a, b) => a.ordinal - b.ordinal)
-                        .map(item => ({
-                            step: String(item.ordinal),
-                            title: item.header,
-                            description: item.description,
-                            image: item.imageUrl,
-                        }))
-                    : [],
+                ourProcess: processArray,
 
-                images: Array.isArray(data.galaries)
-                    ? data.galaries
-                        .map(item => item.imageUrl)
-                        .filter(Boolean)
-                    : [],
+                images: galleryImages,
 
                 childServices,
 
@@ -489,7 +522,9 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                     ? [...data.faQs]
                         .sort((a, b) => a.ordinal - b.ordinal)
                         .map((item, index) => ({
-                            id: String(item.ordinal || index + 1),
+                            id: String(
+                                item.ordinal || index + 1
+                            ),
                             question: item.question,
                             answer: item.answer,
                         }))
@@ -497,24 +532,108 @@ const ServiceBookingScreen = ({ navigation, route }) => {
 
                 reviews: [],
             };
+
+            // =====================================================
+            // SHOW UI IMMEDIATELY
+            // =====================================================
+
             setServiceData(formattedService);
+            setIsLoading(false);
+
+            // =====================================================
+            // DOWNLOAD IMAGES IN BACKGROUND
+            // =====================================================
+
+            const imageUrls = [
+                // Main service image
+                data?.imageUrl,
+
+                // Process images
+                ...processArray.map(item => item?.image),
+
+                // Gallery images
+                ...galleryImages,
+            ];
+
+            // Remove empty URLs
+            const validUrls = imageUrls.filter(
+                url =>
+                    typeof url === 'string' &&
+                    url.trim().length > 0
+            );
+
+            // Remove duplicate URLs
+            const uniqueUrls = [
+                ...new Set(validUrls),
+            ];
+
+            console.log('====================================');
+            console.log('BACKGROUND IMAGE DOWNLOAD STARTED');
+            console.log(
+                'TOTAL IMAGES:',
+                uniqueUrls.length
+            );
+            console.log('====================================');
+
+            // IMPORTANT:
+            // No await here.
+            // UI will NOT wait for image downloads.
+            Promise.all(
+                uniqueUrls.map(async url => {
+                    try {
+                        const result = await Image.prefetch(url);
+
+                        console.log(
+                            'BACKGROUND IMAGE DOWNLOADED:',
+                            url,
+                            result
+                        );
+
+                        return true;
+
+                    } catch (error) {
+                        console.log(
+                            'BACKGROUND IMAGE DOWNLOAD FAILED:',
+                            url,
+                            error?.message
+                        );
+
+                        return false;
+                    }
+                })
+            ).then(() => {
+                console.log(
+                    '===================================='
+                );
+                console.log(
+                    'BACKGROUND IMAGE DOWNLOAD COMPLETED'
+                );
+                console.log(
+                    '===================================='
+                );
+            });
 
         } catch (error) {
-            console.log('SERVICE DETAILS ERROR:', error);
+            console.log(
+                'SERVICE DETAILS ERROR:',
+                error
+            );
+
             console.log(
                 'ERROR RESPONSE:',
                 error?.response?.data
             );
+
+            setIsLoading(false);
 
             Alert.alert(
                 'Error',
                 error?.response?.data?.message ||
                 'Unable to load service details.'
             );
-        } finally {
-            setIsLoading(false);
         }
     };
+
 
     const animateModalIn = (animRef) => {
         animRef.setValue(height);
