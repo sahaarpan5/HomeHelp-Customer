@@ -19,6 +19,7 @@ import { useCallback } from 'react';
 import axios from 'axios';
 import API from '../../util/API';
 import Loader from '../../util/Loader';
+import ServiceOrbitLoader from '../../util/ServiceOrbitLoader';
 
 
 const { width, height } = Dimensions.get('window');
@@ -352,7 +353,7 @@ const SavedServicesScreen = ({ navigation, route }) => {
 
             {isLoading && (
                 <View style={styles.loaderOverlay}>
-                    <Loader />
+                    <ServiceOrbitLoader />
                 </View>
             )}
 
