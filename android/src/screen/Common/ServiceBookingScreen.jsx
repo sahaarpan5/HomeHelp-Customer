@@ -24,6 +24,11 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 import CachedImage from '../../util/CachedImage';
 import ServiceOrbitLoader from '../../util/ServiceOrbitLoader';
+import {
+    initializeCartNotifications,
+    scheduleCartReminder,
+    cancelCartReminder,
+} from '../../util/CartNotification';
 
 
 
@@ -79,94 +84,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
         txtColor: '#403746',
     };
 
-    // Sample Service Data
-    // const serviceData = {
-    //     id: '1',
-    //     name: 'House Maid',
-    //     tagline: '✨ A spotless home, just a tap away',
-    //     coverImage: require('../../asset/housemaid.png'),
-    //     rating: 4.9,
-    //     totalReviews: 1240,
-    //     bookingCount: 15420,
-    //     price: '₹499',
-    //     whatIsCovered: ['House Cleaning', 'Dusting of all surfaces', 'Sweeping & Floor Mopping', 'Kitchen Cleaning', 'Bathroom Cleaning', 'Bedroom Cleaning', 'Utensil Washing', 'Laundry & Clothes Folding', 'Cobweb Removal', 'Waste Disposal',],
-    //     ourProcess: [
-    //         {
-    //             step: '1',
-    //             title: 'Plan the Work',
-    //             description: 'Our expert team plans the cleaning process based on your requirements',
-    //             image: require('../../asset/planned.png'),
-    //         },
-    //         {
-    //             step: '2',
-    //             title: 'Start Cleaning',
-    //             description: 'Professional cleaning with eco-friendly products and advanced equipment',
-    //             image: require('../../asset/start.png'),
-    //         },
-    //         {
-    //             step: '3',
-    //             title: 'Final Checks',
-    //             description: 'Thorough quality check to ensure 100% satisfaction',
-    //             image: require('../../asset/final-check.png'),
-    //         },
-    //     ],
-    //     images: [
-    //         'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
-    //         'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop',
-    //         'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop',
-    //         'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
-    //     ],
-    //     childServices: [
-    //         { id: 'c2', name: 'House Maid', price: '₹399', coverImage: require('../../asset/housemaid.png'), description: 'Reliable house maid service for everyday household chores, cleaning, and maintaining a neat and comfortable home.', whatIsCovered: ['General House Cleaning', 'Dusting & Sweeping', 'Floor Mopping', 'Kitchen Cleaning', 'Bathroom Cleaning', 'Utensil Washing'], duration: '3 hours', },
 
-
-    //     ],
-    //     faqs: [
-    //         {
-    //             id: '1',
-    //             question: 'What is included in deep cleaning?',
-    //             answer: 'Deep cleaning includes thorough cleaning of all surfaces, dusting, mopping, kitchen degreasing, bathroom sanitization, and waste disposal.',
-    //         },
-    //         {
-    //             id: '2',
-    //             question: 'How long does the service take?',
-    //             answer: 'The service typically takes 3-4 hours depending on the size of your home and the services selected.',
-    //         },
-    //         {
-    //             id: '3',
-    //             question: 'Do I need to be present during the service?',
-    //             answer: 'Yes, we recommend being present to provide access and ensure you are satisfied with the service.',
-    //         },
-    //         {
-    //             id: '4',
-    //             question: 'What products do you use?',
-    //             answer: 'We use eco-friendly and safe cleaning products that are effective and gentle on surfaces.',
-    //         },
-    //     ],
-    //     reviews: [
-    //         {
-    //             id: '1',
-    //             customer: 'Priya Sharma',
-    //             rating: 5,
-    //             date: '15 Jan 2027',
-    //             comment: 'Excellent service! My home has never been cleaner. Very professional team.',
-    //         },
-    //         {
-    //             id: '2',
-    //             customer: 'Amit Patel',
-    //             rating: 5,
-    //             date: '10 Jan 2027',
-    //             comment: 'Great job! They were punctual and thorough. Highly recommend this service.',
-    //         },
-    //         {
-    //             id: '3',
-    //             customer: 'Sunita Reddy',
-    //             rating: 4,
-    //             date: '5 Jan 2027',
-    //             comment: 'Good service overall. A few minor issues but they fixed it quickly.',
-    //         },
-    //     ],
-    // };
 
     const starImages = {
         full: require('../../asset/star-fill.png'),
@@ -200,6 +118,10 @@ const ServiceBookingScreen = ({ navigation, route }) => {
             loadSavedServices();
         }, [])
     );
+
+    useEffect(() => {
+        initializeCartNotifications();
+    }, []);
 
 
     const loadSavedServices = async () => {
@@ -766,6 +688,14 @@ const ServiceBookingScreen = ({ navigation, route }) => {
                 'selectedServices',
                 JSON.stringify(updatedCart)
             );
+
+
+            // Schedule cart reminder
+            await scheduleCartReminder(updatedCart);
+
+            console.log(
+                'Cart saved and reminder scheduled'
+            );
         } catch (error) {
             console.log('Save Cart Error:', error);
         }
@@ -789,7 +719,13 @@ const ServiceBookingScreen = ({ navigation, route }) => {
         }
 
         if (updatedCart.length === 0) {
+            await cancelCartReminder();
             closeCart();
+        }else {
+            // Reschedule based on remaining items
+            await scheduleCartReminder(
+                updatedCart
+            );
         }
     };
 

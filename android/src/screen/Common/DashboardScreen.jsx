@@ -25,6 +25,12 @@ import axios from 'axios';
 import CachedImage from '../../util/CachedImage';
 import ServiceOrbitLoader from '../../util/ServiceOrbitLoader';
 
+import {
+    initializeCartNotifications,
+    scheduleCartReminder,
+    cancelCartReminder,
+} from '../../util/CartNotification';
+
 
 
 const { width, height } = Dimensions.get('window');
@@ -141,266 +147,7 @@ const DashboardScreen = ({ navigation }) => {
             image: require('../../asset/sofaclean-icon.png'),
         },
     ];
-    // All Services - Grid View for Modal op-1
-    // const allServices = [
-    //     {
-    //         id: '1',
-    //         name: 'Home Cleaning',
-    //         icon: require('../../asset/street-sweeper.png'),
-    //         color: '#8B5CF6',
-    //         bg: '#EDE9FE',
-    //         border: '#8B5CF6',
-    //     },
-    //     {
-    //         id: '2',
-    //         name: 'Bathroom Cleaning',
-    //         icon: require('../../asset/shower.png'),
-    //         color: '#06B6D4',
-    //         bg: '#CFFAFE',
-    //         border: '#06B6D4',
-    //     },
-    //     {
-    //         id: '3',
-    //         name: 'Cooking Support',
-    //         icon: require('../../asset/chef.png'),
-    //         color: '#F59E0B',
-    //         bg: '#FEF3C7',
-    //         border: '#F59E0B',
-    //     },
-    //     {
-    //         id: '4',
-    //         name: 'Kitchen & Utensil cleaning',
-    //         icon: require('../../asset/kitchen.png'),
-    //         color: '#10B981',
-    //         bg: '#D1FAE5',
-    //         border: '#10B981',
-    //     },
-    //     {
-    //         id: '5',
-    //         name: 'Washing & Ironing cloths',
-    //         icon: require('../../asset/iron.png'),
-    //         color: '#0EA5E9',
-    //         bg: '#E0F2FE',
-    //         border: '#0EA5E9',
-    //     },
-    //     {
-    //         id: '6',
-    //         name: 'House Maid',
-    //         icon: require('../../asset/maid.png'),
-    //         color: '#F43F5E',
-    //         bg: '#FFE4E6',
-    //         border: '#F43F5E',
-    //     },
-    //     {
-    //         id: '7',
-    //         name: 'Home Organizing',
-    //         icon: require('../../asset/helping.png'),
-    //         color: '#D946EF',
-    //         bg: '#FAE8FF',
-    //         border: '#D946EF',
-    //     },
-    //     {
-    //         id: '8',
-    //         name: 'Packers Helpers',
-    //         icon: require('../../asset/box.png'),
-    //         color: '#7ecc08',
-    //         bg: '#ECFCCB',
-    //         border: '#7ecc08',
-    //     },
-    //     {
-    //         id: '9',
-    //         name: 'Elder Care & Companion',
-    //         icon: require('../../asset/old-man.png'),
-    //         color: '#c59607',
-    //         bg: '#FEF9C3',
-    //         border: '#c59607',
-    //     },
-    // ];
 
-    //op-2
-    // const allServices = [
-    //     {
-    //         id: '1',
-    //         name: 'Home Cleaning',
-    //         icon: require('../../asset/home.png'),
-    //         color: '#8B5CF6',
-    //         border: '#8B5CF6',
-    //     },
-    //     {
-    //         id: '2',
-    //         name: 'Bathroom Cleaning',
-    //         icon: require('../../asset/shower.png'),
-    //         color: '#06B6D4',
-    //         border: '#06B6D4',
-    //     },
-    //     {
-    //         id: '3',
-    //         name: 'Cooking',
-    //         icon: require('../../asset/chef.png'),
-    //         color: '#F59E0B',
-    //         border: '#F59E0B',
-    //     },
-    //     {
-    //         id: '4',
-    //         name: 'Kitchen & Utensil cleaning',
-    //         icon: require('../../asset/kitchen.png'),
-    //         color: '#10B981',
-    //         border: '#10B981',
-    //     },
-    //     {
-    //         id: '5',
-    //         name: 'Washing & Ironing cloths',
-    //         icon: require('../../asset/iron.png'),
-    //         color: '#0EA5E9',
-    //         border: '#0EA5E9',
-    //     },
-    //     {
-    //         id: '6',
-    //         name: 'House Maid',
-    //         icon: require('../../asset/maid.png'),
-    //         color: '#F43F5E',
-    //         border: '#F43F5E',
-    //     },
-    //     {
-    //         id: '7',
-    //         name: 'Home Organizing',
-    //         icon: require('../../asset/helping.png'),
-    //         color: '#D946EF',
-    //         border: '#D946EF',
-    //     },
-    //     {
-    //         id: '8',
-    //         name: 'Packers Helpers',
-    //         icon: require('../../asset/box.png'),
-    //         color: '#84CC16',
-    //         border: '#84CC16',
-    //     },
-    //     {
-    //         id: '9',
-    //         name: 'Elder Care & Companion',
-    //         icon: require('../../asset/old-man.png'),
-    //         color: '#EAB308',
-    //         border: '#EAB308',
-    //     },
-    // ];
-
-    //op-3
-
-    // const allServices = [
-    //     {
-    //         id: '1',
-    //         name: 'Home Cleaning',
-    //         icon: require('../../asset/home.png'),
-    //         color: '#8B5CF6',
-    //     },
-    //     {
-    //         id: '2',
-    //         name: 'Bathroom Cleaning',
-    //         icon: require('../../asset/shower.png'),
-    //         color: '#06B6D4',
-    //     },
-    //     {
-    //         id: '3',
-    //         name: 'Cooking',
-    //         icon: require('../../asset/chef.png'),
-    //         color: '#F59E0B',
-    //     },
-    //     {
-    //         id: '4',
-    //         name: 'Kitchen & Utensil cleaning',
-    //         icon: require('../../asset/kitchen.png'),
-    //         color: '#10B981',
-    //     },
-    //     {
-    //         id: '5',
-    //         name: 'Washing & Ironing cloths',
-    //         icon: require('../../asset/iron.png'),
-    //         color: '#0EA5E9',
-    //     },
-    //     {
-    //         id: '6',
-    //         name: 'House Maid',
-    //         icon: require('../../asset/maid.png'),
-    //         color: '#F43F5E',
-    //     },
-    //     {
-    //         id: '7',
-    //         name: 'Home Organizing',
-    //         icon: require('../../asset/helping.png'),
-    //         color: '#D946EF',
-    //     },
-    //     {
-    //         id: '8',
-    //         name: 'Packers Helpers',
-    //         icon: require('../../asset/box.png'),
-    //         color: '#84CC16',
-    //     },
-    //     {
-    //         id: '9',
-    //         name: 'Elder Care & Companion',
-    //         icon: require('../../asset/old-man.png'),
-    //         color: '#EAB308',
-    //     },
-    // ];
-
-    //op-4
-    // const allServices = [
-    //     {
-    //         id: '1',
-    //         name: 'Home Cleaning',
-    //         icon: require('../../asset/home.png'),
-    //         color: '#8B5CF6',
-    //     },
-    //     {
-    //         id: '2',
-    //         name: 'Bathroom Cleaning',
-    //         icon: require('../../asset/shower.png'),
-    //         color: '#06B6D4',
-    //     },
-    //     {
-    //         id: '3',
-    //         name: 'Cooking',
-    //         icon: require('../../asset/chef.png'),
-    //         color: '#F59E0B',
-    //     },
-    //     {
-    //         id: '4',
-    //         name: 'Kitchen & Utensil cleaning',
-    //         icon: require('../../asset/kitchen.png'),
-    //         color: '#10B981',
-    //     },
-    //     {
-    //         id: '5',
-    //         name: 'Washing & Ironing cloths',
-    //         icon: require('../../asset/iron.png'),
-    //         color: '#0EA5E9',
-    //     },
-    //     {
-    //         id: '6',
-    //         name: 'House Maid',
-    //         icon: require('../../asset/maid.png'),
-    //         color: '#F43F5E',
-    //     },
-    //     {
-    //         id: '7',
-    //         name: 'Home Organizing',
-    //         icon: require('../../asset/helping.png'),
-    //         color: '#D946EF',
-    //     },
-    //     {
-    //         id: '8',
-    //         name: 'Packers Helpers',
-    //         icon: require('../../asset/box.png'),
-    //         color: '#84CC16',
-    //     },
-    //     {
-    //         id: '9',
-    //         name: 'Elder Care & Companion',
-    //         icon: require('../../asset/old-man.png'),
-    //         color: '#EAB308',
-    //     },
-    // ];
-    // On the Spot Services
     const onTheSpotServices = [
 
         {
@@ -622,6 +369,11 @@ const DashboardScreen = ({ navigation }) => {
     );
 
 
+    useEffect(() => {
+        initializeCartNotifications();
+    }, []);
+
+
 
 
     useEffect(() => {
@@ -711,7 +463,13 @@ const DashboardScreen = ({ navigation }) => {
         }
 
         if (updatedCart.length === 0) {
+            await cancelCartReminder();
             closeCart();
+        } else {
+            // Reschedule based on remaining items
+            await scheduleCartReminder(
+                updatedCart
+            );
         }
     };
 
@@ -1602,7 +1360,7 @@ const DashboardScreen = ({ navigation }) => {
                 uri={item.image?.uri}
                 style={styles.offerImage}
                 resizeMode="cover"
-                
+
             />
             <View style={styles.offerOverlay}>
                 <View style={styles.offerDiscountContainer}>
@@ -1660,7 +1418,7 @@ const DashboardScreen = ({ navigation }) => {
     );
 
     const renderPopularService = ({ item }) => (
-        <TouchableOpacity style={styles.popularServiceCard} onPress={() => navigation.navigate('ServiceBookingScreen', { serviceId: item.id })}>
+        <TouchableOpacity style={styles.popularServiceCard} >
 
 
             <Image
@@ -1706,7 +1464,7 @@ const DashboardScreen = ({ navigation }) => {
     );
 
     const renderOnTheSpotService = ({ item }) => (
-        <TouchableOpacity style={styles.onTheSpotCard} onPress={() => navigation.navigate('ServiceBookingScreen', { serviceId: item.id })}>
+        <TouchableOpacity style={styles.onTheSpotCard} >
 
             <Image
                 source={item.image}
@@ -1763,7 +1521,7 @@ const DashboardScreen = ({ navigation }) => {
     );
 
     const renderRebookService = ({ item }) => (
-        <TouchableOpacity style={styles.rebookCard} onPress={() => navigation.navigate('ServiceBookingScreen', { serviceId: item.id })}>
+        <TouchableOpacity style={styles.rebookCard} >
 
 
             <Image

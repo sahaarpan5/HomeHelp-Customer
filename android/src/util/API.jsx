@@ -1,4 +1,5 @@
 const BASE_URL = 'https://www.geniushomehelp.com/api';
+const LOCAL = 'https://q4rxnp3k-44307.inc1.devtunnels.ms/api';
 
 const API = {
      SEND_OTP: `${BASE_URL}/Auth/send-otp`,

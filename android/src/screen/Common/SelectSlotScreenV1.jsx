@@ -24,6 +24,12 @@ import RazorpayCheckout from 'react-native-razorpay';
 
 import API from '../../util/API';
 import axios from 'axios';
+import ServiceOrbitLoader from '../../util/ServiceOrbitLoader';
+import {
+    initializeCartNotifications,
+    scheduleCartReminder,
+    cancelCartReminder,
+} from '../../util/CartNotification';
 
 const { width, height } = Dimensions.get('window');
 
@@ -164,6 +170,9 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
     console.log('Customer Mobile:', customerMobile);
     console.log('Address Details:', addressDetails);
     console.log('Address:', address);
+
+
+    const [isPaymentLoading, setIsPaymentLoading] = useState(false);
 
 
     const [isBookingLoading, setIsBookingLoading] = useState(false);
@@ -596,6 +605,12 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
         }
     }, [showBillSummary]);
 
+
+
+    useEffect(() => {
+        initializeCartNotifications();
+    }, []);
+
     /*
     |--------------------------------------------------------------------------
     | MODAL ANIMATION
@@ -632,10 +647,65 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
     const removeServicesFromCart = async () => {
         try {
             await AsyncStorage.removeItem('selectedServices');
+             await cancelCartReminder();
 
             console.log('Cart cleared successfully');
         } catch (error) {
             console.log('Error clearing cart:', error);
+        }
+    };
+
+
+    const validatePayment = async ({
+        orderId,
+        paymentId,
+        signature,
+    }) => {
+        try {
+            setIsPaymentLoading(true);
+
+            const token = await AsyncStorage.getItem('token');
+
+            const response = await axios.post(
+                'https://www.geniushomehelp.com/api/Booking/validate-payment',
+                {
+                    orderId,
+                    paymentId,
+                    signature,
+                },
+                {
+                    headers: {
+                        Accept: '*/*',
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log('Validate Payment Response:', response.data);
+
+            const {
+                bookingId,
+                bookingNo,
+                bookingStatus,
+                paymentStatus,
+            } = response.data || {};
+
+
+
+            setOrderID(bookingNo);
+            setShowPaymentModal(true);
+
+        } catch (error) {
+            console.log(
+                'Validate Payment Error:',
+                error?.response?.data || error.message
+            );
+
+
+
+        } finally {
+            setIsPaymentLoading(false);
         }
     };
 
@@ -706,7 +776,17 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
             );
 
             setPaymentResponse(paymentResponse);
-            setShowPaymentModal(true);
+
+
+            await removeServicesFromCart();
+
+
+
+            await validatePayment({
+                orderId: paymentResponse.razorpay_order_id,
+                paymentId: paymentResponse.razorpay_payment_id,
+                signature: paymentResponse.razorpay_signature,
+            });
 
             // Alert.alert(
             //     'Payment Successful',
@@ -2293,7 +2373,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
                 const orderId =
                     response.data?.booking?.orderId;
-                setOrderID(orderId);
+
 
 
 
@@ -4381,7 +4461,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
                                 setShowPaymentModal(false);
 
-                                await removeServicesFromCart();
+                                
 
                                 navigation.replace(
                                     'BookingConfirmationScreen',
@@ -4426,6 +4506,18 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
                 </View>
             </Modal>
+
+
+            {isPaymentLoading && (
+                <View style={styles.loaderOverlay}>
+                    <ServiceOrbitLoader />
+
+                    <Text style={styles.loaderText}>
+                        Confirming your payment...
+                    </Text>
+                </View>
+            )}
+
 
 
 
@@ -6010,6 +6102,27 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 22,
         marginLeft: 10,
+    },
+
+
+    loaderOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255,255,255,0.92)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 9999,
+        elevation: 9999,
+    },
+
+    loaderText: {
+        marginTop: 18,
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#76577F',
     },
 });
 
