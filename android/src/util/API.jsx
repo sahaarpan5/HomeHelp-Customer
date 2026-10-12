@@ -15,6 +15,7 @@ const API = {
     CUSTOMER_SERVICE_DETAILS: `${BASE_URL}/Service/get-for-customer`,
 
     CUSTOMER_BOOKING: `${BASE_URL}/Booking`,
+    CUSTOMER_MY_BOOKINGS: `${BASE_URL}/Booking/customer/my-bookings`,
 };
 
 // Add more endpoints here as needed

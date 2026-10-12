@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     View,
     Text,
@@ -13,7 +13,12 @@ import {
     Alert,
     Clipboard,
     Linking,
+    ActivityIndicator,
 } from 'react-native';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import API from '../../util/API';
+// Adjust this path to your API file
 
 
 const { width, height } = Dimensions.get('window');
@@ -22,12 +27,29 @@ const MyBookingsScreen = ({ navigation }) => {
     // States
     const [refreshing, setRefreshing] = useState(false);
 
+    const [upcomingBookings, setUpcomingBookings] = useState([]);
+    const [upcomingPage, setUpcomingPage] = useState(1);
+    const [hasMoreUpcoming, setHasMoreUpcoming] = useState(true);
+    const [loadingUpcoming, setLoadingUpcoming] = useState(false);
+    const [loadingMoreUpcoming, setLoadingMoreUpcoming] = useState(false);
+
+    const PAGE_SIZE = 5;
+
+
+    const [cancelledBookings, setCancelledBookings] = useState([]);
+    const [cancelledPage, setCancelledPage] = useState(1);
+    const [hasMoreCancelled, setHasMoreCancelled] = useState(true);
+    const [loadingCancelled, setLoadingCancelled] = useState(false);
+    const [loadingMoreCancelled, setLoadingMoreCancelled] = useState(false);
+
+    const CANCELLED_PAGE_SIZE = 5;
+
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(30)).current;
 
     const COLORS = {
-       gold: '#d6bceb',
+        gold: '#d6bceb',
         goldLight: '#76577F',
         goldDark: '#C4B0D3',
         goldFade: 'rgba(179, 154, 199, 0.1)',
@@ -99,30 +121,7 @@ const MyBookingsScreen = ({ navigation }) => {
     ];
 
     // Sample Data - Upcoming Bookings
-    const upcomingBookings = [
-        {
-            id: '5',
-            serviceName: 'Kitchen Deep Cleaning',
-            provider: 'HomeHelp',
-            date: '5 Jan 2027',
-            time: '09:00 AM',
-            status: 'Confirmed',
-            image: require('../../asset/kitchenclean.png'),
-            address: '123, Main Street, Mumbai',
-            price: '₹449',
-        },
-        {
-            id: '6',
-            serviceName: 'Bathroom Cleaning',
-            provider: 'HomeHelp',
-            date: '12 Jan 2027',
-            time: '11:00 AM',
-            status: 'Confirmed',
-            image: require('../../asset/bathroomclean.png'),
-            address: '456, Park Avenue, Mumbai',
-            price: '₹699',
-        },
-    ];
+
 
     // Combine all data for FlatList
     const sections = [
@@ -153,6 +152,17 @@ const MyBookingsScreen = ({ navigation }) => {
             type: 'previous',
             emptyMessage: 'No previous bookings found',
         },
+
+
+        {
+            id: 'cancelled',
+            title: 'Cancelled Bookings',
+            icon: require('../../asset/closefill.png'),
+            iconColor: COLORS.red,
+            data: cancelledBookings,
+            type: 'cancelled',
+            emptyMessage: 'No cancelled bookings found',
+        },
     ];
 
     useEffect(() => {
@@ -170,9 +180,236 @@ const MyBookingsScreen = ({ navigation }) => {
         ]).start();
     }, []);
 
-    const onRefresh = () => {
+    useEffect(() => {
+        fetchUpcomingBookings(1, false);
+        fetchCancelledBookings(1, false);
+    }, []);
+
+
+
+    const formatBookingDate = (dateString) => {
+        if (!dateString) return 'Date not available';
+
+        const date = new Date(`${dateString}T00:00:00`);
+
+        if (Number.isNaN(date.getTime())) return dateString;
+
+        return date.toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+        });
+    };
+
+    const formatBookingTime = (timeString) => {
+        if (!timeString) return '--:--';
+
+        const [hourString, minuteString] = timeString.split(':');
+        const hour = Number(hourString);
+        const minute = Number(minuteString);
+
+        if (
+            !Number.isFinite(hour) ||
+            !Number.isFinite(minute) ||
+            hour < 0 ||
+            hour > 23
+        ) {
+            return timeString;
+        }
+
+        const date = new Date();
+        date.setHours(hour, minute, 0, 0);
+
+        return date.toLocaleTimeString('en-IN', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        });
+    };
+
+
+    const getBookingImage = (serviceName = '') => {
+        const service = serviceName.toLowerCase();
+
+
+
+        return require('../../asset/kitchenclean.png');
+    };
+
+
+    const mapUpcomingBooking = (item) => ({
+        ...item,
+        id: item.bookingDetailId || item.bookingId,
+        serviceName: item.serviceName || 'Home Service',
+        provider: item.partnerName || 'HomeHelp',
+        date: formatBookingDate(item.serviceDate),
+        time: `${formatBookingTime(item.startTime)} - ${formatBookingTime(item.endTime)}`,
+        status: item.status || 'Upcoming',
+        image: item.serviceBannerImageUrl
+            ? { uri: item.serviceBannerImageUrl }
+            : getBookingImage(item.serviceName),
+        address: [
+            item.addressLine1,
+            item.city,
+            item.postalCode,
+        ]
+            .filter(Boolean)
+            .join(', ') || 'Address not available',
+        price: `₹${Number(item.rate || 0).toLocaleString('en-IN')}`,
+        paymentStatus: item.paymentStatus || 'Pending',
+    });
+
+
+    const fetchUpcomingBookings = useCallback(
+        async (page = 1, append = false) => {
+            if (loadingUpcoming || loadingMoreUpcoming) return;
+
+            if (append) {
+                setLoadingMoreUpcoming(true);
+            } else {
+                setLoadingUpcoming(true);
+            }
+
+            try {
+                const token = await AsyncStorage.getItem('token');
+
+                if (!token) {
+                    Alert.alert(
+                        'Session expired',
+                        'Please log in again to view your bookings.'
+                    );
+                    return;
+                }
+
+                const url =
+                    `${API.CUSTOMER_MY_BOOKINGS}` +
+                    `?status=Upcoming&page=${page}&pageSize=${PAGE_SIZE}`;
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        Accept: '*/*',
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Request failed (${response.status})`);
+                }
+
+                const responseData = await response.json();
+
+                // The API example returns an array directly.
+                const records = Array.isArray(responseData)
+                    ? responseData
+                    : responseData?.data ??
+                    responseData?.items ??
+                    responseData?.bookings ??
+                    [];
+
+                const mappedBookings = records.map(mapUpcomingBooking);
+
+                setUpcomingBookings(previous =>
+                    append
+                        ? [...previous, ...mappedBookings]
+                        : mappedBookings
+                );
+
+                setUpcomingPage(page);
+                setHasMoreUpcoming(records.length === PAGE_SIZE);
+            } catch (error) {
+                console.error('Fetch upcoming bookings error:', error);
+                Alert.alert(
+                    'Error',
+                    'Unable to load upcoming bookings. Please try again.'
+                );
+            } finally {
+                setLoadingUpcoming(false);
+                setLoadingMoreUpcoming(false);
+            }
+        },
+        [loadingUpcoming, loadingMoreUpcoming]
+    );
+
+
+    const fetchCancelledBookings = async (page = 1, append = false) => {
+        if (loadingCancelled || loadingMoreCancelled) return;
+
+        if (append) {
+            setLoadingMoreCancelled(true);
+        } else {
+            setLoadingCancelled(true);
+        }
+
+        try {
+            const token = await AsyncStorage.getItem('token');
+
+            if (!token) {
+                Alert.alert(
+                    'Session expired',
+                    'Please log in again to view your bookings.'
+                );
+                return;
+            }
+
+            const url =
+                `${API.CUSTOMER_MY_BOOKINGS}` +
+                `?status=Cancelled&page=${page}&pageSize=${CANCELLED_PAGE_SIZE}`;
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    Accept: '*/*',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Request failed (${response.status})`);
+            }
+
+            const responseData = await response.json();
+
+            const records = Array.isArray(responseData)
+                ? responseData
+                : responseData?.data ??
+                responseData?.items ??
+                responseData?.bookings ??
+                [];
+
+            const mappedBookings = records.map(mapUpcomingBooking);
+
+            setCancelledBookings(previous =>
+                append
+                    ? [...previous, ...mappedBookings]
+                    : mappedBookings
+            );
+
+            setCancelledPage(page);
+            setHasMoreCancelled(records.length === CANCELLED_PAGE_SIZE);
+        } catch (error) {
+            console.error('Fetch cancelled bookings error:', error);
+            Alert.alert(
+                'Error',
+                'Unable to load cancelled bookings. Please try again.'
+            );
+        } finally {
+            setLoadingCancelled(false);
+            setLoadingMoreCancelled(false);
+        }
+    };
+
+    const onRefresh = async () => {
         setRefreshing(true);
-        setTimeout(() => setRefreshing(false), 1500);
+
+        try {
+        await Promise.all([
+            fetchUpcomingBookings(1, false),
+            fetchCancelledBookings(1, false),
+        ]);
+    } finally {
+            setRefreshing(false);
+        }
     };
 
     const copyToClipboard = (text) => {
@@ -311,6 +548,89 @@ const MyBookingsScreen = ({ navigation }) => {
         </View>
     );
 
+
+    const renderCancelledBookingItem = (item) => (
+        <View style={styles.bookingCard}>
+            <Image
+                source={item.image}
+                style={styles.bookingImage}
+                resizeMode="cover"
+            />
+
+            <View style={styles.bookingContent}>
+                <View style={styles.bookingHeader}>
+                    <Text style={styles.bookingName}>
+                        {item.serviceName}
+                    </Text>
+
+                    <View
+                        style={[
+                            styles.bookingStatusBadge,
+                            { backgroundColor: '#FDECEC' },
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                styles.bookingStatusText,
+                                { color: '#D93025' },
+                            ]}
+                        >
+                            Cancelled
+                        </Text>
+                    </View>
+                </View>
+
+                <Text style={styles.bookingDate}>{item.date}</Text>
+
+                <View style={styles.paymentStatusContainer}>
+                    <Text style={styles.paymentStatusLabel}>
+                        Payment:
+                    </Text>
+
+                    <View
+                        style={[
+                            styles.paymentStatusBadge,
+                            {
+                                backgroundColor:
+                                    item.paymentStatus?.toLowerCase() === 'paid'
+                                        ? '#E8F8EF'
+                                        : '#FDECEC',
+                            },
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                styles.paymentStatusText,
+                                {
+                                    color:
+                                        item.paymentStatus?.toLowerCase() === 'paid'
+                                            ? '#218838'
+                                            : '#D93025',
+                                },
+                            ]}
+                        >
+                            {item.paymentStatus || 'Unknown'}
+                        </Text>
+                    </View>
+                </View>
+
+                <View style={styles.upcomingDateTime}>
+                    <Text style={styles.upcomingDateText}>
+                        {item.time}
+                    </Text>
+                </View>
+
+                
+
+                <View style={styles.bookingFooter}>
+                    <Text style={styles.bookingPrice}>
+                        {item.price}
+                    </Text>
+                </View>
+            </View>
+        </View>
+    );
+
     const renderPreviousBookingItem = (item) => (
         <TouchableOpacity
             style={styles.bookingCard}
@@ -401,19 +721,44 @@ const MyBookingsScreen = ({ navigation }) => {
         <TouchableOpacity
             style={styles.bookingCard}
             activeOpacity={0.8}
-            onPress={() => {
+        // onPress={() => {
 
-                navigation.navigate('BookingScheduleScreen', {
-                    booking: item,
-                });
+        //     navigation.navigate('BookingScheduleScreen', {
+        //         booking: item,
+        //     });
 
-            }}
+        // }}
         >
             <Image source={item.image} style={styles.bookingImage} />
             <View style={styles.bookingContent}>
                 <View style={styles.bookingHeader}>
                     <Text style={styles.bookingName}>{item.serviceName}</Text>
-                    <View style={[
+                    <View
+                        style={[
+                            styles.paymentStatusBadge,
+                            {
+                                backgroundColor:
+                                    item.paymentStatus === 'Paid'
+                                        ? '#E8F8EF'
+                                        : '#FFF3E0',
+                            },
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                styles.paymentStatusText,
+                                {
+                                    color:
+                                        item.paymentStatus === 'Paid'
+                                            ? '#218838'
+                                            : '#E67E22',
+                                },
+                            ]}
+                        >
+                            {item.paymentStatus}
+                        </Text>
+                    </View>
+                    {/* <View style={[
                         styles.bookingStatusBadge,
                         { backgroundColor: item.status === 'Confirmed' ? COLORS.green + '20' : COLORS.warning + '20' }
                     ]}>
@@ -423,9 +768,9 @@ const MyBookingsScreen = ({ navigation }) => {
                         ]}>
                             {item.status}
                         </Text>
-                    </View>
+                    </View> */}
                 </View>
-                <Text style={styles.bookingProvider}>{item.provider}</Text>
+
                 <View style={styles.upcomingDateTime}>
                     <View style={styles.upcomingDateRow}>
 
@@ -471,7 +816,9 @@ const MyBookingsScreen = ({ navigation }) => {
 
                         }}
                     />
-                    <Text style={styles.upcomingAddressText}>{item.address}</Text>
+                    <Text style={styles.upcomingAddressText}
+                        numberOfLines={2}
+                        ellipsizeMode="tail">{item.address}</Text>
                 </View>
 
                 <View style={styles.bookingFooter}>
@@ -497,6 +844,20 @@ const MyBookingsScreen = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
                 </View>
+
+
+
+
+                {item.isPartnerAssigned === true && (
+                    <View style={styles.partnerAssignedContainer}>
+                        <Text style={styles.partnerAssignedLabel}>
+                            Partner Assigned:
+                        </Text>
+                        <Text style={styles.partnerAssignedName}>
+                            {item.partnerName || 'Name not available'}
+                        </Text>
+                    </View>
+                )}
             </View>
         </TouchableOpacity>
     );
@@ -515,11 +876,7 @@ const MyBookingsScreen = ({ navigation }) => {
                 />
                 <Text style={styles.sectionTitle}>{section.title}</Text>
             </View>
-            {section.type !== 'inprogress' && section.data.length > 0 && (
-                <TouchableOpacity>
-                    <Text style={styles.seeAllText}>See All</Text>
-                </TouchableOpacity>
-            )}
+
         </View>
     );
 
@@ -530,7 +887,11 @@ const MyBookingsScreen = ({ navigation }) => {
             return renderInProgressCard(item);
         } else if (section.type === 'previous') {
             return renderPreviousBookingItem(item);
+        } else if (section.type === 'cancelled') {
+            return renderCancelledBookingItem(item);
         }
+
+
         return null;
     };
 
@@ -556,19 +917,138 @@ const MyBookingsScreen = ({ navigation }) => {
         </View>
     );
 
+    // const renderSection = ({ item: section }) => {
+    //     const hasData = section.data.length > 0;
+
+    //     return (
+    //         <View style={styles.sectionContainer}>
+    //             {renderSectionHeader({ section })}
+
+    //             {section.type === 'upcoming' && loadingUpcoming && !hasData ? (
+    //                 <ActivityIndicator
+    //                     size="large"
+    //                     color={COLORS.goldDark}
+    //                     style={{ paddingVertical: 25 }}
+    //                 />
+    //             ) : hasData ? (
+    //                 <View>
+    //                     {section.data.map((item) => (
+    //                         <View key={item.id}>
+    //                             {renderSectionItem({ item, section })}
+    //                         </View>
+    //                     ))}
+
+    //                     {section.type === 'upcoming' && hasMoreUpcoming && (
+    //                         <TouchableOpacity
+    //                             style={styles.loadMoreButton}
+    //                             disabled={loadingMoreUpcoming}
+    //                             onPress={() =>
+    //                                 fetchUpcomingBookings(upcomingPage + 1, true)
+    //                             }
+    //                         >
+    //                             {loadingMoreUpcoming ? (
+    //                                 <ActivityIndicator
+    //                                     size="small"
+    //                                     color={COLORS.txtColor}
+    //                                 />
+    //                             ) : (
+    //                                 <Text style={styles.loadMoreText}>
+    //                                     Load More Bookings
+    //                                 </Text>
+    //                             )}
+    //                         </TouchableOpacity>
+    //                     )}
+    //                 </View>
+    //             ) : (
+    //                 renderEmptyState(section)
+    //             )}
+    //         </View>
+    //     );
+    // };
+
+
+
+
     const renderSection = ({ item: section }) => {
         const hasData = section.data.length > 0;
+
+        const isInitialLoading =
+            (section.type === 'upcoming' &&
+                loadingUpcoming &&
+                !hasData) ||
+            (section.type === 'cancelled' &&
+                loadingCancelled &&
+                !hasData);
 
         return (
             <View style={styles.sectionContainer}>
                 {renderSectionHeader({ section })}
-                {hasData ? (
+
+                {isInitialLoading ? (
+                    <ActivityIndicator
+                        size="large"
+                        color={COLORS.goldDark}
+                        style={{ paddingVertical: 25 }}
+                    />
+                ) : hasData ? (
                     <View>
                         {section.data.map((item) => (
                             <View key={item.id}>
                                 {renderSectionItem({ item, section })}
                             </View>
                         ))}
+
+                        {/* Upcoming Bookings Pagination */}
+                        {section.type === 'upcoming' &&
+                            hasMoreUpcoming && (
+                                <TouchableOpacity
+                                    style={styles.loadMoreButton}
+                                    disabled={loadingMoreUpcoming}
+                                    onPress={() =>
+                                        fetchUpcomingBookings(
+                                            upcomingPage + 1,
+                                            true
+                                        )
+                                    }
+                                >
+                                    {loadingMoreUpcoming ? (
+                                        <ActivityIndicator
+                                            size="small"
+                                            color={COLORS.txtColor}
+                                        />
+                                    ) : (
+                                        <Text style={styles.loadMoreText}>
+                                            Load More Bookings
+                                        </Text>
+                                    )}
+                                </TouchableOpacity>
+                            )}
+
+                        {/* Cancelled Bookings Pagination */}
+                        {section.type === 'cancelled' &&
+                            hasMoreCancelled && (
+                                <TouchableOpacity
+                                    style={styles.loadMoreButton}
+                                    disabled={loadingMoreCancelled}
+                                    onPress={() =>
+                                        fetchCancelledBookings(
+                                            cancelledPage + 1,
+                                            true
+                                        )
+                                    }
+                                >
+                                    {loadingMoreCancelled ? (
+                                        <ActivityIndicator
+                                            size="small"
+                                            color={COLORS.txtColor}
+                                        />
+                                    ) : (
+                                        <Text style={styles.loadMoreText}>
+                                            Load More Cancelled Bookings
+                                        </Text>
+                                    )}
+                                </TouchableOpacity>
+                            )}
                     </View>
                 ) : (
                     renderEmptyState(section)
@@ -1052,6 +1532,67 @@ const styles = StyleSheet.create({
         color: '#666666',
         marginTop: 2,
         textAlign: 'center',
+    },
+
+    loadMoreButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 13,
+        marginTop: 8,
+        marginBottom: 12,
+        borderRadius: 12,
+        backgroundColor: '#d6bceb',
+        borderWidth: 1,
+        borderColor: '#C4B0D3',
+    },
+
+    loadMoreText: {
+        color: '#403746',
+        fontSize: 14,
+        fontWeight: '700',
+    },
+
+    partnerAssignedContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        marginTop: 6,
+    },
+
+    partnerAssignedLabel: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#76577F',
+        marginRight: 4,
+    },
+
+    partnerAssignedName: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: '#403746',
+    },
+    paymentStatusContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
+        gap: 6,
+    },
+
+    paymentStatusLabel: {
+        fontSize: 12,
+        color: '#666666',
+        fontWeight: '500',
+    },
+
+    paymentStatusBadge: {
+        paddingHorizontal: 9,
+        paddingVertical: 3,
+        borderRadius: 12,
+    },
+
+    paymentStatusText: {
+        fontSize: 11,
+        fontWeight: '700',
     },
 });
 
