@@ -44,6 +44,20 @@ const MyBookingsScreen = ({ navigation }) => {
 
     const CANCELLED_PAGE_SIZE = 5;
 
+
+    const [inProgressBookings, setInProgressBookings] = useState([]);
+    const [loadingInProgress, setLoadingInProgress] = useState(false);
+
+
+
+    const [previousBookings, setPreviousBookings] = useState([]);
+    const [previousPage, setPreviousPage] = useState(1);
+    const [hasMorePrevious, setHasMorePrevious] = useState(true);
+    const [loadingPrevious, setLoadingPrevious] = useState(false);
+    const [loadingMorePrevious, setLoadingMorePrevious] = useState(false);
+
+    const PREVIOUS_PAGE_SIZE = 10;
+
     // Animation values
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(30)).current;
@@ -71,98 +85,71 @@ const MyBookingsScreen = ({ navigation }) => {
     };
 
     // Sample Data - In Progress (Always one item)
-    const inProgressData = {
-        id: '1',
-        serviceName: 'Home Cleaning',
-        provider: 'HomeHelp',
-        status: 'In Progress',
-        items: ['Living Room', 'Kitchen', 'Bathrooms'],
-        startOtp: '4826',
-        endOtp: '7391',
-        providerPhone: '+91 98765 43210',
-    };
+
 
     // Sample Data - Previous Bookings
-    const previousBookings = [
 
-        {
-            id: '1',
-            serviceName: 'Cooking Support',
-            provider: 'HomeHelp',
-            date: '10 Dec 2026',
-            status: 'Completed',
-            rating: 4.5,
-            image: require('../../asset/cooking.png'),
-            price: '₹599',
-            feedback: 'Good quality cleaning.',
-        },
-        {
-            id: '2',
-            serviceName: 'Kitchen Cleaning',
-            provider: 'HomeHelp',
-            date: '5 Dec 2026',
-            status: 'Completed',
-            rating: 4.9,
-            image: require('../../asset/kitchenclean.png'),
-            price: '₹349',
-            feedback: 'Excellent work! Very thorough.',
-        },
-        {
-            id: '2',
-            serviceName: 'Bathroom Cleaning',
-            provider: 'HomeHelp',
-            date: '8 Dec 2025',
-            status: 'Cancelled',
-            rating: 4.9,
-            image: require('../../asset/bathroomclean.png'),
-            price: '₹0',
-            feedback: '-.',
-        },
-    ];
 
     // Sample Data - Upcoming Bookings
 
 
     // Combine all data for FlatList
     const sections = [
-        {
-            id: 'upcoming',
-            title: 'Active & Upcoming Bookings',
-            icon: require('../../asset/calendar.png'),
-            iconColor: COLORS.goldBg,
-            data: upcomingBookings,
-            type: 'upcoming',
-            emptyMessage: 'No upcoming bookings scheduled',
-        },
-        {
-            id: 'inprogress',
-            title: 'In Progress',
-            icon: require('../../asset/time-outline.png'),
-            iconColor: COLORS.purple,
-            data: inProgressData ? [inProgressData] : [],
-            type: 'inprogress',
-            emptyMessage: 'No services in progress',
-        },
-        {
-            id: 'previous',
-            title: 'Previous Bookings',
-            icon: require('../../asset/checked.png'),
-            iconColor: COLORS.success,
-            data: previousBookings,
-            type: 'previous',
-            emptyMessage: 'No previous bookings found',
-        },
+        ...(upcomingBookings.length > 0 || loadingUpcoming
+            ? [
+                {
+                    id: 'upcoming',
+                    title: 'Active & Upcoming Bookings',
+                    icon: require('../../asset/calendar.png'),
+                    iconColor: COLORS.goldBg,
+                    data: upcomingBookings,
+                    type: 'upcoming',
+                    emptyMessage: 'No upcoming bookings scheduled',
+                },
+            ]
+            : []),
+        ...(inProgressBookings.length > 0 || loadingInProgress
+            ? [
+                {
+                    id: 'inprogress',
+                    title: 'In Progress',
+                    icon: require('../../asset/time-outline.png'),
+                    iconColor: COLORS.purple,
+                    data: inProgressBookings,
+                    type: 'inprogress',
+                    emptyMessage: 'No services in progress',
+                },
+            ]
+            : []),
 
+        ...(previousBookings.length > 0 || loadingPrevious
+            ? [
 
-        {
-            id: 'cancelled',
-            title: 'Cancelled Bookings',
-            icon: require('../../asset/closefill.png'),
-            iconColor: COLORS.red,
-            data: cancelledBookings,
-            type: 'cancelled',
-            emptyMessage: 'No cancelled bookings found',
-        },
+                {
+                    id: 'previous',
+                    title: 'Previous Bookings',
+                    icon: require('../../asset/checked.png'),
+                    iconColor: COLORS.success,
+                    data: previousBookings,
+                    type: 'previous',
+                    emptyMessage: 'No previous bookings found',
+                },
+            ]
+            : []),
+
+       ...(cancelledBookings.length > 0 || loadingCancelled
+            ? [
+                {
+                    id: 'cancelled',
+                    title: 'Cancelled Bookings',
+                    icon: require('../../asset/closefill.png'),
+                    iconColor: COLORS.red,
+                    data: cancelledBookings,
+                    type: 'cancelled',
+                    emptyMessage: 'No cancelled bookings found',
+                },
+            ]
+            : []),
     ];
 
     useEffect(() => {
@@ -183,6 +170,8 @@ const MyBookingsScreen = ({ navigation }) => {
     useEffect(() => {
         fetchUpcomingBookings(1, false);
         fetchCancelledBookings(1, false);
+        fetchInProgressBookings();
+        fetchPreviousBookings(1, false);
     }, []);
 
 
@@ -257,6 +246,8 @@ const MyBookingsScreen = ({ navigation }) => {
             .join(', ') || 'Address not available',
         price: `₹${Number(item.rate || 0).toLocaleString('en-IN')}`,
         paymentStatus: item.paymentStatus || 'Pending',
+        otp: item.otp || '',
+        otpType: item.otpType || '',
     });
 
 
@@ -399,15 +390,182 @@ const MyBookingsScreen = ({ navigation }) => {
         }
     };
 
+
+    const fetchInProgressBookings = async () => {
+        if (loadingInProgress) return;
+
+        setLoadingInProgress(true);
+
+        try {
+            const token = await AsyncStorage.getItem('token');
+
+            if (!token) {
+                Alert.alert(
+                    'Session expired',
+                    'Please log in again to view your bookings.',
+                );
+                return;
+            }
+
+            const response = await fetch(
+                `${API.CUSTOMER_MY_BOOKINGS}?status=InProgress&page=1&pageSize=10`,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: '*/*',
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            );
+
+            if (!response.ok) {
+                throw new Error(`Request failed (${response.status})`);
+            }
+
+            const responseData = await response.json();
+
+            const records = Array.isArray(responseData)
+                ? responseData
+                : responseData?.data ??
+                responseData?.items ??
+                responseData?.bookings ??
+                [];
+
+            const mappedBookings = records.map(item => ({
+                ...item,
+                id: item.bookingDetailId || item.bookingId,
+                serviceName: item.serviceName || 'Home Service',
+                provider: item.partnerName || 'Partner not assigned',
+                providerPhone: item.partnerMobileNumber || '',
+                status: 'In Progress',
+                items: Array.isArray(item.items) ? item.items : [],
+                otp: item.otp || '',
+                otpType: item.otpType || '',
+                date: formatBookingDate(item.serviceDate),
+                time: `${formatBookingTime(item.startTime)} - ${formatBookingTime(item.endTime)}`,
+                image: item.serviceBannerImageUrl
+                    ? { uri: item.serviceBannerImageUrl }
+                    : getBookingImage(item.serviceName),
+                address: [
+                    item.addressLine1,
+                    item.city,
+                    item.postalCode,
+                ]
+                    .filter(Boolean)
+                    .join(', ') || 'Address not available',
+                price: `₹${Number(item.rate || 0).toLocaleString('en-IN')}`,
+            }));
+
+            setInProgressBookings(mappedBookings);
+        } catch (error) {
+            console.error('Fetch in-progress bookings error:', error);
+            Alert.alert(
+                'Error',
+                'Unable to load in-progress bookings. Please try again.',
+            );
+        } finally {
+            setLoadingInProgress(false);
+        }
+    };
+
+
+    const mapPreviousBooking = (item) => ({
+        ...item,
+        id: item.bookingDetailId || item.bookingId || item.bookingNo,
+        serviceName: item.serviceName || 'Home Service',
+        provider: item.partnerName || 'HomeHelp',
+        date: formatBookingDate(item.serviceDate || item.bookingDate),
+        time: `${formatBookingTime(item.startTime)} - ${formatBookingTime(item.endTime)}`,
+        status: item.status || 'Completed',
+
+        image: item.serviceBannerImageUrl
+            ? { uri: item.serviceBannerImageUrl }
+            : getBookingImage(item.serviceName),
+
+        price: `₹${Number(item.rate || 0).toLocaleString('en-IN')}`,
+        paymentStatus: item.paymentStatus || 'Unknown',
+        rating: item.rating ?? null,
+        feedback: item.feedback || '',
+    });
+
+    const fetchPreviousBookings = async (page = 1, append = false) => {
+        if (loadingPrevious || loadingMorePrevious) return;
+
+        if (append) {
+            setLoadingMorePrevious(true);
+        } else {
+            setLoadingPrevious(true);
+        }
+
+        try {
+            const token = await AsyncStorage.getItem('token');
+
+            if (!token) {
+                Alert.alert(
+                    'Session expired',
+                    'Please log in again to view your bookings.',
+                );
+                return;
+            }
+
+            const response = await fetch(
+                `${API.CUSTOMER_MY_BOOKINGS}?status=Completed&page=${page}&pageSize=${PREVIOUS_PAGE_SIZE}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: '*/*',
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            );
+
+            if (!response.ok) {
+                throw new Error(`Request failed (${response.status})`);
+            }
+
+            const responseData = await response.json();
+
+            const records = Array.isArray(responseData)
+                ? responseData
+                : responseData?.data ??
+                responseData?.items ??
+                responseData?.bookings ??
+                [];
+
+            const mappedBookings = records.map(mapPreviousBooking);
+
+            setPreviousBookings(previous =>
+                append
+                    ? [...previous, ...mappedBookings]
+                    : mappedBookings,
+            );
+
+            setPreviousPage(page);
+            setHasMorePrevious(records.length === PREVIOUS_PAGE_SIZE);
+        } catch (error) {
+            console.error('Fetch completed bookings error:', error);
+
+            Alert.alert(
+                'Error',
+                'Unable to load previous bookings. Please try again.',
+            );
+        } finally {
+            setLoadingPrevious(false);
+            setLoadingMorePrevious(false);
+        }
+    };
+
     const onRefresh = async () => {
         setRefreshing(true);
 
         try {
-        await Promise.all([
-            fetchUpcomingBookings(1, false),
-            fetchCancelledBookings(1, false),
-        ]);
-    } finally {
+            await Promise.all([
+                fetchUpcomingBookings(1, false),
+                fetchCancelledBookings(1, false),
+                fetchInProgressBookings(),
+                fetchPreviousBookings(1, false),
+            ]);
+        } finally {
             setRefreshing(false);
         }
     };
@@ -434,58 +592,58 @@ const MyBookingsScreen = ({ navigation }) => {
 
             <View style={styles.inProgressContent}>
                 <Text style={styles.inProgressServiceName}>{item.serviceName}</Text>
-                <Text style={styles.inProgressProvider}>{item.provider}</Text>
+                <Text style={styles.inProgressProvider}>Partner: {item.provider}</Text>
 
-                <View style={styles.inProgressItems}>
-                    <Text style={styles.inProgressItemsLabel}>Services:</Text>
-                    <View style={styles.inProgressItemsList}>
-                        {item.items.map((service, index) => (
-                            <View key={index} style={styles.inProgressItemTag}>
-                                <Text style={styles.inProgressItemText}>{service}</Text>
-                            </View>
-                        ))}
-                    </View>
-                </View>
+
 
                 {/* Start Service OTP Display */}
-                <View style={styles.otpDisplayCard}>
-                    <View style={styles.otpDisplayHeader}>
-
-                        <Image
-                            source={require('../../asset/key.png')} // Update the path as needed
-                            style={{
-                                width: 16,
-                                height: 16,
-                                resizeMode: 'contain',
-                                tintColor: COLORS.white
-
-
-                            }}
-                        />
-                        <Text style={styles.otpDisplayTitle}>Start Service OTP</Text>
-                    </View>
-                    <View style={styles.otpDisplayRow}>
-                        <Text style={styles.otpDisplayLabel}>Provide this OTP to the partner:</Text>
-                        <TouchableOpacity
-                            onPress={() => copyToClipboard(item.startOtp)}
-                            style={styles.otpCopyContainer}
-                        >
-                            <Text style={styles.otpDisplayValue}>{item.startOtp}</Text>
-
+                {/* Dynamic OTP Section */}
+                {item.otp && item.otpType ? (
+                    <View style={styles.otpDisplayCard}>
+                        <View style={styles.otpDisplayHeader}>
                             <Image
-                                source={require('../../asset/copy.png')} // Update the path as needed
+                                source={require('../../asset/key.png')}
                                 style={{
                                     width: 16,
                                     height: 16,
                                     resizeMode: 'contain',
-                                    tintColor: COLORS.white
-
-
+                                    tintColor: COLORS.white,
                                 }}
                             />
-                        </TouchableOpacity>
+
+                            <Text style={styles.otpDisplayTitle}>
+                                {item.otpType} OTP
+                            </Text>
+                        </View>
+
+                        <View style={styles.otpDisplayRow}>
+                            <Text style={styles.otpDisplayLabel}>
+                                Provide this OTP to the partner:
+                            </Text>
+
+                            <TouchableOpacity
+                                onPress={() => copyToClipboard(item.otp)}
+                                style={styles.otpCopyContainer}
+                                activeOpacity={0.8}
+                            >
+                                <Text style={styles.otpDisplayValue}>
+                                    {item.otp}
+                                </Text>
+
+                                <Image
+                                    source={require('../../asset/copy.png')}
+                                    style={{
+                                        width: 16,
+                                        height: 16,
+                                        resizeMode: 'contain',
+                                        tintColor: COLORS.white,
+                                    }}
+                                />
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
+                ) : null}
+
 
                 {/* End Service OTP Display */}
                 {/* <View style={[styles.otpDisplayCard, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
@@ -620,7 +778,7 @@ const MyBookingsScreen = ({ navigation }) => {
                     </Text>
                 </View>
 
-                
+
 
                 <View style={styles.bookingFooter}>
                     <Text style={styles.bookingPrice}>
@@ -728,8 +886,13 @@ const MyBookingsScreen = ({ navigation }) => {
         //     });
 
         // }}
+
+
         >
-            <Image source={item.image} style={styles.bookingImage} />
+
+            {!item.otp && (
+                <Image source={item.image} style={styles.bookingImage} />
+            )}
             <View style={styles.bookingContent}>
                 <View style={styles.bookingHeader}>
                     <Text style={styles.bookingName}>{item.serviceName}</Text>
@@ -803,46 +966,52 @@ const MyBookingsScreen = ({ navigation }) => {
                         <Text style={styles.upcomingDateText}>{item.time}</Text>
                     </View>
                 </View>
-                <View style={styles.upcomingAddress}>
+                {!item.otp && (
+                    <View style={styles.upcomingAddress}>
 
-                    <Image
-                        source={require('../../asset/location-outline.png')} // Update the path as needed
-                        style={{
-                            width: 14,
-                            height: 14,
-                            resizeMode: 'contain',
-                            tintColor: COLORS.textLight
+                        <Image
+                            source={require('../../asset/location-outline.png')} // Update the path as needed
+                            style={{
+                                width: 14,
+                                height: 14,
+                                resizeMode: 'contain',
+                                tintColor: COLORS.textLight
 
 
-                        }}
-                    />
-                    <Text style={styles.upcomingAddressText}
-                        numberOfLines={2}
-                        ellipsizeMode="tail">{item.address}</Text>
-                </View>
+                            }}
+                        />
+                        <Text style={styles.upcomingAddressText}
+                            numberOfLines={2}
+                            ellipsizeMode="tail">{item.address}</Text>
+                    </View>
+                )}
 
                 <View style={styles.bookingFooter}>
-                    <Text style={styles.bookingPrice}>{item.price}</Text>
-                    <View style={styles.bookingActions}>
-                        <TouchableOpacity style={styles.rescheduleButton}>
+                    {!item.otp && (
+                        <Text style={styles.bookingPrice}>{item.price}</Text>
+                    )}
+                    {!item.otp && (
+                        <View style={styles.bookingActions}>
+                            <TouchableOpacity style={styles.rescheduleButton}>
 
-                            <Image
-                                source={require('../../asset/calendar-outline.png')} // Update the path as needed
-                                style={{
-                                    width: 18,
-                                    height: 18,
-                                    resizeMode: 'contain',
-                                    tintColor: COLORS.txtColor
+                                <Image
+                                    source={require('../../asset/calendar-outline.png')} // Update the path as needed
+                                    style={{
+                                        width: 18,
+                                        height: 18,
+                                        resizeMode: 'contain',
+                                        tintColor: COLORS.txtColor
 
 
-                                }}
-                            />
-                            <Text style={styles.rescheduleButtonText}>Reschedule</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.cancelButton}>
-                            <Text style={styles.cancelButtonText}>Cancel</Text>
-                        </TouchableOpacity>
-                    </View>
+                                    }}
+                                />
+                                <Text style={styles.rescheduleButtonText}>Reschedule</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.cancelButton}>
+                                <Text style={styles.cancelButtonText}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
                 </View>
 
 
@@ -856,6 +1025,40 @@ const MyBookingsScreen = ({ navigation }) => {
                         <Text style={styles.partnerAssignedName}>
                             {item.partnerName || 'Name not available'}
                         </Text>
+                    </View>
+                )}
+
+
+                {item.otp && (
+                    <View style={styles.upcomingOtpCard}>
+                        <View style={styles.upcomingOtpHeader}>
+                            <Image
+                                source={require('../../asset/key.png')}
+                                style={styles.upcomingOtpIcon}
+                            />
+                            <Text style={styles.upcomingOtpTitle}>
+                                {item.otpType || 'Start Service OTP'}
+                            </Text>
+                        </View>
+
+                        <Text style={styles.upcomingOtpDescription}>
+                            Provide this OTP to the partner to start the service.
+                        </Text>
+
+                        <TouchableOpacity
+                            style={styles.upcomingOtpValueContainer}
+                            activeOpacity={0.8}
+                            onPress={() => copyToClipboard(item.otp)}
+                        >
+                            <Text style={styles.upcomingOtpValue}>
+                                {item.otp}
+                            </Text>
+
+                            <Image
+                                source={require('../../asset/copy.png')}
+                                style={styles.upcomingOtpCopyIcon}
+                            />
+                        </TouchableOpacity>
                     </View>
                 )}
             </View>
@@ -978,6 +1181,12 @@ const MyBookingsScreen = ({ navigation }) => {
                 !hasData) ||
             (section.type === 'cancelled' &&
                 loadingCancelled &&
+                !hasData) ||
+            (section.type === 'inprogress' &&
+                loadingInProgress &&
+                !hasData) ||
+            (section.type === 'previous' &&
+                loadingPrevious &&
                 !hasData);
 
         return (
@@ -1049,6 +1258,27 @@ const MyBookingsScreen = ({ navigation }) => {
                                     )}
                                 </TouchableOpacity>
                             )}
+
+                        {section.type === 'previous' && hasMorePrevious && (
+                            <TouchableOpacity
+                                style={styles.loadMoreButton}
+                                disabled={loadingMorePrevious}
+                                onPress={() =>
+                                    fetchPreviousBookings(previousPage + 1, true)
+                                }
+                            >
+                                {loadingMorePrevious ? (
+                                    <ActivityIndicator
+                                        size="small"
+                                        color={COLORS.txtColor}
+                                    />
+                                ) : (
+                                    <Text style={styles.loadMoreText}>
+                                        Load More Previous Bookings
+                                    </Text>
+                                )}
+                            </TouchableOpacity>
+                        )}
                     </View>
                 ) : (
                     renderEmptyState(section)
@@ -1593,6 +1823,66 @@ const styles = StyleSheet.create({
     paymentStatusText: {
         fontSize: 11,
         fontWeight: '700',
+    },
+    upcomingOtpCard: {
+        marginTop: 10,
+        padding: 12,
+        borderRadius: 12,
+        backgroundColor: '#F4ECFA',
+        borderWidth: 1,
+        borderColor: '#C4B0D3',
+    },
+
+    upcomingOtpHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+
+    upcomingOtpIcon: {
+        width: 18,
+        height: 18,
+        resizeMode: 'contain',
+        tintColor: '#76577F',
+        marginRight: 8,
+    },
+
+    upcomingOtpTitle: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: '#76577F',
+    },
+
+    upcomingOtpDescription: {
+        fontSize: 11,
+        color: '#666666',
+        marginBottom: 10,
+    },
+
+    upcomingOtpValueContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        alignSelf: 'flex-start',
+        backgroundColor: '#76577F',
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: 8,
+    },
+
+    upcomingOtpValue: {
+        fontSize: 20,
+        fontWeight: '800',
+        color: '#FFFFFF',
+        letterSpacing: 5,
+    },
+
+    upcomingOtpCopyIcon: {
+        width: 16,
+        height: 16,
+        resizeMode: 'contain',
+        tintColor: '#FFFFFF',
+        marginLeft: 12,
     },
 });
 
