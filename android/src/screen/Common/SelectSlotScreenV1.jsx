@@ -34,24 +34,24 @@ import {
 const { width, height } = Dimensions.get('window');
 
 const COLORS = {
-    gold: '#d6bceb',
-    goldLight: '#76577F',
-    goldDark: '#C4B0D3',
-    goldFade: 'rgba(179, 154, 199, 0.1)',
-    white: '#FFFFFF',
-    dark: '#1A1A1A',
-    textLight: '#666666',
-    lightBg: '#F8F6F0',
-    border: '#E8E3D8',
-    success: '#2ECC71',
-    purple: '#6C5CE7',
-    pink: '#FD79A8',
-    blue: '#0984E3',
-    green: '#00B894',
-    red: '#E17055',
-    orange: '#FDCB6E',
-    warning: '#F39C12',
-    txtColor: '#403746',
+    gold: '#D8B4FE',                            // was '#d6bceb'  → primary
+    goldLight: '#A855F7',                       // was '#76577F'  → secondary
+    goldDark: '#A855F7',                        // was '#C4B0D3'  → secondary
+    goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
+    white: '#FFFFFF',                           // unchanged
+    dark: '#2D1B4E',                            // was '#1A1A1A'
+    textLight: '#6B5B7A',                       // was '#666666'
+    lightBg: '#FAF5FF',                         // was '#F8F6F0'
+    border: '#EDE0FF',                          // was '#E8E3D8'
+    success: '#2ECC71',                         // unchanged (functional)
+    purple: '#A855F7',                          // was '#6C5CE7'  → secondary
+    pink: '#D8B4FE',                            // was '#FD79A8'  → primary
+    blue: '#A855F7',                            // was '#0984E3'  → secondary
+    green: '#00B894',                           // unchanged
+    red: '#E17055',                             // unchanged (functional)
+    orange: '#FDCB6E',                          // unchanged (functional)
+    warning: '#F39C12',                         // unchanged (functional)
+    txtColor: '#2D1B4E',                        // was '#403746'
 };
 
 const HALF_DAY_HOURS = 4;
@@ -391,7 +391,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
                         professionalName:
                             item.professional?.name ||
-                            'Select Any Professional',
+                            'Any Professional',
 
                         pricing:
                             service.pricing || [],
@@ -550,9 +550,9 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
     const ANY_PROFESSIONAL = {
         id: 'ANY',
-        name: 'Select Any Professional',
+        name: 'Any Professional',
         image:
-            'https://ui-avatars.com/api/?name=Any+Professional&background=76577F&color=fff&size=100',
+            'https://ui-avatars.com/api/?name=Any+Professional&background=A855F7&color=fff&size=100',
         rating: 0,
         jobsCompleted: 0,
         experience: 'All professionals',
@@ -1306,7 +1306,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
             const firstTime = times[0];
             return firstTime
                 ? `Available after 30 min • from ${firstTime}`
-                : 'Not available today';
+                : '-';
         }
 
         const times = timeSlots.filter(time =>
@@ -1316,7 +1316,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
         return firstTime
             ? `Available after 30 min • from ${firstTime}`
-            : 'Not available today';
+            : '-';
     };
 
     /*
@@ -1942,7 +1942,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
                     professionalName:
                         item.professional?.name ||
-                        'Select Any Professional',
+                        'Any Professional',
 
                     pricing:
                         service.pricing || [],
@@ -2092,7 +2092,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
 
                         professionalName:
                             item.professional?.name ||
-                            'Select Any Professional',
+                            'Any Professional',
 
                         pricing:
                             service.pricing || [],
@@ -2545,9 +2545,9 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                                             </View>
                                         )}
 
-                                        <Text style={styles.miniLastBooking}>
+                                        {/* <Text style={styles.miniLastBooking}>
                                             Last Booking: {item.lastBookingDate}
-                                        </Text>
+                                        </Text> */}
 
                                         {availabilityText && (
                                             <Text
@@ -3551,7 +3551,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                                     Professional:{' '}
                                     {slot.professionalName ||
                                         slot.professional?.name ||
-                                        'Select Any Professional'}
+                                        'Any Professional'}
                                 </Text>
 
                             </View>
@@ -3831,7 +3831,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
             <StatusBar
                 translucent={false}
                 barStyle="dark-content"
-                backgroundColor="#d6bceb"
+                backgroundColor="#D8B4FE"
             />
 
             {/* HEADER */}
@@ -4290,7 +4290,7 @@ const SelectSlotScreenV1 = ({ navigation, route }) => {
                                                 >
                                                     {
                                                         slot.professionalName ||
-                                                        'Select Any Professional'
+                                                        'Any Professional'
                                                     }
                                                 </Text>
 
@@ -4540,7 +4540,7 @@ const styles = StyleSheet.create({
 
     header: {
         height: 60,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -4733,7 +4733,7 @@ const styles = StyleSheet.create({
         marginTop: 12,
         paddingTop: 12,
         borderTopWidth: 1,
-        borderTopColor: '#EEE',
+        borderTopColor: '#F0E6FF',
     },
 
     dateBlockTitle: {
@@ -4793,7 +4793,7 @@ const styles = StyleSheet.create({
     hoursAmount: {
         fontSize: 11,
         fontWeight: '700',
-        color: '#76577F',
+        color: '#A855F7',
         marginTop: 3,
     },
 
@@ -5130,7 +5130,7 @@ const styles = StyleSheet.create({
         width: 45,
         height: 4,
         borderRadius: 3,
-        backgroundColor: '#DDD',
+        backgroundColor: '#EDE0FF',
         alignSelf: 'center',
         marginBottom: 15,
     },
@@ -5239,7 +5239,7 @@ const styles = StyleSheet.create({
     modalCloseButton: {
         height: 45,
         borderRadius: 12,
-        backgroundColor: '#F1EDF3',
+        backgroundColor: '#F5F0FA',
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 10,
@@ -5342,7 +5342,7 @@ const styles = StyleSheet.create({
     billSlotItem: {
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: '#F0F0F0',
+        borderBottomColor: '#F0E6FF',
     },
 
     billSlotHeader: {
@@ -5538,7 +5538,7 @@ const styles = StyleSheet.create({
 
         paddingHorizontal: 16,
 
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
     },
 
     backButton: {
@@ -5586,17 +5586,17 @@ const styles = StyleSheet.create({
     },
 
     hoursCardDisabled: {
-        backgroundColor: '#F3F3F3',
-        borderColor: '#E5E5E5',
+        backgroundColor: '#F5F0FA',
+        borderColor: '#EDE0FF',
         opacity: 0.55,
     },
 
     hoursTextDisabled: {
-        color: '#999999',
+        color: '#9E8FB0',
     },
 
     hoursAmountDisabled: {
-        color: '#999999',
+        color: '#9E8FB0',
     },
 
 
@@ -5632,12 +5632,12 @@ const styles = StyleSheet.create({
     billTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     billSubtitle: {
         fontSize: 13,
-        color: '#777777',
+        color: '#6B5B7A',
         marginTop: 4,
     },
 
@@ -5647,7 +5647,7 @@ const styles = StyleSheet.create({
 
         borderRadius: 18,
 
-        backgroundColor: '#F4EFF6',
+        backgroundColor: '#F5F0FA',
 
         alignItems: 'center',
         justifyContent: 'center',
@@ -5660,7 +5660,7 @@ const styles = StyleSheet.create({
         lineHeight: 27,
         fontWeight: '400',
 
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     billScroll: {
@@ -5680,7 +5680,7 @@ const styles = StyleSheet.create({
     billSectionTitle: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#333333',
+        color: '#2D1B4E',
 
         marginBottom: 10,
     },
@@ -5697,7 +5697,7 @@ const styles = StyleSheet.create({
         width: '30%',
 
         fontSize: 13,
-        color: '#777777',
+        color: '#6B5B7A',
     },
 
     billValue: {
@@ -5705,7 +5705,7 @@ const styles = StyleSheet.create({
 
         fontSize: 13,
         fontWeight: '600',
-        color: '#333333',
+        color: '#2D1B4E',
 
         textAlign: 'right',
     },
@@ -5715,7 +5715,7 @@ const styles = StyleSheet.create({
     },
 
     scheduleTypeBillCard: {
-        backgroundColor: '#F7F3F8',
+        backgroundColor: '#F5F0FA',
 
         borderRadius: 12,
 
@@ -5726,7 +5726,7 @@ const styles = StyleSheet.create({
     scheduleTypeBillText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     billServiceCard: {
@@ -5739,7 +5739,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
 
         borderWidth: 1,
-        borderColor: '#EEEEEE',
+        borderColor: '#EDE0FF',
     },
 
     billServiceHeader: {
@@ -5755,7 +5755,7 @@ const styles = StyleSheet.create({
 
         fontSize: 15,
         fontWeight: '700',
-        color: '#333333',
+        color: '#2D1B4E',
 
         marginRight: 10,
     },
@@ -5763,7 +5763,7 @@ const styles = StyleSheet.create({
     billServiceAmount: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     billDetailRow: {
@@ -5775,7 +5775,7 @@ const styles = StyleSheet.create({
 
     billDetailLabel: {
         fontSize: 12,
-        color: '#888888',
+        color: '#9E8FB0',
     },
 
     billDetailValue: {
@@ -5783,13 +5783,13 @@ const styles = StyleSheet.create({
 
         fontSize: 12,
         fontWeight: '600',
-        color: '#444444',
+        color: '#2D1B4E',
 
         textAlign: 'right',
     },
 
     emptyBillCard: {
-        backgroundColor: '#F8F8F8',
+        backgroundColor: '#FAF5FF',
 
         borderRadius: 12,
 
@@ -5800,18 +5800,18 @@ const styles = StyleSheet.create({
         textAlign: 'center',
 
         fontSize: 13,
-        color: '#888888',
+        color: '#9E8FB0',
     },
 
     billCalculationCard: {
-        backgroundColor: '#F8F8F8',
+        backgroundColor: '#FAF5FF',
 
         borderRadius: 14,
 
         padding: 15,
 
         borderWidth: 1,
-        borderColor: '#EEEEEE',
+        borderColor: '#EDE0FF',
     },
 
     billCalculationRow: {
@@ -5824,13 +5824,13 @@ const styles = StyleSheet.create({
 
     billCalculationLabel: {
         fontSize: 13,
-        color: '#666666',
+        color: '#6B5B7A',
     },
 
     billCalculationValue: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#333333',
+        color: '#2D1B4E',
     },
 
     discountText: {
@@ -5840,7 +5840,7 @@ const styles = StyleSheet.create({
     billCalculationDivider: {
         height: 1,
 
-        backgroundColor: '#E5E5E5',
+        backgroundColor: '#EDE0FF',
 
         marginVertical: 8,
     },
@@ -5857,12 +5857,12 @@ const styles = StyleSheet.create({
     totalBillLabel: {
         fontSize: 17,
         fontWeight: '700',
-        color: '#333333',
+        color: '#2D1B4E',
     },
 
     totalBillSmallText: {
         fontSize: 10,
-        color: '#999999',
+        color: '#9E8FB0',
 
         marginTop: 3,
     },
@@ -5871,7 +5871,7 @@ const styles = StyleSheet.create({
         fontSize: 21,
         fontWeight: '800',
 
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     confirmBookingSection: {
@@ -5884,7 +5884,7 @@ const styles = StyleSheet.create({
 
         borderRadius: 14,
 
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
 
         alignItems: 'center',
         justifyContent: 'center',
@@ -5984,14 +5984,14 @@ const styles = StyleSheet.create({
     paymentSuccessTitle: {
         fontSize: 24,
         fontWeight: '700',
-        color: '#2A2030',
+        color: '#2D1B4E',
         marginBottom: 7,
         textAlign: 'center',
     },
 
     paymentSuccessSubtitle: {
         fontSize: 14,
-        color: '#817687',
+        color: '#6B5B7A',
         textAlign: 'center',
         lineHeight: 20,
         marginBottom: 22,
@@ -5999,7 +5999,7 @@ const styles = StyleSheet.create({
 
     paymentAmountBox: {
         width: '100%',
-        backgroundColor: '#F7F3F9',
+        backgroundColor: '#F5F0FA',
         borderRadius: 17,
         paddingVertical: 14,
         alignItems: 'center',
@@ -6008,20 +6008,20 @@ const styles = StyleSheet.create({
 
     paymentAmountLabel: {
         fontSize: 12,
-        color: '#817687',
+        color: '#6B5B7A',
         marginBottom: 4,
     },
 
     paymentAmount: {
         fontSize: 28,
         fontWeight: '800',
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     paymentIdBox: {
         width: '100%',
         borderWidth: 1,
-        borderColor: '#E8E2EB',
+        borderColor: '#EDE0FF',
         borderRadius: 15,
         paddingHorizontal: 14,
         paddingVertical: 12,
@@ -6030,14 +6030,14 @@ const styles = StyleSheet.create({
 
     paymentIdLabel: {
         fontSize: 11,
-        color: '#8A7D90',
+        color: '#9E8FB0',
         marginBottom: 5,
     },
 
     paymentIdValue: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#302635',
+        color: '#2D1B4E',
     },
 
     paymentInfoBox: {
@@ -6069,7 +6069,7 @@ const styles = StyleSheet.create({
     paymentInfoText: {
         flex: 1,
         fontSize: 12,
-        color: '#53615A',
+        color: '#6B5B7A',
         lineHeight: 18,
     },
 
@@ -6077,7 +6077,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 54,
         borderRadius: 16,
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -6122,7 +6122,7 @@ const styles = StyleSheet.create({
         marginTop: 18,
         fontSize: 15,
         fontWeight: '600',
-        color: '#76577F',
+        color: '#A855F7',
     },
 });
 

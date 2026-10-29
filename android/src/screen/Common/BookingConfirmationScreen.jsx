@@ -47,24 +47,24 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
 
   const COLORS = {
-    gold: '#d6bceb',
-    goldLight: '#76577F',
-    goldDark: '#C4B0D3',
-    goldFade: 'rgba(179, 154, 199, 0.1)',
-    white: '#FFFFFF',
-    dark: '#1A1A1A',
-    textLight: '#666666',
-    lightBg: '#F8F6F0',
-    border: '#E8E3D8',
-    success: '#2ECC71',
-    purple: '#6C5CE7',
-    pink: '#FD79A8',
-    blue: '#0984E3',
-    green: '#00B894',
-    red: '#E17055',
-    orange: '#FDCB6E',
-    warning: '#F39C12',
-    txtColor: '#403746',
+    gold: '#D8B4FE',                            // was '#d6bceb'  → primary
+    goldLight: '#A855F7',                       // was '#76577F'  → secondary
+    goldDark: '#A855F7',                        // was '#C4B0D3'  → secondary
+    goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
+    white: '#FFFFFF',                           // unchanged
+    dark: '#2D1B4E',                            // was '#1A1A1A'
+    textLight: '#6B5B7A',                       // was '#666666'
+    lightBg: '#FAF5FF',                         // was '#F8F6F0'
+    border: '#EDE0FF',                          // was '#E8E3D8'
+    success: '#2ECC71',                         // unchanged (functional)
+    purple: '#A855F7',                          // was '#6C5CE7'  → secondary
+    pink: '#D8B4FE',                            // was '#FD79A8'  → primary
+    blue: '#A855F7',                            // was '#0984E3'  → secondary
+    green: '#00B894',                           // unchanged (functional — quick-action icon)
+    red: '#E17055',                             // unchanged (functional — cancel/error)
+    orange: '#FDCB6E',                          // unchanged
+    warning: '#F39C12',                         // unchanged
+    txtColor: '#2D1B4E',                        // was '#403746'
   };
 
   // Sample booking data
@@ -196,7 +196,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
             with{' '}
             {slot.professionalName ||
               slot.professional?.name ||
-              'Select Any Professional'}
+              'Any Professional'}
           </Text>
         </TouchableOpacity>
 
@@ -210,7 +210,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
+      <StatusBar barStyle="light-content" backgroundColor="#D8B4FE" />
 
       {/* Header */}
       <View style={styles.header}>
@@ -711,7 +711,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F6F0',
+    backgroundColor: '#FAF5FF',
   },
   header: {
     flexDirection: 'row',
@@ -720,7 +720,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 50,
     paddingBottom: 16,
-    backgroundColor: '#d6bceb',
+    backgroundColor: '#D8B4FE',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
@@ -730,7 +730,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#403746',
+    color: '#2D1B4E',
   },
   headerRight: {
     width: 32,
@@ -749,7 +749,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#76577F',
+    backgroundColor: '#A855F7',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#2ECC71',
@@ -766,7 +766,7 @@ const styles = StyleSheet.create({
   },
   successSubtitle: {
     fontSize: 14,
-    color: '#666666',
+    color: '#6B5B7A',
     marginTop: 4,
   },
   bookingIdContainer: {
@@ -774,19 +774,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     marginTop: 12,
-    backgroundColor: '#F8F6F0',
+    backgroundColor: '#F5F0FA',
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 12,
   },
   bookingIdLabel: {
     fontSize: 12,
-    color: '#666666',
+    color: '#6B5B7A',
   },
   bookingIdValue: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#C9A84C',
+    color: '#A855F7',
   },
   // Quick Actions
   quickActionsContainer: {
@@ -802,7 +802,7 @@ const styles = StyleSheet.create({
     padding: 12,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#F0EDE8',
+    borderColor: '#F0E6FF',
     shadowColor: 'rgba(0,0,0,0.04)',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -824,7 +824,7 @@ const styles = StyleSheet.create({
   },
   quickActionSubtitle: {
     fontSize: 10,
-    color: '#666666',
+    color: '#6B5B7A',
     marginTop: 2,
   },
   // Section
@@ -843,7 +843,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#F0EDE8',
+    borderColor: '#F0E6FF',
   },
   serviceItem: {
     flexDirection: 'row',
@@ -851,7 +851,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#F5F5F5',
+    borderBottomColor: '#F0E6FF',
   },
   serviceItemLast: {
     borderBottomWidth: 0,
@@ -865,7 +865,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#C9A84C',
+    backgroundColor: '#A855F7',
   },
   serviceName: {
     fontSize: 14,
@@ -873,13 +873,13 @@ const styles = StyleSheet.create({
   },
   serviceQuantity: {
     fontSize: 12,
-    color: '#666666',
+    color: '#6B5B7A',
     marginTop: 1,
   },
   servicePrice: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#C9A84C',
+    color: '#A855F7',
   },
   // Slots
   slotsCard: {
@@ -887,7 +887,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#F0EDE8',
+    borderColor: '#F0E6FF',
   },
   slotItem: {
     flexDirection: 'row',
@@ -899,7 +899,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#C9A84C',
+    backgroundColor: '#A855F7',
     marginTop: 4,
     marginRight: 12,
     zIndex: 1,
@@ -910,7 +910,7 @@ const styles = StyleSheet.create({
     top: 18,
     width: 2,
     height: 16,
-    backgroundColor: '#C9A84C',
+    backgroundColor: '#A855F7',
   },
   slotContent: {
     flex: 1,
@@ -922,7 +922,7 @@ const styles = StyleSheet.create({
   },
   slotTime: {
     fontSize: 12,
-    color: '#666666',
+    color: '#6B5B7A',
     marginTop: 1,
   },
   slotProfessionalRow: {
@@ -938,7 +938,7 @@ const styles = StyleSheet.create({
   },
   slotProfessional: {
     fontSize: 12,
-    color: '#76577F',
+    color: '#A855F7',
   },
   // Payment
   paymentToggle: {
@@ -950,7 +950,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     marginTop: 16,
     borderWidth: 1,
-    borderColor: '#F0EDE8',
+    borderColor: '#F0E6FF',
   },
   paymentToggleLeft: {
     flexDirection: 'row',
@@ -968,7 +968,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginTop: 8,
     borderWidth: 1,
-    borderColor: '#F0EDE8',
+    borderColor: '#F0E6FF',
   },
   paymentRow: {
     flexDirection: 'row',
@@ -977,7 +977,7 @@ const styles = StyleSheet.create({
   },
   paymentLabel: {
     fontSize: 14,
-    color: '#666666',
+    color: '#6B5B7A',
   },
   paymentValue: {
     fontSize: 14,
@@ -989,7 +989,7 @@ const styles = StyleSheet.create({
   },
   paymentDivider: {
     height: 1,
-    backgroundColor: '#F0EDE8',
+    backgroundColor: '#F0E6FF',
     marginVertical: 8,
   },
   paymentTotalRow: {
@@ -1005,13 +1005,13 @@ const styles = StyleSheet.create({
   },
   paymentTotalSubtext: {
     fontSize: 11,
-    color: '#666666',
+    color: '#6B5B7A',
     marginTop: 1,
   },
   paymentTotalValue: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#76577F',
+    color: '#A855F7',
   },
   paymentMethodRow: {
     flexDirection: 'row',
@@ -1020,18 +1020,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#F5F5F5',
+    borderTopColor: '#F0E6FF',
   },
   paymentMethodText: {
     fontSize: 12,
-    color: '#666666',
+    color: '#6B5B7A',
   },
   // Booking Details - Updated
   detailsCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#F0EDE8',
+    borderColor: '#F0E6FF',
     overflow: 'hidden',
   },
   detailRow: {
@@ -1040,7 +1040,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F5F5F5',
+    borderBottomColor: '#F0E6FF',
   },
   detailRowLast: {
     borderBottomWidth: 0,
@@ -1049,7 +1049,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: '#F8F6F0',
+    backgroundColor: '#F5F0FA',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -1059,13 +1059,13 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 11,
-    color: '#999999',
+    color: '#9E8FB0',
     textTransform: 'uppercase',
     letterSpacing: 0.3,
   },
   detailValue: {
     fontSize: 14,
-    color: '#1A1A1A',
+    color: '#2D1B4E',
     fontWeight: '500',
     marginTop: 2,
   },
@@ -1110,12 +1110,12 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#76577F',
+    borderColor: '#A855F7',
   },
   rescheduleButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#76577F',
+    color: '#A855F7',
   },
   cancelButton: {
     flex: 1,
@@ -1127,7 +1127,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#76577F',
+    borderColor: '#A855F7',
   },
   cancelButtonText: {
     fontSize: 14,
@@ -1145,7 +1145,7 @@ const styles = StyleSheet.create({
   },
   policyLinkText: {
     fontSize: 14,
-    color: '#76577F',
+    color: '#A855F7',
     fontWeight: '500',
   },
   // Appreciation Section
@@ -1161,7 +1161,7 @@ const styles = StyleSheet.create({
   },
   appreciationSubtitle: {
     fontSize: 13,
-    color: '#666666',
+    color: '#6B5B7A',
     marginTop: 2,
   },
   appreciationTips: {
@@ -1176,7 +1176,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#F0EDE8',
+    borderColor: '#F0E6FF',
   },
   appreciationTipIcon: {
     width: 36,
@@ -1195,7 +1195,7 @@ const styles = StyleSheet.create({
   },
   appreciationTipDesc: {
     fontSize: 11,
-    color: '#999999',
+    color: '#9E8FB0',
     marginTop: 1,
   },
   footerSpacer: {

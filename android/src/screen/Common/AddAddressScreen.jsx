@@ -80,24 +80,24 @@ const AddAddressScreen = ({ navigation }) => {
     const searchTimeout = useRef(null);
 
     const COLORS = {
-        gold: '#d6bceb',
-        goldLight: '#76577F',
-        goldDark: '#C4B0D3',
-        goldFade: 'rgba(179, 154, 199, 0.1)',
-        white: '#FFFFFF',
-        dark: '#1A1A1A',
-        textLight: '#666666',
-        lightBg: '#F8F6F0',
-        border: '#E8E3D8',
-        success: '#2ECC71',
-        purple: '#6C5CE7',
-        pink: '#FD79A8',
-        blue: '#0984E3',
-        green: '#00B894',
-        red: '#E17055',
-        orange: '#FDCB6E',
-        warning: '#F39C12',
-        txtColor: '#403746',
+        gold: '#D8B4FE',                            // was '#d6bceb'  → primary
+        goldLight: '#A855F7',                       // was '#76577F'  → secondary
+        goldDark: '#A855F7',                        // was '#C4B0D3'  → secondary
+        goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
+        white: '#FFFFFF',                           // unchanged
+        dark: '#2D1B4E',                            // was '#1A1A1A'
+        textLight: '#6B5B7A',                       // was '#666666'
+        lightBg: '#FAF5FF',                         // was '#F8F6F0'
+        border: '#EDE0FF',                          // was '#E8E3D8'
+        success: '#2ECC71',                         // unchanged (functional)
+        purple: '#A855F7',                          // was '#6C5CE7'  → secondary
+        pink: '#D8B4FE',                            // was '#FD79A8'  → primary
+        blue: '#A855F7',                            // was '#0984E3'  → secondary
+        green: '#00B894',                           // unchanged (functional)
+        red: '#E17055',                             // unchanged (functional)
+        orange: '#FDCB6E',                          // unchanged (functional)
+        warning: '#F39C12',                         // unchanged (functional)
+        txtColor: '#2D1B4E',                        // was '#403746'
     };
 
     // Address type options
@@ -898,7 +898,7 @@ const AddAddressScreen = ({ navigation }) => {
                                 <TextInput
                                     style={styles.searchInput}
                                     placeholder="Search your location"
-                                    placeholderTextColor="#999"
+                                    placeholderTextColor="#9E8FB0"
                                     value={selectedAddress}
                                     onChangeText={searchLocation}
                                     onFocus={() => {
@@ -932,7 +932,7 @@ const AddAddressScreen = ({ navigation }) => {
                                 {isSearchingLocation && (
                                     <ActivityIndicator
                                         size="small"
-                                        color="#FF8C00"
+                                        color="#A855F7"
                                     />
                                 )}
 
@@ -1077,7 +1077,7 @@ const AddAddressScreen = ({ navigation }) => {
                     </MapView>
                 ) : (
                     <View style={styles.mapLoadingContainer}>
-                        <ActivityIndicator size="large" color="#FF8C00" />
+                        <ActivityIndicator size="large" color="#A855F7" />
                         <Text style={styles.mapPlaceholderText}>
                             Fetching your location...
                         </Text>
@@ -1189,7 +1189,7 @@ const AddAddressScreen = ({ navigation }) => {
                     <TextInput
                         style={styles.formInput}
                         placeholder="Enter house/flat number"
-                        placeholderTextColor="#999"
+                        placeholderTextColor="#9E8FB0"
                         value={houseFlat}
                         onChangeText={setHouseFlat}
                     />
@@ -1200,7 +1200,7 @@ const AddAddressScreen = ({ navigation }) => {
                     <TextInput
                         style={styles.formInput}
                         placeholder="Nearby landmark"
-                        placeholderTextColor="#999"
+                        placeholderTextColor="#9E8FB0"
                         value={landmark}
                         onChangeText={setLandmark}
                     />
@@ -1210,7 +1210,7 @@ const AddAddressScreen = ({ navigation }) => {
                     <TextInput
                         style={styles.formInput}
                         placeholder="Enter pincode"
-                        placeholderTextColor="#999"
+                        placeholderTextColor="#9E8FB0"
                         value={pincode}
                         onChangeText={setPincode}
                     />
@@ -1252,7 +1252,7 @@ const AddAddressScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
+            <StatusBar barStyle="light-content" backgroundColor="#D8B4FE" />
 
             {/* Header - Left Aligned */}
             <View style={styles.header}>
@@ -1345,7 +1345,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -1356,7 +1356,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#403746',
+        color: '#2D1B4E',
         flex: 1,
     },
     content: {
@@ -1377,7 +1377,7 @@ const styles = StyleSheet.create({
         padding: 24,
         borderRadius: 16,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
         shadowColor: 'rgba(0,0,0,0.04)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -1396,11 +1396,11 @@ const styles = StyleSheet.create({
     optionTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     optionSubtitle: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 4,
     },
     locationLoader: {
@@ -1435,30 +1435,30 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         textAlign: 'center',
     },
     modalSubtitle: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         textAlign: 'center',
         marginTop: 4,
     },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         borderRadius: 12,
         paddingHorizontal: 16,
         paddingVertical: 10,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
     },
     searchInput: {
         flex: 1,
         fontSize: 15,
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         marginLeft: 10,
         paddingVertical: 0,
     },
@@ -1467,17 +1467,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         paddingVertical: 12,
         borderRadius: 12,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
     },
     currentLocationText: {
         fontSize: 15,
         fontWeight: '500',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     searchResultItem: {
         flexDirection: 'row',
@@ -1485,11 +1485,11 @@ const styles = StyleSheet.create({
         gap: 12,
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: '#F5F5F5',
+        borderBottomColor: '#F0E6FF',
     },
     searchResultText: {
         fontSize: 14,
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         flex: 1,
     },
     noResults: {
@@ -1498,7 +1498,7 @@ const styles = StyleSheet.create({
     },
     noResultsText: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
     },
     modalCloseButton: {
         alignItems: 'center',
@@ -1507,7 +1507,7 @@ const styles = StyleSheet.create({
     },
     modalCloseText: {
         fontSize: 14,
-        color: '#999',
+        color: '#9E8FB0',
         fontWeight: '500',
     },
     // Map View - Static Image
@@ -1523,7 +1523,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         backgroundColor: '#FFFFFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#F0EDE8',
+        borderBottomColor: '#F0E6FF',
     },
     mapBackButton: {
         padding: 4,
@@ -1531,7 +1531,7 @@ const styles = StyleSheet.create({
     mapHeaderTitle: {
         fontSize: 17,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     mapHeaderRight: {
         width: 32,
@@ -1539,7 +1539,7 @@ const styles = StyleSheet.create({
     mapPlaceholder: {
         flex: 1,
         position: 'relative',
-        backgroundColor: '#E8E3D8',
+        backgroundColor: '#EDE0FF',
     },
     mapImage: {
         width: '100%',
@@ -1556,7 +1556,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#A855F7',
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 3,
@@ -1614,11 +1614,11 @@ const styles = StyleSheet.create({
     mapAddressText: {
         flex: 1,
         fontSize: 14,
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         fontWeight: '500',
     },
     confirmLocationButton: {
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         paddingVertical: 12,
         borderRadius: 12,
         alignItems: 'center',
@@ -1641,7 +1641,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         backgroundColor: '#FFFFFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#F0EDE8',
+        borderBottomColor: '#F0E6FF',
     },
     formBackButton: {
         padding: 4,
@@ -1649,7 +1649,7 @@ const styles = StyleSheet.create({
     formHeaderTitle: {
         fontSize: 17,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     formHeaderRight: {
         width: 32,
@@ -1664,7 +1664,7 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         marginTop: 16,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
         shadowColor: 'rgba(0,0,0,0.04)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -1674,21 +1674,21 @@ const styles = StyleSheet.create({
     formLabel: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         marginBottom: 8,
     },
     selectedAddressContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         padding: 12,
         borderRadius: 10,
     },
     selectedAddressText: {
         flex: 1,
         fontSize: 14,
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     changeLocationButton: {
         alignSelf: 'flex-start',
@@ -1696,17 +1696,17 @@ const styles = StyleSheet.create({
     },
     changeLocationText: {
         fontSize: 13,
-        color: '#76577F',
+        color: '#A855F7',
         fontWeight: '500',
     },
     formInput: {
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         borderRadius: 10,
         padding: 12,
         fontSize: 14,
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         borderWidth: 1,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
     },
     typeSelector: {
         flexDirection: 'row',
@@ -1717,29 +1717,29 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 10,
         borderWidth: 2,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
         alignItems: 'center',
         backgroundColor: '#FFFFFF',
     },
     typeOptionSelected: {
-        borderColor: '#C4B0D3',
-        backgroundColor: '#76577F',
+        borderColor: '#A855F7',
+        backgroundColor: '#A855F7',
     },
     typeOptionText: {
         fontSize: 14,
         fontWeight: '500',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     typeOptionTextSelected: {
         color: '#FFFFFF',
     },
     submitButton: {
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         paddingVertical: 16,
         borderRadius: 14,
         alignItems: 'center',
         marginTop: 24,
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(168, 85, 247, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -1763,13 +1763,13 @@ const styles = StyleSheet.create({
 
     mapPlaceholderText: {
         fontSize: 16,
-        color: '#666',
+        color: '#6B5B7A',
         marginTop: 8,
     },
     suggestionsContainer: {
         backgroundColor: '#FFFFFF',
         borderWidth: 1,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
         borderRadius: 12,
         marginTop: -8,
         marginBottom: 16,
@@ -1783,19 +1783,19 @@ const styles = StyleSheet.create({
         paddingHorizontal: 14,
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: '#F0EDE8',
+        borderBottomColor: '#F0E6FF',
         gap: 10,
     },
 
     suggestionMainText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
 
     suggestionSecondaryText: {
         fontSize: 12,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 3,
     },
 

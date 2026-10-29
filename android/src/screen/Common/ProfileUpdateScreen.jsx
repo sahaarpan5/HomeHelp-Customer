@@ -61,13 +61,13 @@ const ProfileUpdateScreen = ({ navigation }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(30)).current;
 
-    const COLORS = {
-        gold: '#C9A84C',
-        white: '#FFFFFF',
-        dark: '#1A1A1A',
-        textLight: '#666666',
-        lightBg: '#F8F6F0',
-        border: '#E8E3D8',
+   const  COLORS = {
+        gold: '#A855F7',                            // was '#C9A84C'  → secondary
+        white: '#FFFFFF',                           // unchanged
+        dark: '#2D1B4E',                            // was '#1A1A1A'
+        textLight: '#6B5B7A',                       // was '#666666'
+        lightBg: '#FAF5FF',                         // was '#F8F6F0'
+        border: '#EDE0FF',                          // was '#E8E3D8'
     };
 
     // Refs for TextInput
@@ -452,7 +452,7 @@ const ProfileUpdateScreen = ({ navigation }) => {
                 return;
             }
 
-            
+
 
             if (!gender) {
                 Alert.alert('Error', 'Please select gender');
@@ -804,7 +804,7 @@ const ProfileUpdateScreen = ({ navigation }) => {
 
                 setIsEditing(false);
 
-            }else{
+            } else {
                 setIsEditing(true);
             }
 
@@ -1333,7 +1333,7 @@ const ProfileUpdateScreen = ({ navigation }) => {
         <View style={styles.container}>
             <StatusBar
                 barStyle="light-content"
-                backgroundColor="#d6bceb"
+                backgroundColor="#D8B4FE"
             />
 
 
@@ -1349,7 +1349,7 @@ const ProfileUpdateScreen = ({ navigation }) => {
                             width: 24,
                             height: 24,
                             resizeMode: 'contain',
-                            tintColor: '#403746',
+                            tintColor: '#2D1B4E',
                         }}
                     />
                 </TouchableOpacity>
@@ -1367,7 +1367,7 @@ const ProfileUpdateScreen = ({ navigation }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor: '#403746',
+                                tintColor: '#2D1B4E',
                             }}
                         />
 
@@ -1777,7 +1777,7 @@ const ProfileUpdateScreen = ({ navigation }) => {
                                                 width: 24,
                                                 height: 24,
                                                 resizeMode: 'contain',
-                                                tintColor: '#666666',
+                                                tintColor: '#6B5B7A',
                                             }}
                                         />
                                     </TouchableOpacity>
@@ -1790,14 +1790,14 @@ const ProfileUpdateScreen = ({ navigation }) => {
                                         onPress={handleTakePhoto}
                                         activeOpacity={0.7}
                                     >
-                                        <View style={[styles.modalIconContainer, { backgroundColor: '#F0E6FF' }]}>
+                                        <View style={[styles.modalIconContainer, { backgroundColor: '#F5F0FA' }]}>
                                             <Image
                                                 source={require('../../asset/camera.png')}
                                                 style={{
                                                     width: 28,
                                                     height: 28,
                                                     resizeMode: 'contain',
-                                                    tintColor: '#6C5CE7',
+                                                    tintColor: '#A855F7',
                                                 }}
                                             />
                                         </View>
@@ -1821,14 +1821,14 @@ const ProfileUpdateScreen = ({ navigation }) => {
                                         onPress={handleSelectPhoto}
                                         activeOpacity={0.7}
                                     >
-                                        <View style={[styles.modalIconContainer, { backgroundColor: '#FFF3E0' }]}>
+                                        <View style={[styles.modalIconContainer, { backgroundColor: '#F5F0FA' }]}>
                                             <Image
                                                 source={require('../../asset/gallery.png')}
                                                 style={{
                                                     width: 28,
                                                     height: 28,
                                                     resizeMode: 'contain',
-                                                    tintColor: '#F39C12',
+                                                    tintColor: '#A855F7',
                                                 }}
                                             />
                                         </View>
@@ -1842,7 +1842,7 @@ const ProfileUpdateScreen = ({ navigation }) => {
                                                 width: 20,
                                                 height: 20,
                                                 resizeMode: 'contain',
-                                                tintColor: '#BDBDBD',
+                                                tintColor: '#9E8FB0',
                                             }}
                                         />
                                     </TouchableOpacity>
@@ -1872,7 +1872,7 @@ const ProfileUpdateScreen = ({ navigation }) => {
                     <View style={styles.experienceLoadingBox}>
                         <ActivityIndicator
                             size="large"
-                            color="#FF8C00"
+                            color="#A855F7"
                         />
 
                         <Text style={styles.experienceLoadingTitle}>
@@ -1897,7 +1897,7 @@ const ProfileUpdateScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#FAF5FF',
     },
 
     header: {
@@ -1907,7 +1907,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -1919,7 +1919,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#403746',
+        color: '#2D1B4E',
     },
 
     editButton: {
@@ -1936,7 +1936,7 @@ const styles = StyleSheet.create({
     editButtonText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
         marginLeft: 4,
     },
 
@@ -1955,24 +1955,24 @@ const styles = StyleSheet.create({
 
     cancelButton: {
         backgroundColor: 'rgba(255,255,255,0.1)',
-        borderColor: '#403746',
+        borderColor: '#2D1B4E',
     },
 
     cancelButtonText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
     },
 
     saveButton: {
         backgroundColor: 'rgba(255,255,255,0.2)',
-        borderColor: '#403746',
+        borderColor: '#2D1B4E',
     },
 
     saveButtonText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
     },
 
     content: {
@@ -2013,7 +2013,7 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 18,
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 3,
@@ -2030,7 +2030,7 @@ const styles = StyleSheet.create({
 
     imageHint: {
         fontSize: 13,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 10,
         fontWeight: '400',
     },
@@ -2049,7 +2049,7 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 3,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
     },
 
     fieldGroup: {
@@ -2059,7 +2059,7 @@ const styles = StyleSheet.create({
     fieldLabel: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         marginBottom: 6,
         letterSpacing: 0.3,
     },
@@ -2067,18 +2067,18 @@ const styles = StyleSheet.create({
     fieldWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         borderRadius: 12,
         borderWidth: 2,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
         paddingHorizontal: 14,
         height: 52,
     },
 
     fieldWrapperFocused: {
-        borderColor: '#C9A84C',
+        borderColor: '#A855F7',
         backgroundColor: '#FFFFFF',
-        shadowColor: 'rgba(201, 168, 76, 0.1)',
+        shadowColor: 'rgba(168, 85, 247, 0.1)',
         shadowOffset: {
             width: 0,
             height: 0,
@@ -2089,8 +2089,8 @@ const styles = StyleSheet.create({
     },
 
     fieldWrapperDisabled: {
-        backgroundColor: '#F5F5F5',
-        borderColor: '#E0E0E0',
+        backgroundColor: '#F5F0FA',
+        borderColor: '#EDE0FF',
     },
 
     fieldIconContainer: {
@@ -2103,13 +2103,13 @@ const styles = StyleSheet.create({
     fieldInput: {
         flex: 1,
         fontSize: 15,
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         paddingVertical: 10,
         fontWeight: '500',
     },
 
     fieldInputDisabled: {
-        color: '#666666',
+        color: '#6B5B7A',
     },
 
     genderContainer: {
@@ -2122,47 +2122,47 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingVertical: 12,
         borderRadius: 12,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         borderWidth: 2,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
         alignItems: 'center',
         marginHorizontal: 4,
     },
 
     genderOptionSelected: {
-        backgroundColor: 'rgba(201, 168, 76, 0.1)',
-        borderColor: '#C4B0D3',
+        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+        borderColor: '#A855F7',
     },
 
     genderOptionDisabled: {
-        backgroundColor: '#F5F5F5',
-        borderColor: '#E0E0E0',
+        backgroundColor: '#F5F0FA',
+        borderColor: '#EDE0FF',
     },
 
     genderText: {
         fontSize: 14,
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         fontWeight: '500',
     },
 
     genderTextSelected: {
-        color: '#403746',
+        color: '#A855F7',
         fontWeight: '600',
     },
 
     genderTextDisabled: {
-        color: '#666666',
+        color: '#6B5B7A',
     },
 
     updateButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         paddingVertical: 16,
         borderRadius: 14,
         marginTop: 24,
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(168, 85, 247, 0.3)',
         shadowOffset: {
             width: 0,
             height: 4,
@@ -2194,25 +2194,25 @@ const styles = StyleSheet.create({
         height: 20,
         borderRadius: 10,
         borderWidth: 2,
-        borderColor: '#BDBDBD',
+        borderColor: '#EDE0FF',
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 5,
     },
 
     radioCircleSelected: {
-        borderColor: '#403746',
+        borderColor: '#A855F7',
     },
 
     radioCircleInner: {
         width: 10,
         height: 10,
         borderRadius: 5,
-        backgroundColor: '#403746',
+        backgroundColor: '#A855F7',
     },
     dateHint: {
         fontSize: 11,
-        color: '#999999',
+        color: '#9E8FB0',
         marginTop: 4,
         fontStyle: 'italic',
     },
@@ -2236,12 +2236,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 15,
         borderBottomWidth: 1,
-        borderBottomColor: '#F0F0F0',
+        borderBottomColor: '#F0E6FF',
     },
     modalTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     modalCloseButton: {
         padding: 4,
@@ -2255,7 +2255,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 8,
         borderRadius: 12,
-        backgroundColor: '#FAFAFA',
+        backgroundColor: '#FAF5FF',
         marginBottom: 8,
     },
     modalOptionCancel: {
@@ -2263,7 +2263,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 4,
         borderWidth: 1,
-        borderColor: '#E0E0E0',
+        borderColor: '#EDE0FF',
     },
     modalIconContainer: {
         width: 50,
@@ -2279,12 +2279,12 @@ const styles = StyleSheet.create({
     modalOptionTitle: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         marginBottom: 2,
     },
     modalOptionSubtitle: {
         fontSize: 13,
-        color: '#999999',
+        color: '#9E8FB0',
     },
     modalCancelText: {
         fontSize: 16,
@@ -2312,20 +2312,20 @@ const styles = StyleSheet.create({
         marginTop: 15,
         fontSize: 17,
         fontWeight: '700',
-        color: '#222',
+        color: '#2D1B4E',
     },
 
     experienceLoadingProgress: {
         marginTop: 8,
         fontSize: 22,
         fontWeight: '700',
-        color: '#FF8C00',
+        color: '#A855F7',
     },
 
     experienceLoadingSubtitle: {
         marginTop: 5,
         fontSize: 13,
-        color: '#777',
+        color: '#6B5B7A',
     },
 });
 

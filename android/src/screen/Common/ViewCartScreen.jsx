@@ -101,24 +101,24 @@ const ViewCartScreen = ({ navigation, route }) => {
     const couponModalSlideAnim = useRef(new Animated.Value(height)).current;
 
     const COLORS = {
-        gold: '#76577F',
-        goldLight: '#76577F',
-        goldDark: '#C4B0D3',
-        goldFade: 'rgba(179, 154, 199, 0.1)',
-        white: '#FFFFFF',
-        dark: '#1A1A1A',
-        textLight: '#666666',
-        lightBg: '#F8F6F0',
-        border: '#E8E3D8',
-        success: '#2ECC71',
-        purple: '#6C5CE7',
-        pink: '#FD79A8',
-        blue: '#0984E3',
-        green: '#00B894',
-        red: '#E17055',
-        orange: '#FDCB6E',
-        warning: '#F39C12',
-        txtColor: '#403746',
+        gold: '#A855F7',                            // was '#76577F'  → secondary
+        goldLight: '#A855F7',                       // was '#76577F'  → secondary
+        goldDark: '#D8B4FE',                        // was '#C4B0D3'  → primary
+        goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
+        white: '#FFFFFF',                           // unchanged
+        dark: '#2D1B4E',                            // was '#1A1A1A'
+        textLight: '#6B5B7A',                       // was '#666666'
+        lightBg: '#FAF5FF',                         // was '#F8F6F0'
+        border: '#EDE0FF',                          // was '#E8E3D8'
+        success: '#2ECC71',                         // unchanged (functional)
+        purple: '#D8B4FE',                          // was '#6C5CE7'  → primary
+        pink: '#A855F7',                            // was '#FD79A8'  → secondary
+        blue: '#D8B4FE',                            // was '#0984E3'  → primary
+        green: '#00B894',                           // unchanged
+        red: '#E17055',                             // unchanged (functional)
+        orange: '#FDCB6E',                          // unchanged (functional)
+        warning: '#F39C12',                         // unchanged (functional)
+        txtColor: '#2D1B4E',                        // was '#403746'
     };
 
     // Generate next 7 days
@@ -1045,7 +1045,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                                     width: 20,
                                     height: 20,
                                     resizeMode: 'contain',
-                                    tintColor: '#666',
+                                    tintColor: '#6B5B7A',
                                 }}
                             />
                         </TouchableOpacity>
@@ -1199,7 +1199,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                                     width: 20,
                                     height: 20,
                                     resizeMode: 'contain',
-                                    tintColor: '#666',
+                                    tintColor: '#6B5B7A',
                                 }}
                             />
                         </TouchableOpacity>
@@ -1210,7 +1210,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                         <View style={styles.addressLoader}>
                             <ActivityIndicator
                                 size="small"
-                                color="#76577F"
+                                color="#A855F7"
                             />
 
                             <Text style={styles.addressLoadingText}>
@@ -1259,7 +1259,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                                                     resizeMode: 'contain',
                                                     tintColor: isSelected
                                                         ? '#FFFFFF'
-                                                        : '#76577F',
+                                                        : '#A855F7',
                                                 }}
                                             />
                                         </View>
@@ -1308,7 +1308,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                                                         width: 14,
                                                         height: 14,
                                                         resizeMode: 'contain',
-                                                        tintColor: '#76577F',
+                                                        tintColor: '#A855F7',
                                                     }}
                                                 />
 
@@ -1358,7 +1358,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                                     width: 20,
                                     height: 20,
                                     resizeMode: 'contain',
-                                    tintColor: '#76577F',
+                                    tintColor: '#A855F7',
                                 }}
                             />
                         </View>
@@ -1373,7 +1373,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                                 width: 18,
                                 height: 18,
                                 resizeMode: 'contain',
-                                tintColor: '#76577F',
+                                tintColor: '#A855F7',
                             }}
                         />
                     </TouchableOpacity>
@@ -1954,7 +1954,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                         <View style={styles.peopleAlsoLikeLoader}>
                             <ActivityIndicator
                                 size="small"
-                                color="#76577F"
+                                color="#A855F7"
                             />
                             <Text style={styles.loadingText}>
                                 Loading services...
@@ -2014,7 +2014,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                 {addressLoading ? (
                     <ActivityIndicator
                         size="small"
-                        color="#76577F"
+                        color="#A855F7"
                     />
                 ) : (
                     <View style={styles.sectionContainer}>
@@ -2064,7 +2064,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                                             width: 20,
                                             height: 20,
                                             resizeMode: 'contain',
-                                            tintColor: '#76577F',
+                                            tintColor: '#A855F7',
                                         }}
                                     />
                                 </View>
@@ -2085,7 +2085,7 @@ const ViewCartScreen = ({ navigation, route }) => {
                                         width: 18,
                                         height: 18,
                                         resizeMode: 'contain',
-                                        tintColor: '#76577F',
+                                        tintColor: '#A855F7',
                                     }}
                                 />
                             </TouchableOpacity>
@@ -2188,7 +2188,7 @@ const ViewCartScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#FAF5FF',
     },
     header: {
         flexDirection: 'row',
@@ -2196,9 +2196,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         borderBottomWidth: 1,
-        borderBottomColor: '#F0EDE8',
+        borderBottomColor: '#F0E6FF',
     },
     backButton: {
         padding: 4,
@@ -2206,7 +2206,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#403746',
+        color: '#2D1B4E',
     },
     headerRight: {
         width: 32,
@@ -2222,7 +2222,7 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         marginBottom: 10,
     },
     // Selected Services
@@ -2234,7 +2234,7 @@ const styles = StyleSheet.create({
         padding: 12,
         marginBottom: 8,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
     },
     selectedServiceImage: {
         width: 50,
@@ -2248,7 +2248,7 @@ const styles = StyleSheet.create({
     selectedServiceName: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     selectedServicePrice: {
         fontSize: 14,
@@ -2258,7 +2258,7 @@ const styles = StyleSheet.create({
     },
     selectedServiceDuration: {
         fontSize: 11,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 1,
     },
     removeButton: {
@@ -2273,7 +2273,7 @@ const styles = StyleSheet.create({
     addMoreText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#C9A84C',
+        color: '#A855F7',
     },
     // Coupon
     couponContainer: {
@@ -2285,7 +2285,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
         paddingHorizontal: 14,
         height: 48,
     },
@@ -2295,7 +2295,7 @@ const styles = StyleSheet.create({
         color: '#1A1A1A',
     },
     applyCouponButton: {
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         paddingHorizontal: 16,
         paddingVertical: 6,
         borderRadius: 8,
@@ -2328,7 +2328,7 @@ const styles = StyleSheet.create({
     },
     viewCouponsText: {
         fontSize: 13,
-        color: '#76577F',
+        color: '#A855F7',
         fontWeight: '500',
     },
     // People Also Like
@@ -2342,7 +2342,7 @@ const styles = StyleSheet.create({
         padding: 10,
         marginRight: 10,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
     },
     peopleLikeImage: {
         width: '100%',
@@ -2365,12 +2365,12 @@ const styles = StyleSheet.create({
     },
     peopleLikeRatingText: {
         fontSize: 11,
-        color: '#666666',
+        color: '#6B5B7A',
     },
     peopleLikePrice: {
         fontSize: 13,
         fontWeight: '700',
-        color: '#76577F',
+        color: '#A855F7',
         marginTop: 2,
     },
     peopleLikeAddButton: {
@@ -2380,7 +2380,7 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24,
         borderRadius: 12,
-        backgroundColor: '#403746',
+        backgroundColor: '#7E22CE',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -2390,7 +2390,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 12,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
     },
     customerRow: {
         flexDirection: 'row',
@@ -2405,12 +2405,12 @@ const styles = StyleSheet.create({
     customerDivider: {
         width: 1,
         height: 16,
-        backgroundColor: '#E8E3D8',
+        backgroundColor: '#EDE0FF',
         marginHorizontal: 4,
     },
     changeText: {
         fontSize: 12,
-        color: '#76577F',
+        color: '#A855F7',
         fontWeight: '500',
         marginLeft: 'auto',
     },
@@ -2420,7 +2420,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 12,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
     },
     addressRow: {
         flexDirection: 'row',
@@ -2434,7 +2434,7 @@ const styles = StyleSheet.create({
     },
     changeAddressText: {
         fontSize: 12,
-        color: '#76577F',
+        color: '#A855F7',
         fontWeight: '500',
         marginTop: 6,
         alignSelf: 'flex-end',
@@ -2444,7 +2444,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         paddingVertical: 14,
         paddingHorizontal: 18,
         borderRadius: 12,
@@ -2472,7 +2472,7 @@ const styles = StyleSheet.create({
     // Tip
     tipNote: {
         fontSize: 12,
-        color: '#666666',
+        color: '#6B5B7A',
         marginBottom: 10,
     },
     tipOptions: {
@@ -2484,13 +2484,13 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 10,
         borderWidth: 2,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
         alignItems: 'center',
         backgroundColor: '#FFFFFF',
     },
     tipOptionSelected: {
-        borderColor: '#C9A84C',
-        backgroundColor: '#C9A84C',
+        borderColor: '#A855F7',
+        backgroundColor: '#A855F7',
     },
     tipOptionText: {
         fontSize: 13,
@@ -2512,12 +2512,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 14,
         paddingVertical: 10,
         fontSize: 14,
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         borderWidth: 1,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
     },
     customTipApply: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#A855F7',
         paddingHorizontal: 18,
         borderRadius: 10,
         justifyContent: 'center',
@@ -2534,7 +2534,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 16,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
     },
     totalTitle: {
         fontSize: 16,
@@ -2549,7 +2549,7 @@ const styles = StyleSheet.create({
     },
     totalLabel: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
     },
     totalValue: {
         fontSize: 14,
@@ -2561,7 +2561,7 @@ const styles = StyleSheet.create({
     },
     totalDivider: {
         height: 1,
-        backgroundColor: '#F0EDE8',
+        backgroundColor: '#F0E6FF',
         marginVertical: 8,
     },
     totalGrandLabel: {
@@ -2572,7 +2572,7 @@ const styles = StyleSheet.create({
     totalGrandValue: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#C9A84C',
+        color: '#A855F7',
     },
     footerSpacer: {
         height: 20,
@@ -2596,7 +2596,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#E0E0E0',
+        backgroundColor: '#EDE0FF',
         alignSelf: 'center',
         marginBottom: 16,
     },
@@ -2611,7 +2611,7 @@ const styles = StyleSheet.create({
     },
     modalSubtitle: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         textAlign: 'center',
         marginTop: 4,
     },
@@ -2626,7 +2626,7 @@ const styles = StyleSheet.create({
     },
     modalSectionSubtitle: {
         fontSize: 12,
-        color: '#999999',
+        color: '#9E8FB0',
         marginBottom: 10,
     },
     // Dates
@@ -2640,17 +2640,17 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         alignItems: 'center',
         borderRadius: 10,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         borderWidth: 2,
         borderColor: 'transparent',
         position: 'relative',
     },
     dateCardSelected: {
-        backgroundColor: '#C9A84C',
-        borderColor: '#C9A84C',
+        backgroundColor: '#A855F7',
+        borderColor: '#A855F7',
     },
     dateCardToday: {
-        borderColor: '#C9A84C',
+        borderColor: '#A855F7',
     },
     dateCardHasSlot: {
         borderColor: '#2ECC71',
@@ -2818,7 +2818,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#A855F7',
         paddingVertical: 14,
         borderRadius: 12,
         marginTop: 16,
@@ -2833,12 +2833,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         padding: 14,
         borderRadius: 12,
         marginBottom: 10,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
     },
     couponCardCode: {
         fontSize: 15,
@@ -2847,13 +2847,13 @@ const styles = StyleSheet.create({
     },
     couponCardDesc: {
         fontSize: 12,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 2,
     },
     couponCardDiscount: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#76577F',
+        color: '#A855F7',
     },
     modalCloseButton: {
         alignItems: 'center',
@@ -2862,7 +2862,7 @@ const styles = StyleSheet.create({
     },
     modalCloseText: {
         fontSize: 14,
-        color: '#999',
+        color: '#9E8FB0',
         fontWeight: '500',
     },
     peopleAlsoLikeLoader: {
@@ -2874,7 +2874,7 @@ const styles = StyleSheet.create({
     loadingText: {
         marginTop: 8,
         fontSize: 13,
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     customerModalOverlay: {
@@ -2899,7 +2899,7 @@ const styles = StyleSheet.create({
 
     customerModalSubtitle: {
         fontSize: 13,
-        color: '#777777',
+        color: '#6B5B7A',
         textAlign: 'center',
         marginTop: 5,
         marginBottom: 22,
@@ -2908,7 +2908,7 @@ const styles = StyleSheet.create({
     customerInputLabel: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
         marginBottom: 7,
         marginTop: 10,
     },
@@ -2916,12 +2916,12 @@ const styles = StyleSheet.create({
     customerInput: {
         height: 48,
         borderWidth: 1,
-        borderColor: '#E0DCE3',
+        borderColor: '#EDE0FF',
         borderRadius: 10,
         paddingHorizontal: 14,
         fontSize: 14,
         color: '#1A1A1A',
-        backgroundColor: '#FAFAFA',
+        backgroundColor: '#EDE0FF',
     },
 
     customerModalButtons: {
@@ -2935,7 +2935,7 @@ const styles = StyleSheet.create({
         height: 46,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: '#76577F',
+        borderColor: '#A855F7',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -2943,14 +2943,14 @@ const styles = StyleSheet.create({
     customerCancelText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     customerSaveButton: {
         flex: 1,
         height: 46,
         borderRadius: 10,
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -2985,7 +2985,7 @@ const styles = StyleSheet.create({
         width: 42,
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#D8D8D8',
+        backgroundColor: '#EDE0FF',
         alignSelf: 'center',
         marginBottom: 16,
     },
@@ -3005,7 +3005,7 @@ const styles = StyleSheet.create({
 
     addressModalSubtitle: {
         fontSize: 12,
-        color: '#777777',
+        color: '#6B5B7A',
         marginTop: 3,
     },
 
@@ -3018,36 +3018,36 @@ const styles = StyleSheet.create({
     addressLoadingText: {
         marginTop: 8,
         fontSize: 13,
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     savedAddressCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FAFAFA',
+        backgroundColor: '#FAF5FF',
         borderRadius: 14,
         padding: 12,
         marginBottom: 10,
         borderWidth: 1,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
     },
 
     savedAddressCardSelected: {
-        backgroundColor: '#F7F1FA',
-        borderColor: '#76577F',
+        backgroundColor: '#F5F0FA',
+        borderColor: '#A855F7',
     },
 
     addressIconContainer: {
         width: 42,
         height: 42,
         borderRadius: 21,
-        backgroundColor: '#EFE8F2',
+        backgroundColor: '#F5F0FA',
         alignItems: 'center',
         justifyContent: 'center',
     },
 
     addressIconContainerSelected: {
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
     },
 
     savedAddressInfo: {
@@ -3085,12 +3085,12 @@ const styles = StyleSheet.create({
     savedAddressText: {
         fontSize: 12,
         lineHeight: 17,
-        color: '#555555',
+        color: '#6B5B7A',
     },
 
     savedAddressLandmark: {
         fontSize: 11,
-        color: '#888888',
+        color: '#9E8FB0',
         marginTop: 4,
     },
 
@@ -3099,20 +3099,20 @@ const styles = StyleSheet.create({
         height: 21,
         borderRadius: 11,
         borderWidth: 2,
-        borderColor: '#BDBDBD',
+        borderColor: '#EDE0FF',
         alignItems: 'center',
         justifyContent: 'center',
     },
 
     addressRadioSelected: {
-        borderColor: '#76577F',
+        borderColor: '#A855F7',
     },
 
     addressRadioInner: {
         width: 11,
         height: 11,
         borderRadius: 6,
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
     },
 
     addNewAddressButton: {
@@ -3121,7 +3121,7 @@ const styles = StyleSheet.create({
         height: 52,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#76577F',
+        borderColor: '#A855F7',
         paddingHorizontal: 12,
         marginTop: 8,
     },
@@ -3130,7 +3130,7 @@ const styles = StyleSheet.create({
         width: 34,
         height: 34,
         borderRadius: 17,
-        backgroundColor: '#F0E8F4',
+        backgroundColor: '#F5F0FA',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -3140,7 +3140,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         fontSize: 14,
         fontWeight: '600',
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     editAddressButton: {
@@ -3155,7 +3155,7 @@ const styles = StyleSheet.create({
         marginLeft: 4,
         fontSize: 12,
         fontWeight: '600',
-        color: '#76577F',
+        color: '#A855F7',
     },
 
 
@@ -3172,7 +3172,7 @@ const styles = StyleSheet.create({
     editInputLabel: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
         marginBottom: 6,
         marginTop: 10,
     },
@@ -3191,7 +3191,7 @@ const styles = StyleSheet.create({
     saveEditedAddressButton: {
         height: 48,
         borderRadius: 11,
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 20,
@@ -3216,11 +3216,11 @@ const styles = StyleSheet.create({
         marginLeft: 4,
         fontSize: 12,
         fontWeight: '600',
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     disabledInput: {
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         color: '#FFF',
     },
     addAddressCard: {
@@ -3230,7 +3230,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 12,
         borderWidth: 1,
-        borderColor: '#76577F',
+        borderColor: '#A855F7',
         borderStyle: 'dashed',
     },
 
@@ -3238,7 +3238,7 @@ const styles = StyleSheet.create({
         width: 42,
         height: 42,
         borderRadius: 21,
-        backgroundColor: '#F0E8F4',
+        backgroundColor: '#F5F0FA',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -3251,12 +3251,12 @@ const styles = StyleSheet.create({
     addAddressTitle: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     addAddressSubtitle: {
         fontSize: 11,
-        color: '#777777',
+        color: '#6B5B7A',
         marginTop: 3,
     },
 

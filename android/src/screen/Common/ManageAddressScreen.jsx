@@ -54,24 +54,24 @@ const ManageAddressScreen = ({ navigation }) => {
     const modalSlideAnim = useRef(new Animated.Value(height)).current;
 
     const COLORS = {
-        gold: '#d6bceb',
-        goldLight: '#76577F',
-        goldDark: '#C4B0D3',
-        goldFade: 'rgba(179, 154, 199, 0.1)',
-        white: '#FFFFFF',
-        dark: '#1A1A1A',
-        textLight: '#666666',
-        lightBg: '#F8F6F0',
-        border: '#E8E3D8',
-        success: '#2ECC71',
-        purple: '#6C5CE7',
-        pink: '#FD79A8',
-        blue: '#0984E3',
-        green: '#00B894',
-        red: '#E17055',
-        orange: '#FDCB6E',
-        warning: '#F39C12',
-        txtColor: '#403746',
+        gold: '#D8B4FE',                            // was '#d6bceb'  → primary
+        goldLight: '#A855F7',                       // was '#76577F'  → secondary
+        goldDark: '#A855F7',                        // was '#C4B0D3'  → secondary
+        goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
+        white: '#FFFFFF',                           // unchanged
+        dark: '#2D1B4E',                            // was '#1A1A1A'
+        textLight: '#6B5B7A',                       // was '#666666'
+        lightBg: '#FAF5FF',                         // was '#F8F6F0'
+        border: '#EDE0FF',                          // was '#E8E3D8'
+        success: '#2ECC71',                         // unchanged (functional)
+        purple: '#A855F7',                          // was '#6C5CE7'  → secondary
+        pink: '#D8B4FE',                            // was '#FD79A8'  → primary
+        blue: '#A855F7',                            // was '#0984E3'  → secondary
+        green: '#00B894',                           // unchanged (functional — Home type accent)
+        red: '#E17055',                             // unchanged (functional — delete/error)
+        orange: '#FDCB6E',                          // unchanged (functional)
+        warning: '#F39C12',                         // unchanged (functional)
+        txtColor: '#2D1B4E',                        // was '#403746'
     };
 
     // Address type options
@@ -772,7 +772,7 @@ const ManageAddressScreen = ({ navigation }) => {
                                 <TextInput
                                     style={styles.modalInput}
                                     placeholder="Enter your full address"
-                                    placeholderTextColor="#999"
+                                    placeholderTextColor="#9E8FB0"
                                     value={newAddress}
                                     onChangeText={setNewAddress}
                                     multiline
@@ -848,7 +848,7 @@ const ManageAddressScreen = ({ navigation }) => {
                                 <TextInput
                                     style={styles.modalInput}
                                     placeholder="Enter your full address"
-                                    placeholderTextColor="#999"
+                                    placeholderTextColor="#9E8FB0"
                                     value={editAddress}
                                     onChangeText={setEditAddress}
                                     multiline
@@ -860,7 +860,7 @@ const ManageAddressScreen = ({ navigation }) => {
                                 <TextInput
                                     style={[styles.modalInput, { minHeight: 50 }]}
                                     placeholder="Enter your house/flat number"
-                                    placeholderTextColor="#999"
+                                    placeholderTextColor="#9E8FB0"
                                     value={editFlatNo}
                                     onChangeText={setEditFlatNo}
                                     multiline
@@ -874,7 +874,7 @@ const ManageAddressScreen = ({ navigation }) => {
                                 <TextInput
                                     style={[styles.modalInput, { minHeight: 50 }]}
                                     placeholder="Enter your landmark"
-                                    placeholderTextColor="#999"
+                                    placeholderTextColor="#9E8FB0"
                                     value={editLandmark}
                                     onChangeText={setEditLandmark}
                                     multiline
@@ -1027,7 +1027,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -1038,7 +1038,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#403746',
+        color: '#2D1B4E',
         flex: 1,
     },
     content: {
@@ -1055,11 +1055,11 @@ const styles = StyleSheet.create({
     subHeader: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     addressCount: {
         fontSize: 13,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 2,
     },
     // Address Card
@@ -1069,7 +1069,7 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
         shadowColor: 'rgba(0,0,0,0.04)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -1097,10 +1097,10 @@ const styles = StyleSheet.create({
     addressType: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     defaultBadge: {
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 10,
@@ -1119,7 +1119,7 @@ const styles = StyleSheet.create({
     },
     addressText: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         lineHeight: 20,
         marginBottom: 8,
     },
@@ -1128,7 +1128,7 @@ const styles = StyleSheet.create({
     },
     setDefaultText: {
         fontSize: 13,
-        color: '#76577F',
+        color: '#A855F7',
         fontWeight: '500',
     },
     // Empty State
@@ -1140,12 +1140,12 @@ const styles = StyleSheet.create({
     emptyTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         marginTop: 12,
     },
     emptyText: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 4,
     },
     // Add Button
@@ -1158,10 +1158,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         paddingVertical: 14,
         borderRadius: 14,
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(168, 85, 247, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -1191,7 +1191,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#E0E0E0',
+        backgroundColor: '#EDE0FF',
         alignSelf: 'center',
         marginBottom: 16,
     },
@@ -1201,12 +1201,12 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         textAlign: 'center',
     },
     modalSubtitle: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         textAlign: 'center',
         marginTop: 4,
     },
@@ -1216,7 +1216,7 @@ const styles = StyleSheet.create({
     modalLabel: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         marginBottom: 8,
     },
     typeSelector: {
@@ -1229,39 +1229,39 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 10,
         borderWidth: 2,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
         alignItems: 'center',
         backgroundColor: '#FFFFFF',
     },
     typeOptionSelected: {
-        borderColor: '#C4B0D3',
-        backgroundColor: '#76577F',
+        borderColor: '#A855F7',
+        backgroundColor: '#A855F7',
     },
     typeOptionText: {
         fontSize: 14,
         fontWeight: '500',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     typeOptionTextSelected: {
         color: '#FFFFFF',
     },
     modalInput: {
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         borderRadius: 12,
         padding: 12,
         fontSize: 14,
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         minHeight: 80,
         textAlignVertical: 'top',
         borderWidth: 1,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
     },
     modalPrimaryButton: {
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         paddingVertical: 16,
         borderRadius: 14,
         alignItems: 'center',
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(168, 85, 247, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -1279,7 +1279,7 @@ const styles = StyleSheet.create({
     },
     modalCloseText: {
         fontSize: 14,
-        color: '#999',
+        color: '#9E8FB0',
         fontWeight: '500',
     },
     loaderOverlay: {

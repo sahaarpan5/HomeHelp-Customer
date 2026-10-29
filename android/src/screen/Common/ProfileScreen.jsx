@@ -36,23 +36,23 @@ const ProfileScreen = ({ navigation }) => {
     const progressAnim = useRef(new Animated.Value(0)).current;
 
     const COLORS = {
-        gold: '#d6bceb',
-        goldLight: '#76577F',
-        goldDark: '#C4B0D3',
-        goldFade: 'rgba(179, 154, 199, 0.1)',
-        white: '#FFFFFF',
-        dark: '#1A1A1A',
-        textLight: '#666666',
-        lightBg: '#F8F6F0',
-        border: '#E8E3D8',
-        success: '#2ECC71',
-        purple: '#6C5CE7',
-        pink: '#FD79A8',
-        blue: '#0984E3',
-        green: '#00B894',
-        red: '#E17055',
-        orange: '#FDCB6E',
-        warning: '#F39C12',
+        gold: '#D8B4FE',                            // was '#d6bceb'  → primary
+        goldLight: '#A855F7',                       // was '#76577F'  → secondary
+        goldDark: '#A855F7',                        // was '#C4B0D3'  → secondary
+        goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
+        white: '#FFFFFF',                           // unchanged
+        dark: '#2D1B4E',                            // was '#1A1A1A'
+        textLight: '#6B5B7A',                       // was '#666666'
+        lightBg: '#FAF5FF',                         // was '#F8F6F0'
+        border: '#EDE0FF',                          // was '#E8E3D8'
+        success: '#2ECC71',                         // unchanged (functional)
+        purple: '#A855F7',                          // was '#6C5CE7'  → secondary
+        pink: '#D8B4FE',                            // was '#FD79A8'  → primary
+        blue: '#A855F7',                            // was '#0984E3'  → secondary
+        green: '#00B894',                           // unchanged (functional)
+        red: '#E17055',                             // unchanged (functional — logout/error)
+        orange: '#FDCB6E',                          // unchanged (functional)
+        warning: '#F39C12',                         // unchanged (functional — progress warning)
     };
 
     // Sample user data
@@ -67,32 +67,32 @@ const ProfileScreen = ({ navigation }) => {
 
     // Profile menu items
     const profileMenuItems = [
-        {
-            id: '6',
-            icon: require('../../asset/monthly-subscription.png'),
-            title: 'Monthly Subscription',
-            subtitle: 'Enjoy hassle-free recurring home services',
-            color: COLORS.green,
-            onPress: () => navigation.navigate('MonthlySubscriptionScreen'),
-        },
-        {
-            id: '1',
-            icon: require('../../asset/wallet.png'),
-            title: 'Wallet',
-            subtitle: 'Manage your payments and transactions',
-            color: COLORS.gold,
-            onPress: () => navigation.navigate('WalletScreen'),
-        },
-        {
-            id: '2',
-            icon: require('../../asset/star-outline.png'),
-            title: 'My Ratings',
-            subtitle: 'View your ratings and reviews',
-            color: COLORS.orange,
-            onPress: () => navigation.navigate('MyRatingsScreen'),
+        // {
+        //     id: '6',
+        //     icon: require('../../asset/monthly-subscription.png'),
+        //     title: 'Monthly Subscription',
+        //     subtitle: 'Enjoy hassle-free recurring home services',
+        //     color: COLORS.green,
+        //     onPress: () => navigation.navigate('MonthlySubscriptionScreen'),
+        // },
+        // {
+        //     id: '1',
+        //     icon: require('../../asset/wallet.png'),
+        //     title: 'Wallet',
+        //     subtitle: 'Manage your payments and transactions',
+        //     color: COLORS.gold,
+        //     onPress: () => navigation.navigate('WalletScreen'),
+        // },
+        // {
+        //     id: '2',
+        //     icon: require('../../asset/star-outline.png'),
+        //     title: 'My Ratings',
+        //     subtitle: 'View your ratings and reviews',
+        //     color: COLORS.orange,
+        //     onPress: () => navigation.navigate('MyRatingsScreen'),
 
 
-        },
+        // },
         {
             id: '3',
             icon: require('../../asset/location-outline.png'),
@@ -103,23 +103,23 @@ const ProfileScreen = ({ navigation }) => {
 
 
         },
-        {
-            id: '4',
-            icon: require('../../asset/credit-card.png'),
-            title: 'Manage Payment Methods',
-            subtitle: 'Add or remove payment options',
-            color: COLORS.purple,
-            onPress: () => navigation.navigate('ManagePaymentScreen'),
+        // {
+        //     id: '4',
+        //     icon: require('../../asset/credit-card.png'),
+        //     title: 'Manage Payment Methods',
+        //     subtitle: 'Add or remove payment options',
+        //     color: COLORS.purple,
+        //     onPress: () => navigation.navigate('ManagePaymentScreen'),
 
-        },
-        {
-            id: '5',
-            icon: require('../../asset/information.png'),
-            title: 'About HomeHelp',
-            subtitle: 'Learn more about us',
-            color: COLORS.green,
-            onPress: () => Alert.alert('About HomeHelp', 'About section coming soon...'),
-        },
+        // },
+        // {
+        //     id: '5',
+        //     icon: require('../../asset/information.png'),
+        //     title: 'About HomeHelp',
+        //     subtitle: 'Learn more about us',
+        //     color: COLORS.green,
+        //     onPress: () => Alert.alert('About HomeHelp', 'About section coming soon...'),
+        // },
     ];
 
     // Refer & Earn Data
@@ -352,7 +352,7 @@ const ProfileScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
+            <StatusBar barStyle="light-content" backgroundColor="#D8B4FE" />
 
             {/* Header - Left Aligned */}
             <View style={styles.header}>
@@ -682,7 +682,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -693,7 +693,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#403746',
+        color: '#2D1B4E',
         flex: 1,
     },
     content: {
@@ -709,7 +709,7 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 14,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
         shadowColor: 'rgba(0,0,0,0.04)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -732,7 +732,7 @@ const styles = StyleSheet.create({
     },
     profileMobile: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 2,
     },
     // Profile Status
@@ -742,7 +742,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8F6F0',
         borderRadius: 14,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
     },
     profileStatusRow: {
         flexDirection: 'row',
@@ -760,14 +760,14 @@ const styles = StyleSheet.create({
     profileStatusTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     completeProfileButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingVertical: 10,
         borderRadius: 10,
         marginTop: 12,
@@ -775,7 +775,7 @@ const styles = StyleSheet.create({
     completeProfileText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#403746',
+        color: '#7E22CE',
     },
     // Quick Actions
     quickActionsContainer: {
@@ -789,7 +789,7 @@ const styles = StyleSheet.create({
         padding: 14,
         borderRadius: 14,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
         shadowColor: 'rgba(0,0,0,0.04)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -807,11 +807,11 @@ const styles = StyleSheet.create({
     quickActionTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     quickActionSubtitle: {
         fontSize: 11,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 2,
     },
     quickActionArrow: {
@@ -827,7 +827,7 @@ const styles = StyleSheet.create({
     menuSectionTitle: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         marginBottom: 12,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
@@ -839,7 +839,7 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         paddingHorizontal: 4,
         borderBottomWidth: 1,
-        borderBottomColor: '#F5F5F5',
+        borderBottomColor: '#F0E6FF',
     },
     menuIcon: {
         width: 36,
@@ -855,11 +855,11 @@ const styles = StyleSheet.create({
     menuTitle: {
         fontSize: 15,
         fontWeight: '500',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     menuSubtitle: {
         fontSize: 12,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 1,
     },
     // Refer & Earn Section
@@ -867,11 +867,11 @@ const styles = StyleSheet.create({
         marginTop: 16,
     },
     referCard: {
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         borderRadius: 16,
         padding: 20,
         marginTop: 4,
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(168, 85, 247, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 12,
@@ -966,7 +966,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 4,
         marginTop: 16,
         borderBottomWidth: 1,
-        borderBottomColor: '#F5F5F5',
+        borderBottomColor: '#F0E6FF',
     },
     logoutIcon: {
         width: 36,
@@ -986,7 +986,7 @@ const styles = StyleSheet.create({
     versionText: {
         textAlign: 'center',
         fontSize: 12,
-        color: '#999999',
+        color: '#9E8FB0',
         marginTop: 24,
         marginBottom: 8,
     },
@@ -998,7 +998,7 @@ const styles = StyleSheet.create({
     },
     profileStatusPercentage: {
         fontSize: 12,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 1,
     },
 
@@ -1007,7 +1007,7 @@ const styles = StyleSheet.create({
     },
     progressBar: {
         height: 6,
-        backgroundColor: '#E8E3D8',
+        backgroundColor: '#EDE0FF',
         borderRadius: 3,
         overflow: 'hidden',
     },
@@ -1017,7 +1017,7 @@ const styles = StyleSheet.create({
     },
     progressLabel: {
         fontSize: 11,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 4,
         textAlign: 'right',
     },
