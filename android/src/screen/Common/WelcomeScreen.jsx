@@ -9,7 +9,6 @@ import {
   Image,
 } from 'react-native';
 
-
 const { width, height } = Dimensions.get('window');
 
 const WelcomeScreen = ({ navigation }) => {
@@ -24,13 +23,10 @@ const WelcomeScreen = ({ navigation }) => {
   const taglineSlideAnim = useRef(new Animated.Value(20)).current;
   const shimmerAnim = useRef(new Animated.Value(0)).current;
 
-  // const GOLD_COLOR = '#C9A84C';
-  // const GOLD_DARK = '#B8943E';
-  // const GOLD_LIGHT = '#D4AF37';
-
-   const GOLD_COLOR = '#d6bceb';
-   const GOLD_DARK = '#76577F';
-   const GOLD_LIGHT = '#C4B0D3';
+  // Purple theme colors
+const GOLD_COLOR = '#D8B4FE';   // was '#A855F7'  → primary
+const GOLD_DARK  = '#A855F7';   // was '#7E22CE'  → secondary
+const GOLD_LIGHT = '#D8B4FE'; 
 
   useEffect(() => {
     // Start shimmer animation
@@ -127,11 +123,14 @@ const WelcomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={GOLD_COLOR} />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={GOLD_COLOR}
+      />
 
-      {/* Golden Background */}
+      {/* Purple Background */}
       <View style={styles.background}>
-        {/* Decorative Gold Elements */}
+        {/* Decorative Elements */}
         <View style={styles.decorCircle1} />
         <View style={styles.decorCircle2} />
         <View style={styles.decorCircle3} />
@@ -178,27 +177,25 @@ const WelcomeScreen = ({ navigation }) => {
               <View style={styles.logoInnerRing}>
                 <View style={styles.logoIcon}>
                   <Image
-                    source={require('../../asset/genlogo.png')} // Update the path as needed
+                    source={require('../../asset/genlogo.png')}
                     style={{
                       width: 80,
                       height: 80,
                       resizeMode: 'contain',
-                      
                     }}
                   />
                 </View>
               </View>
             </View>
+
             <View style={styles.logoBadge}>
-             
               <Image
-                source={require('../../asset/sparkler.png')} // Update the path as needed
+                source={require('../../asset/sparkler.png')}
                 style={{
                   width: 18,
                   height: 18,
                   resizeMode: 'contain',
-                  tintColor: "#FFFFFF",
-
+                  tintColor: '#FFFFFF',
                 }}
               />
             </View>
@@ -230,48 +227,55 @@ const WelcomeScreen = ({ navigation }) => {
               },
             ]}
           >
-            <Text style={styles.tagline}>Premium Home Services</Text>
-            <Text style={styles.taglineSub}>Professional • Reliable • Trusted</Text>
+            <Text style={styles.tagline}>
+              Premium Home Services
+            </Text>
+
+            <Text style={styles.taglineSub}>
+              Professional • Reliable • Trusted
+            </Text>
 
             <View style={styles.taglineBadges}>
               <View style={styles.taglineBadge}>
-                
                 <Image
-                  source={require('../../asset/checked.png')} // Update the path as needed
+                  source={require('../../asset/checked.png')}
                   style={{
                     width: 14,
                     height: 14,
                     tintColor: GOLD_DARK,
-
                   }}
                 />
-                <Text style={styles.taglineBadgeText}>Verified</Text>
+                <Text style={styles.taglineBadgeText}>
+                  Verified
+                </Text>
               </View>
+
               <View style={styles.taglineBadge}>
-                
                 <Image
-                  source={require('../../asset/star-fill.png')} // Update the path as needed
+                  source={require('../../asset/star-fill.png')}
                   style={{
                     width: 14,
                     height: 14,
                     tintColor: GOLD_DARK,
-
                   }}
                 />
-                <Text style={styles.taglineBadgeText}>4.9 ★</Text>
+                <Text style={styles.taglineBadgeText}>
+                  4.9 ★
+                </Text>
               </View>
+
               <View style={styles.taglineBadge}>
-               
-                 <Image
-                  source={require('../../asset/people.png')} // Update the path as needed
+                <Image
+                  source={require('../../asset/people.png')}
                   style={{
                     width: 14,
                     height: 14,
                     tintColor: GOLD_DARK,
-
                   }}
                 />
-                <Text style={styles.taglineBadgeText}>50K+</Text>
+                <Text style={styles.taglineBadgeText}>
+                  50K+
+                </Text>
               </View>
             </View>
           </Animated.View>
@@ -304,17 +308,19 @@ const WelcomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#d6bceb',
+    backgroundColor: '#D8B4FE',
   },
+
   background: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#d6bceb',
+    backgroundColor: '#D8B4FE',
     overflow: 'hidden',
   },
+
   content: {
     flex: 1,
     alignItems: 'center',
@@ -322,15 +328,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     width: '100%',
   },
+
   // Shimmer Effect
   shimmerOverlay: {
     position: 'absolute',
     top: 0,
     width: width * 0.5,
     height: '100%',
-    backgroundColor: 'rgba(5, 1, 1, 0.05)',
+    backgroundColor: 'rgba(45, 27, 78, 0.04)',
     transform: [{ skewX: '-20deg' }],
   },
+
   // Decorative elements
   decorCircle1: {
     position: 'absolute',
@@ -343,6 +351,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.02)',
   },
+
   decorCircle2: {
     position: 'absolute',
     width: 350,
@@ -354,6 +363,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.02)',
   },
+
   decorCircle3: {
     position: 'absolute',
     width: 200,
@@ -365,6 +375,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.02)',
   },
+
   decorCircle4: {
     position: 'absolute',
     width: 150,
@@ -376,6 +387,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.02)',
   },
+
   decorLine1: {
     position: 'absolute',
     width: 2,
@@ -384,6 +396,7 @@ const styles = StyleSheet.create({
     right: 60,
     top: '35%',
   },
+
   decorLine2: {
     position: 'absolute',
     width: 2,
@@ -392,6 +405,7 @@ const styles = StyleSheet.create({
     left: 40,
     bottom: '30%',
   },
+
   decorDot1: {
     position: 'absolute',
     width: 8,
@@ -401,6 +415,7 @@ const styles = StyleSheet.create({
     top: '15%',
     right: 80,
   },
+
   decorDot2: {
     position: 'absolute',
     width: 5,
@@ -410,6 +425,7 @@ const styles = StyleSheet.create({
     bottom: '20%',
     right: 50,
   },
+
   decorDot3: {
     position: 'absolute',
     width: 10,
@@ -419,6 +435,7 @@ const styles = StyleSheet.create({
     top: '45%',
     left: 60,
   },
+
   decorDot4: {
     position: 'absolute',
     width: 6,
@@ -428,14 +445,17 @@ const styles = StyleSheet.create({
     top: '65%',
     right: 100,
   },
+
   logoContainer: {
     marginBottom: 32,
   },
+
   logoWrapper: {
     position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   logoOuterRing: {
     width: 140,
     height: 140,
@@ -446,6 +466,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(255, 255, 255, 0.15)',
   },
+
   logoInnerRing: {
     width: 128,
     height: 128,
@@ -461,6 +482,7 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 6,
   },
+
   logoIcon: {
     width: 100,
     height: 100,
@@ -474,6 +496,7 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 4,
   },
+
   logoBadge: {
     position: 'absolute',
     top: 4,
@@ -481,7 +504,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#B8943E',
+    backgroundColor: '#A855F7',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -492,64 +515,72 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
   },
+
   textContainer: {
     alignItems: 'center',
     marginTop: 8,
   },
+
   appNameContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+
   appNameHome: {
     fontSize: 46,
     fontWeight: '700',
-    color: '#352B38',
+    color: '#2D1B4E',
     letterSpacing: -1.5,
     includeFontPadding: false,
-    textShadowColor: 'rgba(255, 255, 255, 0.2)',
+    textShadowColor: 'rgba(255, 255, 255, 0.35)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },
+
   appNameHelp: {
     fontSize: 46,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#2D1B4E',
     letterSpacing: -1.5,
     includeFontPadding: false,
-    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowColor: 'rgba(255, 255, 255, 0.35)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },
+
   divider: {
     width: 60,
     height: 3.5,
     borderRadius: 2,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#2D1B4E',
     marginTop: 16,
     marginBottom: 16,
-    opacity: 0.6,
+    opacity: 0.35,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
   },
+
   taglineContainer: {
     alignItems: 'center',
   },
+
   tagline: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1A1A1A',
+    color: '#2D1B4E',
     letterSpacing: 0.3,
     textAlign: 'center',
     textShadowColor: 'rgba(255, 255, 255, 0.15)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },
+
   taglineSub: {
     fontSize: 13,
     fontWeight: '400',
-    color: '#4A3A1A',
+    color: '#2D1B4E',
     letterSpacing: 0.5,
     textAlign: 'center',
     marginTop: 4,
@@ -557,6 +588,7 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
+
   taglineBadges: {
     flexDirection: 'row',
     marginTop: 16,
@@ -564,6 +596,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
   },
+
   taglineBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -580,36 +613,41 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+
   taglineBadgeText: {
     fontSize: 11,
-    color: '#4A3A1A',
+    color: '#2D1B4E',
     fontWeight: '500',
     letterSpacing: 0.2,
   },
+
   loadingContainer: {
     marginTop: 48,
     width: width * 0.4,
     maxWidth: 160,
   },
+
   loadingBar: {
     height: 3.5,
     borderRadius: 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    backgroundColor: 'rgba(45, 27, 78, 0.15)',
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
   },
+
   loadingFill: {
     height: '100%',
     borderRadius: 2,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#A855F7',
     shadowColor: '#FFFFFF',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
+
   footer: {
     position: 'absolute',
     bottom: 48,
@@ -617,20 +655,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
+
   footerText: {
     fontSize: 11,
     color: 'rgba(255, 255, 255, 0.5)',
     fontWeight: '400',
     letterSpacing: 0.3,
-    textShadowColor: 'rgba(0, 0, 0, 0.05)',
+    textShadowColor: 'rgba(45, 27, 78, 0.55)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
+
   footerDot: {
     width: 2,
     height: 2,
     borderRadius: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: 'rgba(45, 27, 78, 0.35)',
   },
 });
 

@@ -89,25 +89,23 @@ const CreateAccountScreen = ({ navigation, route }) => {
     const accountIconBounce = useRef(new Animated.Value(0)).current;
 
     const COLORS = {
-        gold: '#d6bceb',
-        goldLight: '#76577F',
-        goldDark: '#C4B0D3',
-        goldFade: 'rgba(179, 154, 199, 0.1)',
-        goldFadeStrong: 'rgba(179, 154, 199, 0.2)',
-        white: '#FFFFFF',
-        dark: '#1A1A1A',
-        textLight: '#666666',
-        lightBg: '#F8F6F0',
-        border: '#E8E3D8',
-        success: '#2ECC71',
-        shadow: 'rgba(201, 168, 76, 0.15)',
-        purple: '#6C5CE7',
-        pink: '#FD79A8',
-        blue: '#0984E3',
-        green: '#00B894',
+        gold: '#D8B4FE',                            // was '#d6bceb'  → primary
+        goldLight: '#A855F7',                       // was '#76577F'  → secondary
+        goldDark: '#D8B4FE',                        // was '#C4B0D3'  → primary
+        goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
+        goldFadeStrong: 'rgba(216, 180, 254, 0.2)', // was 'rgba(179, 154, 199, 0.2)'
+        white: '#FFFFFF',                           // unchanged
+        dark: '#2D1B4E',                            // was '#1A1A1A'
+        textLight: '#6B5B7A',                       // was '#666666'
+        lightBg: '#FAF5FF',                         // was '#F8F6F0'
+        border: '#EDE0FF',                          // was '#E8E3D8'
+        success: '#2ECC71',                         // unchanged (functional)
+        shadow: 'rgba(168, 85, 247, 0.15)',         // was 'rgba(201, 168, 76, 0.15)'
+        purple: '#D8B4FE',                          // was '#6C5CE7'  → primary
+        pink: '#A855F7',                            // was '#FD79A8'  → secondary
+        blue: '#D8B4FE',                            // was '#0984E3'  → primary
+        green: '#00B894',                           // unchanged
     };
-
-
     useEffect(() => {
         const mobileNo = route.params?.mobileNo;
         const verified = route.params?.mobileVerified;
@@ -1153,7 +1151,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                             width: 32,
                             height: 32,
                             resizeMode: 'contain',
-                            tintColor:  '#403746'
+                            tintColor: '#403746'
 
 
                         }}
@@ -1195,7 +1193,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                             width: 32,
                             height: 32,
                             resizeMode: 'contain',
-                            tintColor:  COLORS.gold
+                            tintColor: COLORS.gold
 
 
                         }}
@@ -1237,7 +1235,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                             width: 32,
                             height: 32,
                             resizeMode: 'contain',
-                            tintColor:  '#403746'
+                            tintColor: '#403746'
 
 
                         }}
@@ -1317,7 +1315,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                             width: 20,
                                             height: 20,
                                             resizeMode: 'contain',
-                                            tintColor:  '#403746'
+                                            tintColor: '#403746'
 
 
                                         }}
@@ -1333,7 +1331,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                         width: 18,
                                         height: 18,
                                         resizeMode: 'contain',
-                                        tintColor:  '#403746'
+                                        tintColor: '#403746'
 
 
                                     }}
@@ -1456,7 +1454,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor:  '#403746'
+                                tintColor: '#403746'
 
 
                             }}
@@ -1551,7 +1549,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor:  '#403746',
+                                tintColor: '#403746',
                                 marginRight: 12
 
 
@@ -1585,7 +1583,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor:  '#403746',
+                                tintColor: '#403746',
                                 marginRight: 12
 
 
@@ -1618,7 +1616,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor:  '#403746',
+                                tintColor: '#403746',
                                 marginRight: 12
 
 
@@ -1662,7 +1660,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                     width: 24,
                                     height: 24,
                                     resizeMode: 'contain',
-                                    tintColor: gender === 'Female' ?  '#403746' : COLORS.gold, // Remove if the PNG is already colored
+                                    tintColor: gender === 'Female' ? '#403746' : COLORS.gold, // Remove if the PNG is already colored
                                 }}
                             />
                             <Text style={[
@@ -1687,7 +1685,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                     width: 24,
                                     height: 24,
                                     resizeMode: 'contain',
-                                    tintColor: gender === 'Male' ?  '#403746' : COLORS.gold, // Remove if the PNG is already colored
+                                    tintColor: gender === 'Male' ? '#403746' : COLORS.gold, // Remove if the PNG is already colored
                                 }}
                             />
 
@@ -1714,7 +1712,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                     width: 24,
                                     height: 24,
                                     resizeMode: 'contain',
-                                    tintColor: gender === 'Other' ?  '#403746' : COLORS.gold, // Remove if the PNG is already colored
+                                    tintColor: gender === 'Other' ? '#403746' : COLORS.gold, // Remove if the PNG is already colored
                                 }}
                             />
                             <Text style={[
@@ -1741,7 +1739,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor:  '#403746',
+                                tintColor: '#403746',
                                 marginRight: 12
                             }}
                         />
@@ -1814,7 +1812,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor:  '#403746',
+                                tintColor: '#403746',
                                 marginRight: 12
                             }}
                         />
@@ -1874,7 +1872,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                 width: 20,
                                 height: 20,
                                 resizeMode: 'contain',
-                                tintColor:  '#403746', // Remove if the PNG is already colored
+                                tintColor: '#403746', // Remove if the PNG is already colored
                             }}
                         />
                     </TouchableOpacity>
@@ -1927,14 +1925,19 @@ const CreateAccountScreen = ({ navigation, route }) => {
                                             width: 55,
                                             height: 55,
                                             resizeMode: 'contain',
-                                            tintColor: COLORS.dark
+
 
 
 
                                         }}
                                     />
                                 </View>
-                                <Text style={styles.headerTitle}>HomeHelp</Text>
+                                <Text style={styles.headerTitle}>
+                                    <Text style={styles.headerTitleBold}>H</Text>
+                                    <Text style={styles.headerTitleNormal}>ome</Text>
+                                    <Text style={styles.headerTitleBold}>H</Text>
+                                    <Text style={styles.headerTitleNormal}>elp</Text>
+                                </Text>
                             </View>
                             <View style={styles.headerBadge}>
                                 <Text style={styles.headerBadgeText}>Create Account</Text>
@@ -1968,14 +1971,14 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
     },
     header: {
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         marginHorizontal: -20,
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 20,
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(168, 85, 247, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 12,
@@ -1996,14 +1999,14 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 10,
-        backgroundColor: 'rgba(255,255,255,0.2)',
+        backgroundColor: '#FFF',
         justifyContent: 'center',
         alignItems: 'center',
     },
     headerTitle: {
         fontSize: 22,
-        fontWeight: '700',
-        color: '#403746',
+        
+        color: '#2D1B4E',
         letterSpacing: -0.5,
     },
     headerBadge: {
@@ -2014,7 +2017,7 @@ const styles = StyleSheet.create({
     },
     headerBadgeText: {
         fontSize: 11,
-        color: '#403746',
+        color: '#2D1B4E',
         fontWeight: '600',
         letterSpacing: 0.5,
     },
@@ -2037,10 +2040,10 @@ const styles = StyleSheet.create({
         width: 44,
         height: 44,
         borderRadius: 14,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(168, 85, 247, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -2049,12 +2052,12 @@ const styles = StyleSheet.create({
     welcomeTitle: {
         fontSize: 26,
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         lineHeight: 32,
     },
     welcomeSubtitle: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         lineHeight: 20,
         paddingLeft: 56,
     },
@@ -2064,8 +2067,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 24,
         borderWidth: 1,
-        borderColor: '#E8E3D8',
-        shadowColor: 'rgba(201, 168, 76, 0.08)',
+        borderColor: '#EDE0FF',
+        shadowColor: 'rgba(168, 85, 247, 0.08)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
         shadowRadius: 12,
@@ -2084,7 +2087,7 @@ const styles = StyleSheet.create({
     shimmerEffect: {
         width: width * 0.5,
         height: '100%',
-        backgroundColor: 'rgba(201, 168, 76, 0.04)',
+        backgroundColor: 'rgba(168, 85, 247, 0.04)',
         transform: [{ skewX: '-20deg' }],
     },
     stepHeader: {
@@ -2099,10 +2102,10 @@ const styles = StyleSheet.create({
         width: 52,
         height: 52,
         borderRadius: 16,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(168, 85, 247, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -2111,16 +2114,16 @@ const styles = StyleSheet.create({
     stepTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     stepSubtitle: {
         fontSize: 13,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 1,
     },
     stepDescription: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         marginBottom: 20,
         lineHeight: 20,
     },
@@ -2128,10 +2131,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         width: '100%',
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         borderRadius: 14,
         borderWidth: 1,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
         paddingHorizontal: 16,
         marginBottom: 16,
         height: 56,
@@ -2142,18 +2145,18 @@ const styles = StyleSheet.create({
         gap: 6,
         paddingRight: 12,
         borderRightWidth: 1,
-        borderRightColor: '#E8E3D8',
+        borderRightColor: '#EDE0FF',
         marginRight: 12,
     },
     countryCodeText: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     phoneInput: {
         flex: 1,
         fontSize: 15,
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         paddingVertical: 12,
     },
     validIcon: {
@@ -2164,12 +2167,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
         width: '100%',
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(216, 180, 254, 0.35)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -2180,7 +2183,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
     },
     primaryButtonText: {
-        color: '#403746',
+        color: '#7E22CE',
         fontSize: 16,
         fontWeight: '700',
     },
@@ -2192,13 +2195,13 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 14,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         borderWidth: 1,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
     },
     backToLoginText: {
         fontSize: 14,
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         fontWeight: '500',
     },
     // Progress Bar
@@ -2207,19 +2210,19 @@ const styles = StyleSheet.create({
     },
     progressBar: {
         height: 6,
-        backgroundColor: '#F0EDE8',
+        backgroundColor: '#F0E6FF',
         borderRadius: 3,
         overflow: 'hidden',
         marginBottom: 8,
     },
     progressFill: {
         height: '100%',
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#A855F7',
         borderRadius: 3,
     },
     progressText: {
         fontSize: 12,
-        color: '#666666',
+        color: '#6B5B7A',
         textAlign: 'right',
     },
     // Profile Form
@@ -2234,7 +2237,7 @@ const styles = StyleSheet.create({
     inputLabel: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     inputRequired: {
         fontSize: 14,
@@ -2245,10 +2248,10 @@ const styles = StyleSheet.create({
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         borderRadius: 14,
         borderWidth: 1,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
         paddingHorizontal: 16,
         height: 52,
     },
@@ -2258,7 +2261,7 @@ const styles = StyleSheet.create({
     input: {
         flex: 1,
         fontSize: 15,
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         paddingVertical: 12,
     },
     // Gender Selection
@@ -2272,17 +2275,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         borderRadius: 12,
         paddingVertical: 12,
         paddingHorizontal: 10,
         borderWidth: 2,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
     },
     genderOptionSelected: {
-        backgroundColor: '#d6bceb',
-        borderColor: '#d6bceb',
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        backgroundColor: '#D8B4FE',
+        borderColor: '#A855F7',
+        shadowColor: 'rgba(168, 85, 247, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -2291,10 +2294,10 @@ const styles = StyleSheet.create({
     genderText: {
         fontSize: 14,
         fontWeight: '500',
-        color: '#666666',
+        color: '#6B5B7A',
     },
     genderTextSelected: {
-        color: '#403746',
+        color: '#2D1B4E',
     },
     // Modal Styles
     modalOverlay: {
@@ -2315,7 +2318,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#E0E0E0',
+        backgroundColor: '#EDE0FF',
         alignSelf: 'center',
         marginBottom: 16,
     },
@@ -2334,17 +2337,17 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         marginBottom: 4,
     },
     modalSubtitle: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         textAlign: 'center',
         lineHeight: 20,
     },
     modalHighlight: {
-        color: '#d6bceb',
+        color: '#A855F7',
         fontWeight: '600',
     },
     otpContainer: {
@@ -2359,17 +2362,17 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 14,
         borderWidth: 2,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
         textAlign: 'center',
         fontSize: 24,
         fontWeight: '600',
-        color: '#1A1A1A',
-        backgroundColor: '#F8F6F0',
+        color: '#2D1B4E',
+        backgroundColor: '#F5F0FA',
     },
     otpInputFocused: {
-        borderColor: '#d6bceb',
+        borderColor: '#A855F7',
         backgroundColor: '#FFFFFF',
-        shadowColor: 'rgba(201, 168, 76, 0.15)',
+        shadowColor: 'rgba(168, 85, 247, 0.15)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
@@ -2384,12 +2387,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
         width: '100%',
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(216, 180, 254, 0.35)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -2400,7 +2403,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
     },
     modalPrimaryButtonText: {
-        color: '#403746',
+        color: '#7E22CE',
         fontSize: 16,
         fontWeight: '700',
     },
@@ -2413,11 +2416,11 @@ const styles = StyleSheet.create({
     },
     resendText: {
         fontSize: 13,
-        color: '#666666',
+        color: '#6B5B7A',
     },
     resendLink: {
         fontSize: 13,
-        color: '#d6bceb',
+        color: '#A855F7',
         fontWeight: '600',
     },
     modalCloseButton: {
@@ -2427,8 +2430,19 @@ const styles = StyleSheet.create({
     },
     modalCloseText: {
         fontSize: 14,
-        color: '#999',
+        color: '#9E8FB0',
         fontWeight: '500',
+    },
+     headerTitleBold: {
+        fontSize: 24,
+        fontWeight: '900',
+        color: '#2D1B4E',
+        fontFamily: 'Segoe UI Bold',
+    },
+    headerTitleNormal: {
+        fontSize: 24,
+        color: '#2D1B4E',
+        fontFamily: 'Segoe UI',
     },
 });
 

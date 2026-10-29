@@ -59,26 +59,26 @@ const LoginScreen = ({ navigation }) => {
     const pulseAnim = useRef(new Animated.Value(1)).current;
 
     const COLORS = {
-        gold: '#B39AC7',
-        goldLight: '#C4B0D3',
-        goldDark: '#76577F',
-        goldFade: 'rgba(179, 154, 199, 0.1)',
-        goldFadeStrong: 'rgba(179, 154, 199, 0.2)',
-        white: '#FFF',
-        dark: '#1A1A1A',
-        textLight: '#666666',
-        lightBg: '#F8F6F0',
-        border: '#E8E3D8',
-        success: '#2ECC71',
-        shadow: 'rgba(201, 168, 76, 0.15)',
-        google: '#DB4437',
-        facebook: '#4267B2',
-        purple: '#6C5CE7',
-        pink: '#FD79A8',
-        blue: '#0984E3',
-        green: '#00B894',
-        red: '#E17055',
-        orange: '#FDCB6E',
+        gold: '#A855F7',                            // secondary (kept as accent)
+        goldLight: '#D8B4FE',                       // was '#A855F7'  → now primary
+        goldDark: '#A855F7',                        // was '#7E22CE'  → now secondary
+        goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
+        goldFadeStrong: 'rgba(216, 180, 254, 0.2)', // was 'rgba(179, 154, 199, 0.2)'
+        white: '#FFF',                              // unchanged
+        dark: '#2D1B4E',                            // was '#1A1A1A'
+        textLight: '#6B5B7A',                       // was '#666666'
+        lightBg: '#FAF5FF',                         // was '#F8F6F0'
+        border: '#EDE0FF',                          // was '#E8E3D8'  (lighter to suit lavender)
+        success: '#2ECC71',                         // unchanged (functional)
+        shadow: 'rgba(168, 85, 247, 0.15)',         // was 'rgba(201, 168, 76, 0.15)'
+        google: '#DB4437',                          // unchanged (brand)
+        facebook: '#4267B2',                        // unchanged (brand)
+        purple: '#D8B4FE',                          // was '#6C5CE7'  → primary
+        pink: '#A855F7',                            // was '#FD79A8'  → secondary
+        blue: '#D8B4FE',                            // was '#0984E3'  → primary
+        green: '#00B894',                           // unchanged
+        red: '#E17055',                             // unchanged
+        orange: '#FDCB6E',                          // unchanged
     };
 
     useEffect(() => {
@@ -1287,14 +1287,14 @@ const styles = StyleSheet.create({
     },
 
     header: {
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         marginHorizontal: -20,
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 20,
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,
-        shadowColor: 'rgba(142, 49, 87, 0.3)',
+        shadowColor: 'rgba(168, 85, 247, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 12,
@@ -1333,7 +1333,7 @@ const styles = StyleSheet.create({
     },
     headerBadgeText: {
         fontSize: 11,
-        color: '#403746',
+        color: '#2D1B4E',
         fontWeight: '600',
         letterSpacing: 0.5,
     },
@@ -1346,13 +1346,13 @@ const styles = StyleSheet.create({
     welcomeTitle: {
         fontSize: 24,
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         marginBottom: 6,
         lineHeight: 30,
     },
     welcomeSubtitle: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         lineHeight: 20,
     },
     stepCard: {
@@ -1361,8 +1361,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 24,
         borderWidth: 1,
-        borderColor: '#E8E3D8',
-        shadowColor: 'rgba(201, 168, 76, 0.08)',
+        borderColor: '#EDE0FF',
+        shadowColor: 'rgba(168, 85, 247, 0.08)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
         shadowRadius: 12,
@@ -1378,7 +1378,7 @@ const styles = StyleSheet.create({
         width: 44,
         height: 44,
         borderRadius: 12,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
@@ -1386,11 +1386,11 @@ const styles = StyleSheet.create({
     stepTitle: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     stepSubtitle: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         marginBottom: 20,
         lineHeight: 20,
     },
@@ -1398,10 +1398,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         width: '100%',
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         borderRadius: 14,
         borderWidth: 1,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
         paddingHorizontal: 16,
         marginBottom: 16,
         height: 56,
@@ -1412,47 +1412,32 @@ const styles = StyleSheet.create({
         gap: 6,
         paddingRight: 12,
         borderRightWidth: 1,
-        borderRightColor: '#E8E3D8',
+        borderRightColor: '#EDE0FF',
         marginRight: 12,
     },
     countryCodeText: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     phoneInput: {
         flex: 1,
         fontSize: 15,
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         paddingVertical: 12,
     },
+   
     primaryButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
         width: '100%',
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-    primaryButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 10,
-        backgroundColor: '#d6bceb',
-        paddingVertical: 16,
-        paddingHorizontal: 32,
-        borderRadius: 14,
-        width: '100%',
-        shadowColor: 'rgba(126, 53, 77, 0.3)',
+        shadowColor: 'rgba(168, 85, 247, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -1463,7 +1448,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
     },
     primaryButtonText: {
-        color: '#403746',
+        color: '#2D1B4E',
         fontSize: 16,
         fontWeight: '700',
     },
@@ -1481,10 +1466,10 @@ const styles = StyleSheet.create({
     dividerLine: {
         flex: 1,
         height: 1,
-        backgroundColor: '#E8E3D8',
+        backgroundColor: '#EDE0FF',
     },
     dividerText: {
-        color: '#999',
+        color: '#9E8FB0',
         fontSize: 12,
         fontWeight: '500',
     },
@@ -1504,7 +1489,7 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         paddingHorizontal: 16,
         borderWidth: 1,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
         shadowColor: 'rgba(0,0,0,0.05)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -1521,18 +1506,18 @@ const styles = StyleSheet.create({
     socialButtonText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     // Create Account - After Social Login (Highlighted)
     createAccountHighlight: {
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         borderRadius: 16,
         padding: 16,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: 20,
-        shadowColor: 'rgba(108, 92, 231, 0.4)',
+        shadowColor: 'rgba(168, 85, 247, 0.4)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 16,
@@ -1597,7 +1582,7 @@ const styles = StyleSheet.create({
         marginTop: 24,
         paddingTop: 20,
         borderTopWidth: 1,
-        borderTopColor: '#F0EDE8',
+        borderTopColor: '#F0E6FF',
     },
     whyChooseHeader: {
         flexDirection: 'row',
@@ -1608,12 +1593,12 @@ const styles = StyleSheet.create({
     whyChooseLine: {
         flex: 1,
         height: 1,
-        backgroundColor: '#E8E3D8',
+        backgroundColor: '#EDE0FF',
     },
     whyChooseTitle: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     reasonsGrid: {
         flexDirection: 'row',
@@ -1625,8 +1610,8 @@ const styles = StyleSheet.create({
         padding: 14,
         borderRadius: 14,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
-        backgroundColor: '#F8F6F0',
+        borderColor: '#F0E6FF',
+        backgroundColor: '#F5F0FA',
     },
     reasonIcon: {
         width: 40,
@@ -1639,17 +1624,17 @@ const styles = StyleSheet.create({
     reasonTitle: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         marginBottom: 4,
     },
     reasonDescription: {
         fontSize: 11,
-        color: '#666666',
+        color: '#6B5B7A',
         lineHeight: 16,
     },
     termsText: {
         fontSize: 11,
-        color: '#999',
+        color: '#9E8FB0',
         textAlign: 'center',
         marginTop: 16,
         lineHeight: 16,
@@ -1673,7 +1658,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#E0E0E0',
+        backgroundColor: '#EDE0FF',
         alignSelf: 'center',
         marginBottom: 16,
     },
@@ -1692,19 +1677,19 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: '#0a0a0a',
         marginBottom: 4,
     },
     modalSubtitle: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         textAlign: 'center',
         lineHeight: 20,
     },
     modalHighlight: {
 
         fontWeight: '600',
-        color: '#d6bceb',
+        color: '#A855F7',
     },
     otpContainer: {
         flexDirection: 'row',
@@ -1718,18 +1703,18 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 14,
         borderWidth: 2,
-        borderColor: '#E8E3D8',
+        borderColor: '#EDE0FF',
         textAlign: 'center',
         fontSize: 24,
         fontWeight: '600',
-        color: '#1A1A1A',
-        backgroundColor: '#F8F6F0',
+        color: '#2D1B4E',
+        backgroundColor: '#F5F0FA',
     },
     otpInputFocused: {
 
-        borderColor: '#d6bceb',
+        borderColor: '#A855F7',
         backgroundColor: '#FFFFFF',
-        shadowColor: 'rgba(201, 168, 76, 0.15)',
+        shadowColor: 'rgba(168, 85, 247, 0.15)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
@@ -1744,12 +1729,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
         width: '100%',
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(216, 180, 254, 0.35)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -1760,7 +1745,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
     },
     modalPrimaryButtonText: {
-        color: '#403746',
+        color: '#2D1B4E',
         fontSize: 16,
         fontWeight: '700',
     },
@@ -1773,11 +1758,11 @@ const styles = StyleSheet.create({
     },
     resendText: {
         fontSize: 13,
-        color: '#666666',
+        color: '#6B5B7A',
     },
     resendLink: {
         fontSize: 13,
-        color: '#d6bceb',
+        color: '#A855F7',
         fontWeight: '600',
     },
     modalCloseButton: {
@@ -1787,7 +1772,7 @@ const styles = StyleSheet.create({
     },
     modalCloseText: {
         fontSize: 14,
-        color: '#999',
+        color: '#9E8FB0',
         fontWeight: '500',
     },
     showMpinButton: {
@@ -1798,12 +1783,12 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
         paddingHorizontal: 14,
         borderRadius: 20,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         alignSelf: 'center',
     },
     showMpinText: {
         fontSize: 13,
-        color: '#d6bceb',
+        color: '#A855F7',
         fontWeight: '500',
     },
     backToSetMpin: {
@@ -1814,23 +1799,23 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 20,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         alignSelf: 'center',
     },
     backToSetMpinText: {
         fontSize: 13,
-        color: '#d6bceb',
+        color: '#A855F7',
         fontWeight: '500',
     },
     headerTitleBold: {
         fontSize: 24,
         fontWeight: '900',
-        color: '#000000',
+        color: '#2D1B4E',
         fontFamily: 'Segoe UI Bold',
     },
     headerTitleNormal: {
         fontSize: 24,
-        color: '#000000',
+        color: '#2D1B4E',
         fontFamily: 'Segoe UI',
     },
 });

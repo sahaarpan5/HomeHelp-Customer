@@ -58,26 +58,26 @@ const LoginScreenV2 = ({ navigation }) => {
     const pulseAnim = useRef(new Animated.Value(1)).current;
 
     const COLORS = {
-        gold: '#A855F7',
-        goldLight: '#C084FC',
-        goldDark: '#7E22CE',
-        goldFade: 'rgba(168, 85, 247, 0.15)',
-        goldFadeStrong: 'rgba(168, 85, 247, 0.25)',
-        white: '#FFFFFF',
-        dark: '#0F0F0F',
-        textLight: '#4B5563',
-        lightBg: '#FAF5FF',
-        border: '#E9D5FF',
-        success: '#22C55E',
-        shadow: 'rgba(168, 85, 247, 0.35)',
-        google: '#DB4437',
-        facebook: '#4267B2',
-        purple: '#8B5CF6',
-        pink: '#EC4899',
-        blue: '#0EA5E9',
-        green: '#10B981',
-        red: '#EF4444',
-        orange: '#F59E0B',
+        gold: '#A855F7',                            // secondary (kept as accent)
+        goldLight: '#D8B4FE',                       // was '#A855F7'  → now primary
+        goldDark: '#A855F7',                        // was '#7E22CE'  → now secondary
+        goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
+        goldFadeStrong: 'rgba(216, 180, 254, 0.2)', // was 'rgba(179, 154, 199, 0.2)'
+        white: '#FFF',                              // unchanged
+        dark: '#2D1B4E',                            // was '#1A1A1A'
+        textLight: '#6B5B7A',                       // was '#666666'
+        lightBg: '#FAF5FF',                         // was '#F8F6F0'
+        border: '#EDE0FF',                          // was '#E8E3D8'  (lighter to suit lavender)
+        success: '#2ECC71',                         // unchanged (functional)
+        shadow: 'rgba(168, 85, 247, 0.15)',         // was 'rgba(201, 168, 76, 0.15)'
+        google: '#DB4437',                          // unchanged (brand)
+        facebook: '#4267B2',                        // unchanged (brand)
+        purple: '#D8B4FE',                          // was '#6C5CE7'  → primary
+        pink: '#A855F7',                            // was '#FD79A8'  → secondary
+        blue: '#D8B4FE',                            // was '#0984E3'  → primary
+        green: '#00B894',                           // unchanged
+        red: '#E17055',                             // unchanged
+        orange: '#FDCB6E',                          // unchanged
     };
 
     useEffect(() => {
@@ -1699,11 +1699,11 @@ const styles = StyleSheet.create({
         color: '#A855F7',
         fontWeight: '800',
     },
-     headerTitleBold: {
+    headerTitleBold: {
         fontSize: 24,
         fontWeight: '900',
         color: '#000000',
-       fontFamily: 'Segoe UI Bold',
+        fontFamily: 'Segoe UI Bold',
     },
     headerTitleNormal: {
         fontSize: 24,

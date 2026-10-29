@@ -63,25 +63,25 @@ const ServiceBookingScreen = ({ navigation, route }) => {
     const heartAnim = useRef(new Animated.Value(1)).current;
 
     const COLORS = {
-        gold: '#d6bceb',
-        goldLight: '#76577F',
-        goldDark: '#C4B0D3',
-        goldFade: 'rgba(179, 154, 199, 0.1)',
-        white: '#FFFFFF',
-        dark: '#1A1A1A',
-        textLight: '#666666',
-        lightBg: '#F8F6F0',
-        border: '#E8E3D8',
-        success: '#2ECC71',
-        purple: '#6C5CE7',
-        pink: '#FD79A8',
-        blue: '#0984E3',
-        green: '#00B894',
-        red: '#E17055',
-        orange: '#FDCB6E',
-        warning: '#F39C12',
-        heart: '#FF4757',
-        txtColor: '#403746',
+        gold: '#D8B4FE',                            // was '#d6bceb'  → primary
+        goldLight: '#A855F7',                       // was '#76577F'  → secondary
+        goldDark: '#A855F7',                        // was '#C4B0D3'  → secondary
+        goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
+        white: '#FFFFFF',                           // unchanged
+        dark: '#2D1B4E',                            // was '#1A1A1A'
+        textLight: '#6B5B7A',                       // was '#666666'
+        lightBg: '#FAF5FF',                         // was '#F8F6F0'
+        border: '#EDE0FF',                          // was '#E8E3D8'
+        success: '#2ECC71',                         // unchanged (functional)
+        purple: '#D8B4FE',                          // was '#6C5CE7'  → primary
+        pink: '#A855F7',                            // was '#FD79A8'  → secondary
+        blue: '#D8B4FE',                            // was '#0984E3'  → primary
+        green: '#00B894',                           // unchanged
+        red: '#E17055',                             // unchanged (functional)
+        orange: '#FDCB6E',                          // unchanged (functional)
+        warning: '#F39C12',                         // unchanged (functional)
+        heart: '#FF4757',                           // unchanged (functional — fav heart)
+        txtColor: '#2D1B4E',                        // was '#403746'
     };
 
 
@@ -721,7 +721,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
         if (updatedCart.length === 0) {
             await cancelCartReminder();
             closeCart();
-        }else {
+        } else {
             // Reschedule based on remaining items
             await scheduleCartReminder(
                 updatedCart
@@ -1802,7 +1802,7 @@ const ServiceBookingScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#FAF5FF',
     },
     content: {
         flex: 1,
@@ -1886,11 +1886,11 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: '#FFFFFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#F0EDE8',
+        borderBottomColor: '#F0E6FF',
     },
     serviceTagline: {
         fontSize: 13,
-        color: '#C9A84C',
+        color: '#A855F7',
         fontWeight: '600',
         marginBottom: 4,
         letterSpacing: 0.5,
@@ -1916,7 +1916,7 @@ const styles = StyleSheet.create({
     },
     ratingCount: {
         fontSize: 13,
-        color: '#666666',
+        color: '#6B5B7A',
     },
     priceRow: {
         flexDirection: 'row',
@@ -1930,7 +1930,7 @@ const styles = StyleSheet.create({
     },
     pricePerService: {
         fontSize: 13,
-        color: '#666666',
+        color: '#6B5B7A',
         marginLeft: 4,
     },
     // Section Styles
@@ -1954,19 +1954,19 @@ const styles = StyleSheet.create({
     },
     sectionSubtitle: {
         fontSize: 13,
-        color: '#999999',
+        color: '#9E8FB0',
         marginTop: 2,
     },
     // Child Services
     childServiceCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         borderRadius: 12,
         padding: 12,
         marginBottom: 10,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
     },
     childServiceImage: {
         width: 60,
@@ -1999,19 +1999,19 @@ const styles = StyleSheet.create({
     },
     childServiceDuration: {
         fontSize: 12,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 2,
     },
     actionButton: {
         width: 32,
         height: 32,
         borderRadius: 16,
-        backgroundColor: '#403746',
+        backgroundColor: '#7E22CE',
         justifyContent: 'center',
         alignItems: 'center',
     },
     actionButtonAdded: {
-        backgroundColor: '#C4B0D3',
+        backgroundColor: '#A855F7',
     },
     // List Items
     listItem: {
@@ -2039,7 +2039,7 @@ const styles = StyleSheet.create({
         padding: 12,
         marginBottom: 4,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
         shadowColor: 'rgba(0,0,0,0.04)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -2063,7 +2063,7 @@ const styles = StyleSheet.create({
         width: 22,
         height: 22,
         borderRadius: 11,
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 2,
@@ -2086,7 +2086,7 @@ const styles = StyleSheet.create({
     },
     processDescription: {
         fontSize: 12,
-        color: '#666666',
+        color: '#6B5B7A',
         lineHeight: 16,
     },
     processArrow: {
@@ -2107,7 +2107,7 @@ const styles = StyleSheet.create({
     faqItem: {
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: '#F5F5F5',
+        borderBottomColor: '#F0E6FF',
     },
     faqHeader: {
         flexDirection: 'row',
@@ -2123,7 +2123,7 @@ const styles = StyleSheet.create({
     },
     faqAnswer: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 8,
         lineHeight: 20,
     },
@@ -2142,7 +2142,7 @@ const styles = StyleSheet.create({
     reviewItem: {
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: '#F5F5F5',
+        borderBottomColor: '#F0E6FF',
     },
     reviewHeader: {
         flexDirection: 'row',
@@ -2158,7 +2158,7 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 18,
-        backgroundColor: '#403746',
+        backgroundColor: '#A855F7',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -2170,7 +2170,7 @@ const styles = StyleSheet.create({
     reviewCustomerName: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     reviewStarsRow: {
         flexDirection: 'row',
@@ -2180,11 +2180,11 @@ const styles = StyleSheet.create({
     },
     reviewDate: {
         fontSize: 11,
-        color: '#999999',
+        color: '#9E8FB0',
     },
     reviewComment: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         lineHeight: 20,
     },
     // Cart
@@ -2195,7 +2195,7 @@ const styles = StyleSheet.create({
         right: 20,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingVertical: 14,
         paddingHorizontal: 20,
         borderRadius: 14,
@@ -2227,13 +2227,13 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 15,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
         marginLeft: 12,
     },
     cartTotalText: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#403746',
+        color: '#2D1B4E',
         marginRight: 8,
     },
     // Cart Modal
@@ -2254,7 +2254,7 @@ const styles = StyleSheet.create({
     },
     cartSubtitle: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         textAlign: 'center',
         marginTop: 4,
         marginBottom: 16,
@@ -2264,7 +2264,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: '#F5F5F5',
+        borderBottomColor: '#F0E6FF',
     },
     cartItemImage: {
         width: 50,
@@ -2290,7 +2290,7 @@ const styles = StyleSheet.create({
         marginTop: 16,
         paddingTop: 16,
         borderTopWidth: 1,
-        borderTopColor: '#F0EDE8',
+        borderTopColor: '#F0E6FF',
     },
     cartTotal: {
         flexDirection: 'row',
@@ -2313,7 +2313,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#403746',
+        backgroundColor: '#7E22CE',
         paddingVertical: 14,
         borderRadius: 12,
     },
@@ -2341,7 +2341,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#E0E0E0',
+        backgroundColor: '#7E22CE',
         alignSelf: 'center',
         marginBottom: 16,
     },
@@ -2375,12 +2375,12 @@ const styles = StyleSheet.create({
     },
     modalServiceDuration: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 4,
     },
     modalServiceDescription: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 8,
         lineHeight: 20,
     },
@@ -2401,7 +2401,7 @@ const styles = StyleSheet.create({
     },
     modalListItemText: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         flex: 1,
     },
     modalAddButton: {
@@ -2409,7 +2409,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#403746',
+        backgroundColor: '#7E22CE',
         paddingVertical: 14,
         borderRadius: 12,
         marginTop: 20,
@@ -2429,14 +2429,14 @@ const styles = StyleSheet.create({
     },
     modalCloseText: {
         fontSize: 14,
-        color: '#999',
+        color: '#9E8FB0',
         fontWeight: '500',
     },
     selectSlotButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#A855F7',
         paddingVertical: 14,
         paddingHorizontal: 18,
         borderRadius: 12,
@@ -2481,20 +2481,20 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#76577F',
-        backgroundColor: '#F8F3FA',
+        borderColor: '#A855F7',
+        backgroundColor: '#FAF5FF',
     },
 
     rateChartButtonText: {
         fontSize: 11,
         fontWeight: '600',
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     childServicePerHour: {
         fontSize: 11,
         fontWeight: '500',
-        color: '#777777',
+        color: '#6B5B7A',
     },
     rateChartOverlay: {
         flex: 1,
@@ -2526,7 +2526,7 @@ const styles = StyleSheet.create({
 
     rateChartServiceName: {
         fontSize: 13,
-        color: '#777777',
+        color: '#6B5B7A',
         marginTop: 3,
     },
 
@@ -2534,7 +2534,7 @@ const styles = StyleSheet.create({
         width: 34,
         height: 34,
         borderRadius: 17,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: '#F5F0FA',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -2551,9 +2551,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 14,
         marginBottom: 8,
         borderRadius: 10,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         borderWidth: 1,
-        borderColor: '#EFE9E0',
+        borderColor: '#EDE0FF',
     },
 
     rateChartDuration: {
@@ -2563,7 +2563,7 @@ const styles = StyleSheet.create({
     rateChartDurationText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
     },
 
     rateChartPriceContainer: {
@@ -2573,11 +2573,11 @@ const styles = StyleSheet.create({
     rateChartPrice: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#76577F',
+        color: '#A855F7',
     },
 
     rateChartDoneButton: {
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         borderRadius: 12,
         paddingVertical: 13,
         alignItems: 'center',
@@ -2604,7 +2604,7 @@ const styles = StyleSheet.create({
         width: 34,
         height: 34,
         borderRadius: 17,
-        backgroundColor: '#F1EAF4',
+        backgroundColor: '#F5F0FA',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 10,
@@ -2619,7 +2619,7 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#2D2530',
+        color: '#2D1B4E',
     },
 
     includedList: {

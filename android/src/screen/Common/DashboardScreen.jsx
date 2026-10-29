@@ -78,32 +78,31 @@ const DashboardScreen = ({ navigation }) => {
         require('../../asset/information.png'),
     ];
 
-    const COLORS = {
-        gold: '#d6bceb',
-        goldLight: '#76577F',
-        goldDark: '#C4B0D3',
-        goldFade: 'rgba(179, 154, 199, 0.1)',
-        goldFadeStrong: 'rgba(179, 154, 199, 0.2)',
-        white: '#FFFFFF',
-        dark: '#1A1A1A',
-        textLight: '#666666',
-        lightBg: '#F8F6F0',
-        border: '#E8E3D8',
-        success: '#2ECC71',
-        purple: '#6C5CE7',
-        pink: '#FD79A8',
-        blue: '#0984E3',
-        green: '#00B894',
-        red: '#E17055',
-        orange: '#FDCB6E',
-        teal: '#00CEC9',
-        indigo: '#6C5CE7',
-        coral: '#FF6B6B',
-        mint: '#00B894',
-        lavender: '#A29BFE',
-        peach: '#FD79A8',
-    };
-
+   const COLORS = {
+    gold: '#D8B4FE',                            // was '#d6bceb'  → primary
+    goldLight: '#A855F7',                       // was '#76577F'  → secondary
+    goldDark: '#A855F7',                        // was '#C4B0D3'  → secondary
+    goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
+    goldFadeStrong: 'rgba(216, 180, 254, 0.2)', // was 'rgba(179, 154, 199, 0.2)'
+    white: '#FFFFFF',                           // unchanged
+    dark: '#2D1B4E',                            // was '#1A1A1A'
+    textLight: '#6B5B7A',                       // was '#666666'
+    lightBg: '#FAF5FF',                         // was '#F8F6F0'
+    border: '#EDE0FF',                          // was '#E8E3D8'
+    success: '#2ECC71',                         // unchanged (functional)
+    purple: '#A855F7',                          // was '#6C5CE7'  → secondary
+    pink: '#D8B4FE',                            // was '#FD79A8'  → primary
+    blue: '#A855F7',                            // was '#0984E3'  → secondary
+    green: '#00B894',                           // unchanged
+    red: '#E17055',                             // unchanged (functional)
+    orange: '#FDCB6E',                          // unchanged (functional)
+    teal: '#00CEC9',                            // unchanged
+    indigo: '#A855F7',                          // was '#6C5CE7'  → secondary
+    coral: '#D8B4FE',                           // was '#FF6B6B'  → primary
+    mint: '#00B894',                            // unchanged
+    lavender: '#D8B4FE',                        // was '#A29BFE'  → primary
+    peach: '#A855F7',                           // was '#FD79A8'  → secondary
+};
     const offerListRef = useRef(null);
 
     // Sample user data
@@ -2062,7 +2061,7 @@ const DashboardScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#FAF5FF',
     },
     header: {
         flexDirection: 'row',
@@ -2073,7 +2072,7 @@ const styles = StyleSheet.create({
         paddingBottom: 16,
         backgroundColor: '#FFFFFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#F0EDE8',
+        borderBottomColor: '#F0E6FF',
     },
     headerLeft: {
         flexDirection: 'row',
@@ -2085,7 +2084,7 @@ const styles = StyleSheet.create({
     },
     headerGreeting: {
         fontSize: 12,
-        color: '#666666',
+        color: '#6B5B7A',
     },
     headerName: {
         fontSize: 18,
@@ -2133,8 +2132,8 @@ const styles = StyleSheet.create({
         marginTop: 16,
         marginBottom: 20,
         borderWidth: 1,
-        borderColor: '#E8E3D8',
-        shadowColor: 'rgba(201, 168, 76, 0.08)',
+        borderColor: '#EDE0FF',
+        shadowColor: 'rgba(168, 85, 247, 0.08)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 4,
@@ -2178,7 +2177,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     offerDiscountBadge: {
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 20,
@@ -2190,12 +2189,12 @@ const styles = StyleSheet.create({
     offerDiscountText: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#403746',
+        color: '#2D1B4E',
     },
     offerDiscountLabel: {
         fontSize: 10,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
         opacity: 0.8,
     },
     offerContent: {
@@ -2236,7 +2235,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 20,
@@ -2244,7 +2243,7 @@ const styles = StyleSheet.create({
     bookNowText: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
     },
     offerDots: {
         flexDirection: 'row',
@@ -2256,10 +2255,10 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#D4D4D4',
+        backgroundColor: '#EDE0FF',
     },
     offerDotActive: {
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#A855F7',
         width: 24,
     },
     sectionHeader: {
@@ -2276,7 +2275,7 @@ const styles = StyleSheet.create({
     },
     sectionSubtitle: {
         fontSize: 12,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 2,
     },
     viewAllText: {
@@ -2295,7 +2294,7 @@ const styles = StyleSheet.create({
         marginRight: 12,
         width: 200,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
         shadowColor: 'rgba(0,0,0,0.04)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -2329,7 +2328,7 @@ const styles = StyleSheet.create({
     },
     popularServiceReviews: {
         fontSize: 11,
-        color: '#666666',
+        color: '#6B5B7A',
     },
     popularServiceBottom: {
         flexDirection: 'row',
@@ -2362,7 +2361,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
         shadowColor: 'rgba(0,0,0,0.04)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -2418,7 +2417,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingHorizontal: 10,
         paddingVertical: 4,
         borderRadius: 12,
@@ -2427,7 +2426,7 @@ const styles = StyleSheet.create({
     onTheSpotBadgeText: {
         fontSize: 10,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
     },
     onTheSpotContent: {
         justifyContent: 'flex-end',
@@ -2469,7 +2468,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     onTheSpotBookButton: {
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingHorizontal: 14,
         paddingVertical: 6,
         borderRadius: 16,
@@ -2477,7 +2476,7 @@ const styles = StyleSheet.create({
     onTheSpotBookText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
     },
     rebookList: {
         paddingBottom: 4,
@@ -2490,7 +2489,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         marginRight: 12,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
         shadowColor: 'rgba(0,0,0,0.04)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -2511,12 +2510,12 @@ const styles = StyleSheet.create({
     },
     rebookProvider: {
         fontSize: 11,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 2,
     },
     rebookDate: {
         fontSize: 10,
-        color: '#999999',
+        color: '#9E8FB0',
         marginTop: 2,
     },
     rebookFooter: {
@@ -2538,14 +2537,14 @@ const styles = StyleSheet.create({
     rebookPrice: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#d6bceb',
+        color: '#A855F7',
     },
     rebookButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 6,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingVertical: 6,
         paddingHorizontal: 12,
         borderRadius: 8,
@@ -2554,7 +2553,7 @@ const styles = StyleSheet.create({
     rebookButtonText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
     },
     thoughtfulContainer: {
         marginBottom: 24,
@@ -2590,7 +2589,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingHorizontal: 10,
         paddingVertical: 4,
         borderRadius: 12,
@@ -2599,7 +2598,7 @@ const styles = StyleSheet.create({
     thoughtfulBadgeText: {
         fontSize: 10,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
     },
     thoughtfulContent: {
         justifyContent: 'flex-end',
@@ -2618,7 +2617,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 20,
@@ -2628,7 +2627,7 @@ const styles = StyleSheet.create({
     thoughtfulButtonText: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
     },
     thoughtfulDots: {
         flexDirection: 'row',
@@ -2640,10 +2639,10 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#D4D4D4',
+        backgroundColor: '#EDE0FF',
     },
     thoughtfulDotActive: {
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#A855F7',
         width: 24,
     },
     whyChooseContainer: {
@@ -2662,7 +2661,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
         flex: 1,
         minWidth: (width - 60) / 2,
     },
@@ -2681,12 +2680,12 @@ const styles = StyleSheet.create({
 
     },
     referCard: {
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         borderRadius: 16,
         padding: 20,
         marginTop: 8,
         marginBottom: 24,
-        shadowColor: 'rgba(201, 168, 76, 0.3)',
+        shadowColor: 'rgba(168, 85, 247, 0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 12,
@@ -2776,7 +2775,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 20,
         borderTopWidth: 1,
-        borderTopColor: '#F0EDE8',
+        borderTopColor: '#F0E6FF',
         marginTop: 8,
     },
     footerCatchyText: {
@@ -2789,19 +2788,19 @@ const styles = StyleSheet.create({
     },
     footerSubText: {
         fontSize: 13,
-        color: '#666666',
+        color: '#6B5B7A',
         textAlign: 'center',
         marginTop: 8,
     },
     footerDivider: {
         width: 40,
         height: 2,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#A855F7',
         marginVertical: 12,
     },
     footerVersion: {
         fontSize: 11,
-        color: '#999999',
+        color: '#9E8FB0',
     },
     // Modal Styles - Bottom Sheet
     modalOverlay: {
@@ -2823,7 +2822,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#E0E0E0',
+        backgroundColor: '#EDE0FF',
         alignSelf: 'center',
         marginBottom: 16,
     },
@@ -2838,7 +2837,7 @@ const styles = StyleSheet.create({
     },
     modalSubtitle: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         textAlign: 'center',
         marginTop: 4,
     },
@@ -2953,7 +2952,7 @@ const styles = StyleSheet.create({
     //     fontWeight: '500',
     // },
     modalCloseButton: {
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         paddingVertical: 14,
         borderRadius: 14,
         alignItems: 'center',
@@ -2962,7 +2961,7 @@ const styles = StyleSheet.create({
     modalCloseText: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#666666',
+        color: '#6B5B7A',
     },
     sidebarOverlay: {
         flex: 1,
@@ -2990,7 +2989,7 @@ const styles = StyleSheet.create({
         paddingVertical: 24,
         paddingHorizontal: 20,
         borderBottomWidth: 1,
-        borderBottomColor: '#F0EDE8',
+        borderBottomColor: '#F0E6FF',
     },
     sidebarAvatarContainer: {
         position: 'relative',
@@ -3010,7 +3009,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         backgroundColor: '#2ECC71',
         borderWidth: 2,
-        borderColor: '#403746',
+        borderColor: '#2D1B4E',
     },
     sidebarName: {
         fontSize: 18,
@@ -3019,7 +3018,7 @@ const styles = StyleSheet.create({
     },
     sidebarEmail: {
         fontSize: 13,
-        color: '#666666',
+        color: '#6B5B7A',
         marginTop: 4,
     },
     sidebarMenu: {
@@ -3032,13 +3031,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 14,
         borderBottomWidth: 1,
-        borderBottomColor: '#F5F5F5',
+        borderBottomColor: '#F0E6FF',
     },
     sidebarMenuIcon: {
         width: 36,
         height: 36,
         borderRadius: 8,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#F5F0FA',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 14,
@@ -3056,18 +3055,18 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0,
         marginTop: 12,
         borderTopWidth: 1,
-        borderTopColor: '#F5F5F5',
+        borderTopColor: '#F0E6FF',
         paddingTop: 16,
     },
     sidebarFooter: {
         padding: 20,
         borderTopWidth: 1,
-        borderTopColor: '#F0EDE8',
+        borderTopColor: '#F0E6FF',
         alignItems: 'center',
     },
     sidebarVersion: {
         fontSize: 11,
-        color: '#999999',
+        color: '#9E8FB0',
     },
     loaderOverlay: {
         flex: 1,
@@ -3094,7 +3093,7 @@ const styles = StyleSheet.create({
         right: 20,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         paddingVertical: 14,
         paddingHorizontal: 20,
         borderRadius: 14,
@@ -3126,13 +3125,13 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 15,
         fontWeight: '600',
-        color: '#403746',
+        color: '#2D1B4E',
         marginLeft: 12,
     },
     cartTotalText: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#403746',
+        color: '#2D1B4E',
         marginRight: 8,
     },
     // Cart Modal
@@ -3153,7 +3152,7 @@ const styles = StyleSheet.create({
     },
     cartSubtitle: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         textAlign: 'center',
         marginTop: 4,
         marginBottom: 16,
@@ -3163,7 +3162,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: '#F5F5F5',
+        borderBottomColor: '#F0E6FF',
     },
     cartItemImage: {
         width: 50,
@@ -3189,7 +3188,7 @@ const styles = StyleSheet.create({
         marginTop: 16,
         paddingTop: 16,
         borderTopWidth: 1,
-        borderTopColor: '#F0EDE8',
+        borderTopColor: '#F0E6FF',
     },
     cartTotal: {
         flexDirection: 'row',
@@ -3205,14 +3204,14 @@ const styles = StyleSheet.create({
     cartTotalPrice: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#403746',
+        color: '#7E22CE',
     },
     cartCheckoutButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#403746',
+        backgroundColor: '#7E22CE',
         paddingVertical: 14,
         borderRadius: 12,
     },
