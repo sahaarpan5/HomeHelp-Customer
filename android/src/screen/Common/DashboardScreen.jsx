@@ -72,37 +72,37 @@ const DashboardScreen = ({ navigation }) => {
         require('../../asset/person-outline.png'),
         require('../../asset/calendar-outline.png'),
         require('../../asset/heart.png'),
-        require('../../asset/monthly-subscription.png'),
+        // require('../../asset/monthly-subscription.png'),
         require('../../asset/person-outline.png'),
         require('../../asset/gift.png'),
         require('../../asset/information.png'),
     ];
 
-   const COLORS = {
-    gold: '#D8B4FE',                            // was '#d6bceb'  → primary
-    goldLight: '#A855F7',                       // was '#76577F'  → secondary
-    goldDark: '#A855F7',                        // was '#C4B0D3'  → secondary
-    goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
-    goldFadeStrong: 'rgba(216, 180, 254, 0.2)', // was 'rgba(179, 154, 199, 0.2)'
-    white: '#FFFFFF',                           // unchanged
-    dark: '#2D1B4E',                            // was '#1A1A1A'
-    textLight: '#6B5B7A',                       // was '#666666'
-    lightBg: '#FAF5FF',                         // was '#F8F6F0'
-    border: '#EDE0FF',                          // was '#E8E3D8'
-    success: '#2ECC71',                         // unchanged (functional)
-    purple: '#A855F7',                          // was '#6C5CE7'  → secondary
-    pink: '#D8B4FE',                            // was '#FD79A8'  → primary
-    blue: '#A855F7',                            // was '#0984E3'  → secondary
-    green: '#00B894',                           // unchanged
-    red: '#E17055',                             // unchanged (functional)
-    orange: '#FDCB6E',                          // unchanged (functional)
-    teal: '#00CEC9',                            // unchanged
-    indigo: '#A855F7',                          // was '#6C5CE7'  → secondary
-    coral: '#D8B4FE',                           // was '#FF6B6B'  → primary
-    mint: '#00B894',                            // unchanged
-    lavender: '#D8B4FE',                        // was '#A29BFE'  → primary
-    peach: '#A855F7',                           // was '#FD79A8'  → secondary
-};
+    const COLORS = {
+        gold: '#D8B4FE',                            // was '#d6bceb'  → primary
+        goldLight: '#A855F7',                       // was '#76577F'  → secondary
+        goldDark: '#A855F7',                        // was '#C4B0D3'  → secondary
+        goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
+        goldFadeStrong: 'rgba(216, 180, 254, 0.2)', // was 'rgba(179, 154, 199, 0.2)'
+        white: '#FFFFFF',                           // unchanged
+        dark: '#2D1B4E',                            // was '#1A1A1A'
+        textLight: '#6B5B7A',                       // was '#666666'
+        lightBg: '#FAF5FF',                         // was '#F8F6F0'
+        border: '#EDE0FF',                          // was '#E8E3D8'
+        success: '#2ECC71',                         // unchanged (functional)
+        purple: '#A855F7',                          // was '#6C5CE7'  → secondary
+        pink: '#D8B4FE',                            // was '#FD79A8'  → primary
+        blue: '#A855F7',                            // was '#0984E3'  → secondary
+        green: '#00B894',                           // unchanged
+        red: '#E17055',                             // unchanged (functional)
+        orange: '#FDCB6E',                          // unchanged (functional)
+        teal: '#00CEC9',                            // unchanged
+        indigo: '#A855F7',                          // was '#6C5CE7'  → secondary
+        coral: '#D8B4FE',                           // was '#FF6B6B'  → primary
+        mint: '#00B894',                            // unchanged
+        lavender: '#D8B4FE',                        // was '#A29BFE'  → primary
+        peach: '#A855F7',                           // was '#FD79A8'  → secondary
+    };
     const offerListRef = useRef(null);
 
     // Sample user data
@@ -994,7 +994,7 @@ const DashboardScreen = ({ navigation }) => {
                                 </TouchableOpacity>
 
                                 <View style={styles.sidebarMenu}>
-                                    {['My Account', 'My Bookings', 'My Favorites Services', 'Monthly Subscription', 'Help & Support'].map((item, index) => (
+                                    {['My Account', 'My Bookings', 'My Favorites Services', 'Help & Support'].map((item, index) => (
                                         <TouchableOpacity key={index} style={styles.sidebarMenuItem}
                                             onPress={() => {
                                                 switch (item) {
@@ -1818,10 +1818,61 @@ const DashboardScreen = ({ navigation }) => {
                             </TouchableOpacity>
                         </View>
 
-                        <FlatList
+                        {/* <FlatList
                             data={popularServices}
                             renderItem={renderPopularService}
                             keyExtractor={(item) => item.id}
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={styles.servicesList}
+                        /> */}
+
+                        <FlatList
+                            data={allServices.slice(0, 3)}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity
+                                    style={styles.popularServiceCard}
+                                    onPress={() =>
+                                        navigation.navigate('ServiceBookingScreen', {
+                                            serviceId: item.id,
+                                            customername: `${firstName} ${lastName}`,
+                                            customemob: phone,
+                                        })
+                                    }
+                                >
+                                    <CachedImage
+                                        uri={item.image?.uri}
+                                        style={styles.popularServiceImage}
+                                        resizeMode="cover"
+                                    />
+
+                                    <View style={styles.popularServiceContent}>
+                                        <Text style={styles.popularServiceName}>
+                                            {item.name}
+                                        </Text>
+
+                                        <View style={styles.popularServiceBottom}>
+                                            <View
+                                                style={[
+                                                    styles.popularServiceIcon,
+                                                    { backgroundColor: item.color },
+                                                ]}
+                                            >
+                                                <Image
+                                                    source={item.icon}
+                                                    style={{
+                                                        width: 16,
+                                                        height: 16,
+                                                        resizeMode: 'contain',
+                                                        tintColor: '#FFFFFF',
+                                                    }}
+                                                />
+                                            </View>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            )}
+                            keyExtractor={(item) => String(item.id)}
                             horizontal
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={styles.servicesList}
@@ -1851,39 +1902,42 @@ const DashboardScreen = ({ navigation }) => {
                         </View>
 
                         {/* On the Spot Services */}
-                        <View style={styles.sectionHeader}>
+                        {/* <View style={styles.sectionHeader}>
                             <Text style={styles.sectionTitle}>⚡ On the Spot</Text>
 
-                        </View>
-                        <FlatList
+                        </View> */}
+                        {/* <FlatList
                             data={onTheSpotServices}
                             renderItem={renderOnTheSpotService}
                             keyExtractor={(item) => item.id}
                             horizontal
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={styles.onTheSpotList}
-                        />
+                        /> */}
 
                         {/* Rebook Services */}
-                        <View style={styles.sectionHeader}>
+
+                        {/* <View style={styles.sectionHeader}>
                             <Text style={styles.sectionTitle}>🔄 Rebook Services</Text>
                             <Text style={styles.viewAllText}>View All</Text>
-                        </View>
-                        <FlatList
+                        </View> */}
+
+
+                        {/* <FlatList
                             data={rebookServices}
                             renderItem={renderRebookService}
                             keyExtractor={(item) => item.id}
                             horizontal
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={styles.rebookList}
-                        />
+                        /> */}
 
                         {/* Thoughtful Creation */}
-                        <View style={styles.sectionHeader}>
+                        {/* <View style={styles.sectionHeader}>
                             <Text style={styles.sectionTitle}>💡 Thoughtful Creation</Text>
                             <Text style={styles.viewAllText}>View All</Text>
-                        </View>
-                        <View style={styles.thoughtfulContainer}>
+                        </View> */}
+                        {/* <View style={styles.thoughtfulContainer}>
                             <FlatList
                                 ref={thoughtfulFlatListRef}
                                 data={thoughtfulCreations}
@@ -1918,7 +1972,7 @@ const DashboardScreen = ({ navigation }) => {
                                     </TouchableOpacity>
                                 ))}
                             </View>
-                        </View>
+                        </View> */}
 
                         {/* Why Choose HomeHelp */}
                         <View style={styles.sectionHeader}>

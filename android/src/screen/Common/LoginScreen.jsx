@@ -23,6 +23,10 @@ import {
     GoogleSignin,
     statusCodes,
 } from '@react-native-google-signin/google-signin';
+import {
+    getMessaging,
+    getToken,
+} from '@react-native-firebase/messaging';
 
 
 
@@ -138,6 +142,27 @@ const LoginScreen = ({ navigation }) => {
             offlineAccess: false,
         });
     }, []);
+
+    useEffect(() => {
+        getFCMToken();
+    }, []);
+
+
+
+    const getFCMToken = async () => {
+        try {
+            const messagingInstance = getMessaging();
+
+            const token = await getToken(messagingInstance);
+
+            console.log('FCM DEVICE TOKEN:', token);
+
+            return token;
+        } catch (error) {
+            console.log('FCM TOKEN ERROR:', error);
+            return null;
+        }
+    };
 
     const handlePhoneChange = (text) => {
         const cleaned = text.replace(/[^0-9]/g, '');
@@ -1426,7 +1451,7 @@ const styles = StyleSheet.create({
         color: '#2D1B4E',
         paddingVertical: 12,
     },
-   
+
     primaryButton: {
         flexDirection: 'row',
         alignItems: 'center',

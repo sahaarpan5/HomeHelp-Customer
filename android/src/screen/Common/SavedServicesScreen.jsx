@@ -47,26 +47,26 @@ const SavedServicesScreen = ({ navigation, route }) => {
     const slideAnim = useRef(new Animated.Value(30)).current;
 
     const COLORS = {
-        gold: '#d6bceb',
-        goldLight: '#76577F',
-        goldDark: '#C4B0D3',
-        goldFade: 'rgba(179, 154, 199, 0.1)',
-        white: '#FFFFFF',
-        dark: '#1A1A1A',
-        textLight: '#666666',
-        lightBg: '#F8F6F0',
-        border: '#E8E3D8',
-        success: '#2ECC71',
-        purple: '#6C5CE7',
-        pink: '#FD79A8',
-        blue: '#0984E3',
-        green: '#00B894',
-        red: '#E17055',
-        orange: '#FDCB6E',
-        warning: '#F39C12',
-        heart: '#FF4757',
-        txtColor: '#403746',
-    };
+    gold: '#D8B4FE',                            // was '#d6bceb'  → primary
+    goldLight: '#A855F7',                       // was '#76577F'  → secondary
+    goldDark: '#A855F7',                        // was '#C4B0D3'  → secondary
+    goldFade: 'rgba(216, 180, 254, 0.1)',       // was 'rgba(179, 154, 199, 0.1)'
+    white: '#FFFFFF',                           // unchanged
+    dark: '#2D1B4E',                            // was '#1A1A1A'
+    textLight: '#6B5B7A',                       // was '#666666'
+    lightBg: '#FAF5FF',                         // was '#F8F6F0'
+    border: '#EDE0FF',                          // was '#E8E3D8'
+    success: '#2ECC71',                         // unchanged (functional)
+    purple: '#A855F7',                          // was '#6C5CE7'  → secondary
+    pink: '#D8B4FE',                            // was '#FD79A8'  → primary
+    blue: '#A855F7',                            // was '#0984E3'  → secondary
+    green: '#00B894',                           // unchanged (functional)
+    red: '#E17055',                             // unchanged (functional)
+    orange: '#FDCB6E',                          // unchanged (functional)
+    warning: '#F39C12',                         // unchanged (functional)
+    heart: '#FF4757',                           // unchanged (functional — saved/fav heart)
+    txtColor: '#2D1B4E',                        // was '#403746'
+};
 
     useEffect(() => {
         Animated.parallel([
@@ -325,7 +325,7 @@ const SavedServicesScreen = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#d6bceb" />
+            <StatusBar barStyle="light-content" backgroundColor="#D8B4FE" />
 
             {/* Header */}
             <View style={styles.header}>
@@ -412,7 +412,7 @@ const SavedServicesScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#FAF5FF',
     },
     header: {
         flexDirection: 'row',
@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
         paddingBottom: 16,
-        backgroundColor: '#d6bceb',
+        backgroundColor: '#D8B4FE',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255,255,255,0.1)',
     },
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#403746',
+        color: '#2D1B4E',
     },
     headerRight: {
         width: 32,
@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
     },
     savedCount: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
     },
     listContent: {
         paddingBottom: 20,
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
         marginBottom: 14,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: '#F0EDE8',
+        borderColor: '#F0E6FF',
         shadowColor: 'rgba(0,0,0,0.04)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -496,7 +496,7 @@ const styles = StyleSheet.create({
     serviceName: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         marginBottom: 4,
     },
     serviceRating: {
@@ -508,16 +508,16 @@ const styles = StyleSheet.create({
     serviceRatingText: {
         fontSize: 11,
         fontWeight: '600',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
     },
     servicePrice: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#403746',
+        color: '#2D1B4E',
         marginBottom: 6,
     },
     bookButton: {
-        backgroundColor: '#76577F',
+        backgroundColor: '#A855F7',
         paddingVertical: 6,
         borderRadius: 8,
         alignItems: 'center',
@@ -538,7 +538,7 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 40,
-        backgroundColor: '#F8F6F0',
+        backgroundColor: '#FAF5FF',
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 16,
@@ -546,19 +546,19 @@ const styles = StyleSheet.create({
     emptyTitle: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: '#2D1B4E',
         marginBottom: 8,
     },
     emptyText: {
         fontSize: 14,
-        color: '#666666',
+        color: '#6B5B7A',
         textAlign: 'center',
         marginBottom: 20,
         paddingHorizontal: 40,
         lineHeight: 20,
     },
     exploreButton: {
-        backgroundColor: '#C9A84C',
+        backgroundColor: '#A855F7',
         paddingHorizontal: 30,
         paddingVertical: 12,
         borderRadius: 12,

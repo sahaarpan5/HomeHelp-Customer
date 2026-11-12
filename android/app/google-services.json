@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "151200951855",
+    "project_id": "homehelpg",
+    "storage_bucket": "homehelpg.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:151200951855:android:f9a8c6a2aff75eaaf0a0da",
+        "android_client_info": {
+          "package_name": "com.homehelp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqBriVDAG1Pz2cOB62VYBtSTbqEoliK8k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
